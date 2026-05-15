@@ -149,5 +149,3 @@ verdict-protocol/
 - 🤖 Telegram Bot: [@MemeCourt_Bot](https://t.me/MemeCourt_Bot)
 - 💬 Contact: [@lant1ng](https://t.me/lant1ng)
 ```
-
----
