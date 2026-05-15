@@ -175,15 +175,3 @@ verdict-protocol/
 ├── protocol-bet/           # ⚖️ On-chain Betting Arena (Building)
 ├── audit/                  # 🔍 AI Contract Audit (Planned)
 └── ip-arbitration/         # 🏛️ IP Arbitration (Planned)
-```
-
----
-
-## Links
-
-<div align="center">
-
-[![Telegram Bot](https://img.shields.io/badge/@MemeCourt__Bot-Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/MemeCourt_Bot)
-[![Contact](https://img.shields.io/badge/@lant1ng-Contact-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/lant1ng)
-
-</div>
