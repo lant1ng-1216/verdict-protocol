@@ -160,6 +160,7 @@ _The On-Chain Tribunal. Every wallet gets judged._
 🐋 `/whale` `/suspect` `[chain]` — View whale suspects
 🟢 `/mantle` — Mantle ecosystem live data (TVL, protocols, gas)
 💰 `/price` `<token or address>` — Token price & 24h change
+⚔️ `/compare` `<addr1> <addr2> [chain]` — Compare two wallets, get AI ruling
 👁 `/watch` `/subpoena` `<address> [label]` — Issue surveillance order
 📋 `/watchlist` `/docket` — View active cases
 ❌ `/unwatch` `<address>` — Dismiss case
@@ -357,6 +358,169 @@ async def whale_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await wait.edit_text("\n".join(lines), parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup([chain_buttons[:2], chain_buttons[2:]]),
         disable_web_page_preview=True)
+
+async def compare_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    args = context.args or []
+    if len(args) < 2:
+        await update.message.reply_text(
+            "Usage: `/compare <address1> <address2> [chain]`\nExample: `/compare 0xAAA...aaa 0xBBB...bbb mantle`",
+            parse_mode="Markdown")
+        return
+
+    addr1, addr2 = args[0].strip(), args[1].strip()
+    if not EVM_RE.match(addr1) or not EVM_RE.match(addr2):
+        await update.message.reply_text("❌ *Invalid address format.*", parse_mode="Markdown")
+        return
+
+    chain = "bnb"
+    if len(args) > 2:
+        raw = args[2].lower()
+        chain = CHAIN_ALIASES.get(raw, raw) if raw in CHAIN_ALIASES or raw in CHAINS else "bnb"
+
+    ci = CHAINS[chain]
+    case_no = case_number(addr1 + addr2)
+
+    wait = await update.message.reply_text(
+        f"⚖️ *Court is comparing two wallets...*\n🔍 Summoning both defendants to the stand\n🔗 Chain: {ci['emoji']} {ci['name']}",
+        parse_mode="Markdown")
+
+    # Fetch data for both wallets concurrently
+    txs1, bal1, tok1, txs2, bal2, tok2 = await asyncio.gather(
+        get_transfers(addr1, chain, 20),
+        get_balance(addr1, chain),
+        get_tokens(addr1, chain),
+        get_transfers(addr2, chain, 20),
+        get_balance(addr2, chain),
+        get_tokens(addr2, chain),
+    )
+
+    def analyze(addr, txs, bal, tokens):
+        try: balance = float(bal.get("balance","0"))/1e18
+        except: balance = 0
+
+        inflow = sum(float(t.get("value","0"))/1e18 for t in txs if t.get("to_address","").lower()==addr.lower())
+        outflow = sum(float(t.get("value","0"))/1e18 for t in txs if t.get("from_address","").lower()==addr.lower())
+        net = inflow - outflow
+
+        max_tx = max((float(t.get("value","0"))/1e18 for t in txs), default=0)
+
+        last_active = "N/A"
+        if txs:
+            last_active = tago(txs[0].get("block_timestamp",""))
+
+        # Scoring: balance(40) + tx_count(20) + net_flow(20) + token_diversity(10) + recency(10)
+        score = 0
+        score += min(40, balance * 0.4)
+        score += min(20, len(txs))
+        score += min(20, max(0, net * 2))
+        score += min(10, len(tokens) * 2)
+        if txs and "ago" in last_active:
+            if "s ago" in last_active or "m ago" in last_active: score += 10
+            elif "h ago" in last_active: score += 7
+            elif "d ago" in last_active: score += 3
+
+        return {
+            "balance": balance, "tx_count": len(txs), "net": net,
+            "max_tx": max_tx, "token_count": len(tokens),
+            "last_active": last_active, "score": min(100, int(score)),
+            "inflow": inflow, "outflow": outflow,
+        }
+
+    a1 = analyze(addr1, txs1, bal1, tok1)
+    a2 = analyze(addr2, txs2, bal2, tok2)
+    symbol = ci["symbol"]
+
+    def fmt(v): return f"{v:,.4f}" if v < 1000 else f"{v:,.2f}"
+
+    # AI verdict
+    prompt = f"""You are the AI Judge of Verdict Protocol — an on-chain tribunal for wallet disputes.
+
+Compare these two {ci['name']} wallets and deliver a dramatic court ruling.
+
+RED CORNER (Wallet 1): {addr1[:10]}...
+- Balance: {fmt(a1['balance'])} {symbol}
+- Transactions: {a1['tx_count']}
+- Net flow: {'+' if a1['net']>=0 else ''}{fmt(a1['net'])} {symbol}
+- Largest tx: {fmt(a1['max_tx'])} {symbol}
+- Token diversity: {a1['token_count']} tokens
+- Last active: {a1['last_active']}
+- Score: {a1['score']}/100
+
+BLUE CORNER (Wallet 2): {addr2[:10]}...
+- Balance: {fmt(a2['balance'])} {symbol}
+- Transactions: {a2['tx_count']}
+- Net flow: {'+' if a2['net']>=0 else ''}{fmt(a2['net'])} {symbol}
+- Largest tx: {fmt(a2['max_tx'])} {symbol}
+- Token diversity: {a2['token_count']} tokens
+- Last active: {a2['last_active']}
+- Score: {a2['score']}/100
+
+Respond in exactly 2 sentences using dramatic court language:
+- Sentence 1: Compare the two wallets factually (activity, holdings, behavior)
+- Sentence 2: Declare the winner and why — use phrases like "The court rules...", "Red corner dominates...", "Blue corner prevails..."
+
+Be dramatic but factual."""
+
+    ruling = await ai_judge(addr1, chain, txs1, bal1) if not DEEPSEEK_KEY else ""
+    if DEEPSEEK_KEY:
+        try:
+            async with aiohttp.ClientSession(trust_env=False) as s:
+                async with s.post("https://api.deepseek.com/v1/chat/completions",
+                    headers={"Authorization":f"Bearer {DEEPSEEK_KEY}","Content-Type":"application/json"},
+                    json={"model":"deepseek-chat","messages":[{"role":"user","content":prompt}],
+                          "max_tokens":200,"temperature":0.7},
+                    timeout=aiohttp.ClientTimeout(total=12)) as r:
+                    if r.status==200:
+                        d = await r.json()
+                        ruling = d["choices"][0]["message"]["content"].strip()
+        except: ruling = "The court is unable to reach a verdict at this time."
+
+    winner = "🔴 RED" if a1['score'] >= a2['score'] else "🔵 BLUE"
+    score_bar1 = "█" * (a1['score']//10) + "░" * (10 - a1['score']//10)
+    score_bar2 = "█" * (a2['score']//10) + "░" * (10 - a2['score']//10)
+
+    report = f"""⚖️ *VERDICT PROTOCOL — CASE {case_no}*
+{ci['emoji']} *{ci['name']} Wallet Comparison*
+━━━━━━━━━━━━━━━━━━━
+*🔴 RED CORNER*
+  👤 `{addr1[:6]}...{addr1[-4:]}`
+  💰 Balance: `{fmt(a1['balance'])} {symbol}`
+  📊 Transactions: `{a1['tx_count']}`
+  💸 Net Flow: `{'+' if a1['net']>=0 else ''}{fmt(a1['net'])} {symbol}`
+  🔝 Largest Tx: `{fmt(a1['max_tx'])} {symbol}`
+  🪙 Token Diversity: `{a1['token_count']} tokens`
+  🕐 Last Active: `{a1['last_active']}`
+
+*🔵 BLUE CORNER*
+  👤 `{addr2[:6]}...{addr2[-4:]}`
+  💰 Balance: `{fmt(a2['balance'])} {symbol}`
+  📊 Transactions: `{a2['tx_count']}`
+  💸 Net Flow: `{'+' if a2['net']>=0 else ''}{fmt(a2['net'])} {symbol}`
+  🔝 Largest Tx: `{fmt(a2['max_tx'])} {symbol}`
+  🪙 Token Diversity: `{a2['token_count']} tokens`
+  🕐 Last Active: `{a2['last_active']}`
+━━━━━━━━━━━━━━━━━━━
+📊 *COURT SCORING*
+  🔴 `{score_bar1}` {a1['score']}/100
+  🔵 `{score_bar2}` {a2['score']}/100
+━━━━━━━━━━━━━━━━━━━
+🏆 *LEADING: {winner} CORNER*
+━━━━━━━━━━━━━━━━━━━
+👨‍⚖️ *AI Judge Ruling:*
+_{ruling}_
+━━━━━━━━━━━━━━━━━━━
+⚔️ *Disagree with the verdict?*
+_Issue a duel and let the chain decide!_
+[⚖️ verdictprotocol.online](https://verdictprotocol.online)"""
+
+    await wait.delete()
+    await update.message.reply_text(report, parse_mode="Markdown",
+        reply_markup=InlineKeyboardMarkup([[
+            InlineKeyboardButton("⚔️ Issue a Duel", url="https://verdictprotocol.online"),
+            InlineKeyboardButton(f"🔍 Red — {ci['explorer']}", url=f"{ci['explorer']}/address/{addr1}"),
+        ],[
+            InlineKeyboardButton(f"🔍 Blue — {ci['explorer']}", url=f"{ci['explorer']}/address/{addr2}"),
+        ]]), disable_web_page_preview=True)
 
 async def price_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     args = context.args or []
@@ -691,6 +855,7 @@ def main():
     for cmd in ["whale","suspect"]: app.add_handler(CommandHandler(cmd, whale_command))
     app.add_handler(CommandHandler("mantle", mantle_command))
     app.add_handler(CommandHandler("price", price_command))
+    app.add_handler(CommandHandler("compare", compare_command))
     app.add_handler(CommandHandler("unwatch", unwatch_command))
     app.add_handler(CallbackQueryHandler(button_callback))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
