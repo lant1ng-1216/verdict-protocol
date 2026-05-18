@@ -1,0 +1,48 @@
+#meme-court-verdict-widget {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 300px;
+  background: #ffffff;
+  border: 1px solid #e8e6e0;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+  z-index: 2147483647;
+  overflow: hidden;
+  animation: mc-slide-in 0.28s cubic-bezier(.34,1.2,.64,1) forwards;
+}
+@keyframes mc-slide-in { from{opacity:0;transform:translateY(20px) scale(0.96)} to{opacity:1;transform:translateY(0) scale(1)} }
+#meme-court-verdict-widget .mc-header { display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:#1a1a18;cursor:move; }
+#meme-court-verdict-widget .mc-logo { display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:#fff; }
+#meme-court-verdict-widget .mc-close { font-size:12px;color:rgba(255,255,255,0.4);cursor:pointer;padding:2px 6px;border-radius:4px; }
+#meme-court-verdict-widget .mc-close:hover { color:#fff;background:rgba(255,255,255,0.1); }
+#meme-court-verdict-widget .mc-token-row { display:flex;align-items:center;gap:8px;padding:10px 14px 6px;border-bottom:1px solid #f0ede8; }
+#meme-court-verdict-widget .mc-token-name { font-size:15px;font-weight:800;color:#1a1a18;letter-spacing:-.02em;flex-shrink:0; }
+#meme-court-verdict-widget .mc-token-addr { font-size:10px;font-family:monospace;color:#8a8a87;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+#meme-court-verdict-widget .mc-verdict-main { display:flex;align-items:center;justify-content:space-between;padding:10px 14px 6px; }
+#meme-court-verdict-widget .mc-verdict-badge { display:inline-flex;align-items:center;padding:5px 14px;border-radius:99px;font-size:13px;font-weight:800;color:#fff; }
+#meme-court-verdict-widget .mc-conf-wrap { text-align:right;min-width:52px; }
+#meme-court-verdict-widget .mc-conf-num { font-size:20px;font-weight:900;color:#1a1a18;font-family:monospace;line-height:1; }
+#meme-court-verdict-widget .mc-conf-lbl { font-size:10px;color:#8a8a87;margin-top:1px; }
+#meme-court-verdict-widget .mc-risk-bar { margin:2px 14px 6px;padding:5px 10px;background:#fafaf8;border-radius:6px;font-size:11px; }
+#meme-court-verdict-widget .mc-short { padding:6px 14px 3px;font-size:13px;font-weight:700;color:#1a1a18;line-height:1.5; }
+#meme-court-verdict-widget .mc-reason { padding:3px 14px 8px;font-size:11px;color:#6b6b68;line-height:1.65;border-bottom:1px solid #f0ede8; }
+#meme-court-verdict-widget .mc-data-row { display:flex;padding:8px 14px;border-bottom:1px solid #f0ede8; }
+#meme-court-verdict-widget .mc-data-item { flex:1;text-align:center; }
+#meme-court-verdict-widget .mc-data-val { font-size:12px;font-weight:700;color:#1a1a18;font-family:monospace; }
+#meme-court-verdict-widget .mc-data-lbl { font-size:9px;color:#8a8a87;margin-top:1px; }
+#meme-court-verdict-widget .mc-signals { padding:8px 14px;display:flex;flex-direction:column;gap:4px;border-bottom:1px solid #f0ede8; }
+#meme-court-verdict-widget .mc-sig { display:flex;align-items:flex-start;gap:6px;font-size:11px; }
+#meme-court-verdict-widget .mc-sig-l { color:#8a8a87;flex-shrink:0;min-width:64px;width:auto; }
+#meme-court-verdict-widget .mc-sig-v { color:#1a1a18;line-height:1.5; }
+#meme-court-verdict-widget .mc-footer { display:flex;gap:8px;padding:10px 14px; }
+#meme-court-verdict-widget .mc-btn-p { flex:1;display:flex;align-items:center;justify-content:center;padding:8px 12px;background:#ff6340;color:#fff !important;border-radius:8px;font-size:11px;font-weight:700;text-decoration:none !important;transition:opacity .15s; }
+#meme-court-verdict-widget .mc-btn-p:hover { opacity:.88; }
+#meme-court-verdict-widget .mc-btn-s { display:flex;align-items:center;justify-content:center;padding:8px 14px;background:transparent;border:1.5px solid #e8e6e0;color:#4a4a47 !important;border-radius:8px;font-size:11px;font-weight:700;text-decoration:none !important;transition:all .15s; }
+#meme-court-verdict-widget .mc-btn-s:hover { border-color:#ff6340;color:#ff6340 !important; }
+#meme-court-verdict-widget .mc-powered { padding:4px 14px 8px;font-size:9px;color:#b0aea8;text-align:center; }
+#meme-court-verdict-widget .mc-loading { display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 14px; }
+#meme-court-verdict-widget .mc-spinner { width:24px;height:24px;border:2px solid #f0ede8;border-top-color:#ff6340;border-radius:50%;animation:mc-spin .8s linear infinite; }
+@keyframes mc-spin { to{transform:rotate(360deg)} }
+#meme-court-verdict-widget .mc-loading-text { font-size:12px;color:#6b6b68;font-weight:500; }

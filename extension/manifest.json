@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "Verdict Protocol",
+  "version": "0.1.0",
+  "description": "AI-powered on-chain verdict for Meme tokens. Get instant risk analysis on DexScreener, GMGN and four.meme.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    },
+    "default_title": "点击获取 Meme Court AI 裁定"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.dexscreener.com/*",
+        "*://*.gmgn.ai/*",
+        "*://*.four.meme/*",
+        "*://*.ave.ai/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "*://*.dexscreener.com/*",
+    "*://*.gmgn.ai/*",
+    "*://*.four.meme/*",
+    "*://*.ave.ai/*",
+    "*://api.deepseek.com/*",
+    "*://memecourt.online/*"
+  ]
+}
