@@ -1480,9 +1480,48 @@ function AppInner() {
   const t = LANG[lang];
 
   // ── 链上数据 ──
-  const { data: counterData } = useCounter();
-  const totalCount = counterData ? Number(counterData) : 0;
-  const { duels: onChainDuels, isLoading, refetch } = useAllDuels(totalCount);
+  // 从后端API读取链上数据，不依赖钱包网络
+  const [onChainDuels, setOnChainDuels] = useState<OnChainDuel[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchDuels = async (forceSync = false) => {
+    try {
+      setIsLoading(true);
+      const res = await fetch(`/api/duels${forceSync ? '?sync=1' : ''}`);
+      const data = await res.json();
+      if (data.duels && data.duels.length > 0) {
+        // 转换数据类型
+        const duels: OnChainDuel[] = data.duels.map((d: any) => ({
+          ...d,
+          wager: BigInt(d.wager),
+          audioBps: BigInt(d.audioBps),
+          deadline: BigInt(d.deadline),
+          settledAt: BigInt(d.settledAt),
+          poolRed: BigInt(d.poolRed),
+          poolBlue: BigInt(d.poolBlue),
+          _claimText: d.claimText,
+          _ruleText: d.ruleText,
+        }));
+        setOnChainDuels(duels);
+        // 同步到localStorage供Modal使用
+        if (typeof window !== 'undefined') {
+          duels.forEach(d => {
+            if (d._claimText) localStorage.setItem('claim_' + d.claimHash, d._claimText as string);
+            if (d._ruleText) localStorage.setItem('rule_' + d.ruleHash, d._ruleText as string);
+          });
+        }
+      }
+    } catch (e) {
+      console.error('Failed to fetch duels:', e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const refetch = () => fetchDuels(true);
+
+  useEffect(() => { fetchDuels(); }, []);
+  const totalCount = onChainDuels.length;
 
   // 过滤：只展示 Open 和 Active 状态，且未过期
   const now = BigInt(Math.floor(Date.now() / 1000));
@@ -1608,21 +1647,18 @@ function AppInner() {
               All Duels
               {isLoading && <span className="text-white/15">loading...</span>}
               {!isLoading && visibleDuels.length === 0 && totalCount === 0 && (
-                <span className="text-white/15">— connect wallet & switch to BNB Testnet to see duels</span>
+                <span className="text-white/15">— no active duels</span>
               )}
             </div>
-            {visibleDuels.length > 0 ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-                {visibleDuels.map((od, i) => {
-                  const duel = onChainToDuel(od, i);
-                  return <DuelCard key={od.id} duel={duel} t={t} onClick={() => handleSelectDuel(duel, od)} onEnter={() => handleSelectDuel(duel, od)} />;
-                })}
-              </div>
-            ) : !isLoading && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-                {DUELS.map(d => <DuelCard key={d.id} duel={d} t={t} onClick={() => setSelectedDuel(d)} onEnter={() => setSelectedDuel(d)} />)}
-              </div>
-            )}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '12px' }}>
+              {visibleDuels.length > 0
+                ? visibleDuels.map((od, i) => {
+                    const duel = onChainToDuel(od, i);
+                    return <DuelCard key={od.id} duel={duel} t={t} onClick={() => handleSelectDuel(duel, od)} onEnter={() => handleSelectDuel(duel, od)} />;
+                  })
+                : !isLoading && DUELS.map(d => <DuelCard key={d.id} duel={d} t={t} onClick={() => setSelectedDuel(d)} onEnter={() => setSelectedDuel(d)} />)
+              }
+            </div>
           </div>
           <div className="pb-8 pt-4 text-center">
             <button onClick={() => refetch()} className="text-xs text-white/30 bg-[#0c0c1a] border border-white/10 rounded-xl px-6 py-2.5 hover:border-white/20 transition-colors">↻ Refresh</button>
