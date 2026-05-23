@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { ConnectButton, useConnectModal } from '@rainbow-me/rainbowkit';
 import { useAccount, useChainId } from 'wagmi';
 import { formatEther } from 'viem';
 import {
@@ -753,6 +753,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
   const wager = onChainDuel ? fmtEther(onChainDuel.wager) : String(duel.challenger.amount);
   const isMock = onChainDuel?.id === 42;
 
+  const { openConnectModal } = useConnectModal();
   const myAddr = ((address || (typeof window !== 'undefined' ? (window as any).ethereum?.selectedAddress : '') || '')).toLowerCase();
   const isMyRed = !!(myAddr && onChainDuel && onChainDuel.red.toLowerCase() === myAddr);
   const isMyBlue = !!(myAddr && onChainDuel && onChainDuel.blue.toLowerCase() === myAddr);
@@ -886,9 +887,9 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
       <div style={S.foot}>
         <Btn label="取消" color="rgba(255,255,255,0.4)" bg="transparent" border="rgba(255,255,255,0.15)" onClick={onClose} />
         <Btn
-          label={acceptSuccess ? '✓ 已接受!' : acceptConfirming ? '确认中...' : acceptPending ? '等待签名...' : '⚔️ 接受挑战'}
+          label={!address ? '🔗 连接钱包后参与' : acceptSuccess ? '✓ 已接受!' : acceptConfirming ? '确认中...' : acceptPending ? '等待签名...' : '⚔️ 接受挑战'}
           color="#ff6b6b" bg="rgba(255,107,107,0.1)" border="rgba(255,107,107,0.4)"
-          onClick={() => onChainDuel && accept(onChainDuel.id, wager)}
+          onClick={() => !address ? openConnectModal?.() : onChainDuel && accept(onChainDuel.id, wager)}
           disabled={acceptPending || acceptConfirming}
         />
       </div>
@@ -996,10 +997,10 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
       <div style={S.foot}>
         <Btn label="取消" color="rgba(255,255,255,0.4)" bg="transparent" border="rgba(255,255,255,0.15)" onClick={onClose} />
         <Btn
-          label={isMock ? '🎮 演示模式' : betSuccess ? '✓ 押注成功!' : betConfirming ? '确认中...' : betPending ? '等待签名...' : '🔒 确认押注'}
+          label={!address && !isMock ? '🔗 连接钱包后参与' : isMock ? '🎮 演示模式' : betSuccess ? '✓ 押注成功!' : betConfirming ? '确认中...' : betPending ? '等待签名...' : '🔒 确认押注'}
           color="#6b9fff" bg="rgba(107,159,255,0.1)" border="rgba(107,159,255,0.4)"
-          onClick={() => { if(!isMock && selectedSide && betStakeNum && onChainDuel) placeBet(onChainDuel.id, selectedSide, betStake); }}
-          disabled={isMock || !selectedSide || !betStakeNum || betPending || betConfirming}
+          onClick={() => { if(!address && !isMock){ openConnectModal?.(); return; } if(!isMock && selectedSide && betStakeNum && onChainDuel) placeBet(onChainDuel.id, selectedSide, betStake); }}
+          disabled={isMock || betPending || betConfirming || (!!address && (!selectedSide || !betStakeNum))}
         />
       </div>
     </>
@@ -1610,7 +1611,14 @@ function AppInner() {
         }} />
       )}
       {showModal && <IssueModal t={t} onClose={() => { setShowModal(false); refetch(); }} chainId={chainId} />}
-      {selectedDuel && <DuelModal duel={selectedDuel} t={t} onClose={() => { setSelectedDuel(null); refetch(); }} onChainDuel={selectedOnChainDuel} />}
+      {selectedDuel && <DuelModal duel={selectedDuel} t={t} onClose={() => {
+        setSelectedDuel(null);
+        setSelectedOnChainDuel(undefined);
+        refetch();
+        if (typeof window !== 'undefined' && window.location.search.includes('duel=')) {
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+      }} onChainDuel={selectedOnChainDuel} />}
     </div>
   );
 }
