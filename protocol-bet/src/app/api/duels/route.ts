@@ -13,6 +13,7 @@ async function rpcCall(method: string, params: any[]) {
     body: JSON.stringify({ jsonrpc: '2.0', method, params, id: 1 }),
   });
   const data = await res.json();
+  if (data.error) throw new Error(`RPC error: ${JSON.stringify(data.error)}`);
   return data.result;
 }
 
@@ -39,43 +40,37 @@ async function kvSetEx(key: string, value: any, ttl: number) {
 function parseDuel(id: number, hex: string, poolRedHex: string, poolBlueHex: string) {
   if (!hex || hex === '0x' || hex.length < 10) return null;
   const data = hex.slice(2);
-  // struct Duel: red(addr), blue(addr), token(addr), wager, audioBps, deadline,
-  //              claimHash(bytes32), ruleHash(bytes32), vis(uint8), status, winner, settledAt
   const addr = (offset: number) => '0x' + data.slice(offset * 64 + 24, offset * 64 + 64);
   const uint = (offset: number) => BigInt('0x' + (data.slice(offset * 64, offset * 64 + 64) || '0'));
-  try {
-    return {
-      id,
-      red: addr(0),
-      blue: addr(1),
-      token: addr(2),
-      wager: uint(3).toString(),
-      audioBps: uint(4).toString(),
-      deadline: uint(5).toString(),
-      claimHash: '0x' + data.slice(6 * 64, 7 * 64),
-      ruleHash: '0x' + data.slice(7 * 64, 8 * 64),
-      vis: Number(uint(8)),
-      status: Number(uint(9)),
-      winner: Number(uint(10)),
-      settledAt: uint(11).toString(),
-      poolRed: BigInt('0x' + (poolRedHex?.slice(2) || '0')).toString(),
-      poolBlue: BigInt('0x' + (poolBlueHex?.slice(2) || '0')).toString(),
-    };
-  } catch { return null; }
+  const red = addr(0);
+  // 如果red是零地址，这个对决无效
+  if (red === '0x0000000000000000000000000000000000000000') return null;
+  return {
+    id,
+    red,
+    blue: addr(1),
+    token: addr(2),
+    wager: uint(3).toString(),
+    audioBps: uint(4).toString(),
+    deadline: uint(5).toString(),
+    claimHash: '0x' + data.slice(6 * 64, 7 * 64),
+    ruleHash: '0x' + data.slice(7 * 64, 8 * 64),
+    vis: Number(uint(8)),
+    status: Number(uint(9)),
+    winner: Number(uint(10)),
+    settledAt: uint(11).toString(),
+    poolRed: poolRedHex && poolRedHex !== '0x' ? BigInt(poolRedHex).toString() : '0',
+    poolBlue: poolBlueHex && poolBlueHex !== '0x' ? BigInt(poolBlueHex).toString() : '0',
+  };
 }
 
 async function syncDuels() {
-  // 读counter
   const counterHex = await rpcCall('eth_call', [
     { to: CONTRACT, data: '0x61bc221a' }, 'latest'
   ]);
   const count = parseInt(counterHex, 16);
   if (!count) return [];
 
-  // 批量读所有对决 - 使用正确的选择器
-  // getDuel(uint256): 0x565e614f
-  // poolRed(uint256): 0xd831f3c5
-  // poolBlue(uint256): 0x3a33cdea
   const calls = [];
   for (let i = 1; i <= count; i++) {
     const idHex = i.toString(16).padStart(64, '0');
@@ -122,8 +117,9 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const forceSync = searchParams.get('sync') === '1';
+    const debug = searchParams.get('debug') === '1';
 
-    if (!forceSync) {
+    if (!forceSync && !debug) {
       const cached = await kvGet(CACHE_KEY);
       if (cached) {
         return NextResponse.json({ duels: cached, cached: true });
@@ -131,10 +127,10 @@ export async function GET(req: NextRequest) {
     }
 
     const duels = await syncDuels();
-    await kvSetEx(CACHE_KEY, duels, CACHE_TTL);
+    if (!debug) await kvSetEx(CACHE_KEY, duels, CACHE_TTL);
 
-    return NextResponse.json({ duels, cached: false });
+    return NextResponse.json({ duels, cached: false, count: duels.length });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message, duels: [] }, { status: 500 });
+    return NextResponse.json({ error: e.message, stack: e.stack, duels: [] }, { status: 500 });
   }
 }
