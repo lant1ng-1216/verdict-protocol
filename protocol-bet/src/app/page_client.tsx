@@ -753,7 +753,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
   const wager = onChainDuel ? fmtEther(onChainDuel.wager) : String(duel.challenger.amount);
   const isMock = onChainDuel?.id === 42;
 
-  const myAddr = (address || (typeof window !== 'undefined' ? (window as any).ethereum?.selectedAddress : '')).toLowerCase();
+  const myAddr = ((address || (typeof window !== 'undefined' ? (window as any).ethereum?.selectedAddress : '') || '')).toLowerCase();
   const isMyRed = !!(myAddr && onChainDuel && onChainDuel.red.toLowerCase() === myAddr);
   const isMyBlue = !!(myAddr && onChainDuel && onChainDuel.blue.toLowerCase() === myAddr);
   const isParticipant = isMyRed || isMyBlue;
@@ -1361,7 +1361,7 @@ function MyDuelsPage({ t, onGoToArena, onChainDuels, chainId, onViewDuel }: { t:
           /* CARD GRID */
           <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
             {currentDuels.map(d => {
-              const myAddr2 = (address || (typeof window !== 'undefined' ? (window as any).ethereum?.selectedAddress : '')).toLowerCase();
+              const myAddr2 = ((address || (typeof window !== 'undefined' ? (window as any).ethereum?.selectedAddress : '') || '')).toLowerCase();
               const isRed = !!(myAddr2 && d.red.toLowerCase() === myAddr2);
               const mySide = isRed ? 'red' : 'blue';
               const opponentAddr = isRed ? d.blue : d.red;
