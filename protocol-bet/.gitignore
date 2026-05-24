@@ -5,3 +5,5 @@ package-lock.json
 .env.local
 AGENTS.md
 CLAUDE.md
+.vercel
+.env*
