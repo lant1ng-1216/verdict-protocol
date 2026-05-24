@@ -37,6 +37,47 @@ CHAIN_ALIASES = {
 AUTO_DETECT_ORDER = ["bnb","eth","base","arbitrum","polygon","mantle","optimism","avalanche"]
 
 EVM_RE = re.compile(r"0x[a-fA-F0-9]{40}")
+KV_URL   = os.getenv("KV_REST_API_URL", "")
+KV_TOKEN = os.getenv("KV_REST_API_TOKEN", "")
+
+async def kv_set(key: str, value: str):
+    if not KV_URL or not KV_TOKEN:
+        return
+    import urllib.parse
+    url = f"{KV_URL}/set/{urllib.parse.quote(key, safe='')}/{urllib.parse.quote(value, safe='')}"
+    try:
+        async with aiohttp.ClientSession() as s:
+            await s.get(url, headers={"Authorization": f"Bearer {KV_TOKEN}"}, timeout=aiohttp.ClientTimeout(total=5))
+    except Exception as e:
+        print(f"KV set error: {e}")
+
+async def kv_get(key: str) -> str:
+    if not KV_URL or not KV_TOKEN:
+        return ""
+    import urllib.parse
+    url = f"{KV_URL}/get/{urllib.parse.quote(key, safe='')}"
+    try:
+        async with aiohttp.ClientSession() as s:
+            async with s.get(url, headers={"Authorization": f"Bearer {KV_TOKEN}"}, timeout=aiohttp.ClientTimeout(total=5)) as r:
+                data = await r.json()
+                return data.get("result") or ""
+    except Exception as e:
+        print(f"KV get error: {e}")
+    return ""
+
+async def send_duel_notification(bot, username: str, message: str):
+    chat_id = await kv_get(f"tg:user:{username.lower()}")
+    if not chat_id:
+        print(f"[Notify] No chat_id for @{username}")
+        return False
+    try:
+        await bot.send_message(chat_id=int(chat_id), text=message, parse_mode="Markdown")
+        print(f"[Notify] Sent to @{username}")
+        return True
+    except Exception as e:
+        print(f"[Notify] Failed: {e}")
+        return False
+
 watchlist: dict = {}
 
 # 案件编号生成
@@ -151,6 +192,11 @@ def verdict_label(balance_eth: float, tx_count: int) -> tuple:
 # ── 命令处理 ──────────────────────────────────────────────
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chains_list = " · ".join([f"{v['emoji']}{v['name']}" for v in CHAINS.values()])
+    # 记录用户 chat_id 到 Upstash，用于后续通知
+    user = update.effective_user
+    if user and user.username:
+        await kv_set(f"tg:user:{user.username.lower()}", str(update.effective_chat.id))
+        print(f"[KV] Registered @{user.username} → {update.effective_chat.id}")
     await update.message.reply_text(
 f"""⚖️ *MEME COURT — Verdict Protocol*
 _The On-Chain Tribunal. Every wallet gets judged._
