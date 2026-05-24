@@ -73,9 +73,23 @@ export async function GET(req: NextRequest) {
       const prevStatus = await kvGet(prevStatusKey);
       const prevStatusNum = prevStatus ? parseInt(prevStatus) : -1;
 
-      // 第一次运行，记录初始状态，不发通知
+      // 第一次运行，记录初始状态
       if (prevStatusNum === -1) {
         await kvSet(prevStatusKey, String(duel.status));
+        // 如果第一次见到就已经是 Active，说明在我们监控前就被接受了，也发通知
+        if (duel.status === 1) {
+          const tgUsername = await kvGet(`tg:claim:${duel.claimHash}`);
+          if (tgUsername) {
+            const chatId = await kvGet(`tg:user:${tgUsername}`);
+            if (chatId) {
+              const blue = duel.blue !== '0x0000000000000000000000000000000000000000'
+                ? `${duel.blue.slice(0, 6)}...${duel.blue.slice(-4)}` : '未知';
+              const message = `⚔️ *你的对决 #${i} 已被接受！*\n\n对手：\`${blue}\`\n\n查看详情：https://verdictprotocol.online/?duel=${i}`;
+              await sendTelegramMessage(chatId, message);
+              notifications.push(`duel #${i}: first-seen Active, notified @${tgUsername}`);
+            }
+          }
+        }
         continue;
       }
 
