@@ -33,7 +33,7 @@ export default function Web3Providers({ children }: { children: ReactNode }) {
   if (!configRef.current) {
     configRef.current = getDefaultConfig({
       appName: 'Protocol Bet',
-      projectId: 'b5b0c1b1b1b1b1b1b1b1b1b1b1b1b1b1',
+      projectId: 'c04340f72bb9dd71c7f22ba48ba492e0',
       chains: [bscTestnet, mantleSepolia, bsc, mainnet, polygon, arbitrum, optimism, base, avalanche],
       ssr: false,
     });
