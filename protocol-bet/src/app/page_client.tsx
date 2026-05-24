@@ -923,24 +923,30 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
           label={!address ? '🔗 连接钱包后参与' : isWrongNetwork ? '⚠️ 切换到 BNB Testnet' : acceptSuccess ? '✓ 已接受!' : acceptConfirming ? '确认中...' : acceptPending ? '等待签名...' : '⚔️ 接受挑战'}
           color={isWrongNetwork ? 'rgba(250,199,117,0.9)' : '#ff6b6b'} bg={isWrongNetwork ? 'rgba(250,199,117,0.06)' : 'rgba(255,107,107,0.1)'} border={isWrongNetwork ? 'rgba(250,199,117,0.4)' : 'rgba(255,107,107,0.4)'}
           onClick={async () => {
-            if (!address) { openConnectModal?.(); return; }
-            if (isWrongNetwork) { switchChain({ chainId: targetChainId }); return; }
             const chainDuelId = onChainDuel?.id ?? (duel as any)._onChainId;
             const wagerBigInt = onChainDuel?.wager ?? (duel as any)._wager;
             if (!chainDuelId) return;
-            if (onChainDuel) {
-              accept(onChainDuel.id, wager);
-            } else if (window.ethereum) {
+            // 优先用 window.ethereum 直接调用，绕过wagmi状态问题
+            if ((window as any).ethereum) {
               try {
+                const accounts = await (window as any).ethereum.request({ method: 'eth_accounts' });
+                if (!accounts || accounts.length === 0) { openConnectModal?.(); return; }
+                const chainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
+                if (parseInt(chainId, 16) !== targetChainId) {
+                  await (window as any).ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x' + targetChainId.toString(16) }] });
+                }
                 const idHex = chainDuelId.toString(16).padStart(64, '0');
                 const data = '0x19b05f49' + idHex;
                 const wagerHex = '0x' + (wagerBigInt ?? BigInt(Math.round(parseFloat(wager) * 1e18))).toString(16);
-                const accounts = await (window as any).ethereum.request({ method: 'eth_accounts' });
                 await (window as any).ethereum.request({
                   method: 'eth_sendTransaction',
                   params: [{ from: accounts[0], to: '0xa0A997cF05F7Baf21becEA4130209fD7C7D1A994', value: wagerHex, data }]
                 });
               } catch(e: any) { console.error('accept error:', e); }
+            } else if (onChainDuel) {
+              accept(onChainDuel.id, wager);
+            } else {
+              openConnectModal?.();
             }
           }}
           disabled={acceptPending || acceptConfirming}
