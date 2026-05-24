@@ -350,21 +350,12 @@ function IssueModal({ t, onClose, chainId = 97 }: { t: typeof LANG['en']; onClos
         const rHash = keccak256(toBytes(ruleTrimmed));
         localStorage.setItem('claim_' + cHash, claimTrimmed);
         localStorage.setItem('rule_' + rHash, ruleTrimmed);
-        // 同时存到服务端，让其他用户也能看到
-        // 存 TG 用户名（用于接受对决时通知）
-        if (tgUsername.trim()) {
-          const tgClean = tgUsername.trim().replace(/^@/, '').toLowerCase();
-          // 先存一个临时 key，notify route 会在链上确认后绑定到 duel id
-          fetch('/api/claim', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ tgUsername: tgClean, claimHash: cHash }),
-          }).catch(() => {});
-        }
+        // 存到服务端（声明文字 + TG 用户名一次提交）
+        const tgClean = tgUsername.trim() ? tgUsername.trim().replace(/^@/, '').toLowerCase() : undefined;
         fetch('/api/claim', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ claimHash: cHash, ruleHash: rHash, claimText: claimTrimmed, ruleText: ruleTrimmed }),
+          body: JSON.stringify({ claimHash: cHash, ruleHash: rHash, claimText: claimTrimmed, ruleText: ruleTrimmed, tgUsername: tgClean }),
         }).catch(() => {});
       } catch (e) {}
     }
