@@ -1,6 +1,6 @@
 """
 Verdict Protocol — Meme Court Telegram Bot v3
-⚖️ Full EVM Support + Meme Court Theme
+⚖️ Full EVM Support + Meme Court Theme + Bilingual (EN/ZH)
 """
 
 import os, re, json, asyncio, aiohttp
@@ -14,7 +14,6 @@ TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "")
 MORALIS_KEY    = os.getenv("MORALIS_API_KEY", "")
 DEEPSEEK_KEY   = os.getenv("DEEPSEEK_API_KEY", "")
 
-# ── 全 EVM 链配置 ─────────────────────────────────────────
 CHAINS = {
     "eth":       {"name":"Ethereum",    "emoji":"🔵","moralis_chain":"eth",      "explorer":"https://etherscan.io",              "symbol":"ETH",  "whale_threshold":500000},
     "bnb":       {"name":"BNB Chain",   "emoji":"🟡","moralis_chain":"bsc",      "explorer":"https://bscscan.com",               "symbol":"BNB",  "whale_threshold":50000},
@@ -26,23 +25,20 @@ CHAINS = {
     "avalanche": {"name":"Avalanche",   "emoji":"🔺","moralis_chain":"avalanche","explorer":"https://snowtrace.io",              "symbol":"AVAX", "whale_threshold":100000},
 }
 
-# 链名别名
 CHAIN_ALIASES = {
     "bsc":"bnb","binance":"bnb","eth":"eth","ethereum":"bnb",
     "poly":"polygon","matic":"polygon","arb":"arbitrum",
     "op":"optimism","mnt":"mantle","avax":"avalanche","avl":"avalanche",
 }
 
-# 默认尝试链顺序（没有指定时）
 AUTO_DETECT_ORDER = ["bnb","eth","base","arbitrum","polygon","mantle","optimism","avalanche"]
-
 EVM_RE = re.compile(r"0x[a-fA-F0-9]{40}")
 KV_URL   = os.getenv("KV_REST_API_URL", "")
 KV_TOKEN = os.getenv("KV_REST_API_TOKEN", "")
 
+# ── KV helpers ────────────────────────────────────────────
 async def kv_set(key: str, value: str):
-    if not KV_URL or not KV_TOKEN:
-        return
+    if not KV_URL or not KV_TOKEN: return
     import urllib.parse
     url = f"{KV_URL}/set/{urllib.parse.quote(key, safe='')}/{urllib.parse.quote(value, safe='')}"
     try:
@@ -52,8 +48,7 @@ async def kv_set(key: str, value: str):
         print(f"KV set error: {e}")
 
 async def kv_get(key: str) -> str:
-    if not KV_URL or not KV_TOKEN:
-        return ""
+    if not KV_URL or not KV_TOKEN: return ""
     import urllib.parse
     url = f"{KV_URL}/get/{urllib.parse.quote(key, safe='')}"
     try:
@@ -64,6 +59,114 @@ async def kv_get(key: str) -> str:
     except Exception as e:
         print(f"KV get error: {e}")
     return ""
+
+# ── Language system ───────────────────────────────────────
+T = {
+    "en": {
+        "start_intro": "⚖️ *MEME COURT — Verdict Protocol*\n_The On-Chain Tribunal. Every wallet gets judged._",
+        "start_commands": "*Commands:*\n⚖️ `/scan` `/judge` `<address> [chain]` — Summon wallet to court\n🐋 `/whale` `/suspect` `[chain]` — View whale suspects\n🟢 `/mantle` — Mantle ecosystem live data\n💰 `/price` `<token or address>` — Token price & 24h change\n⚔️ `/compare` `<addr1> <addr2> [chain]` — Compare two wallets, get AI ruling\n👁 `/watch` `/subpoena` `<address> [label]` — Issue surveillance order\n📋 `/watchlist` `/docket` — View active cases\n❌ `/unwatch` `<address>` — Dismiss case\n🌐 `/lang en` or `/lang zh` — Switch language",
+        "supported_chains": "Supported Chains",
+        "chains_note": "Or paste any wallet address directly — court is always in session",
+        "lang_set": "✅ Language set to English",
+        "lang_invalid": "Please use `/lang en` or `/lang zh`",
+        "scan_usage": "Usage: `/judge <address> [chain]`\nExample: `/judge 0x1234...abcd bnb`",
+        "scan_invalid": "❌ *Objection!* Invalid address format.",
+        "scan_detecting": "detecting chain...",
+        "scan_session": "⚖️ *Court is now in session...*\n🔍 Summoning {addr} to the stand\n🔗 Chain: {chain}",
+        "scan_no_tx": "_No transaction history found_",
+        "scan_no_tokens": "_No ERC20 assets found_",
+        "watch_usage": "Usage: `/subpoena <address> [label]`\nExample: `/subpoena 0x1234...abcd SuspectA`",
+        "watch_invalid": "❌ Invalid address.",
+        "watch_exists": "⚠️ This suspect is already under surveillance.",
+        "watch_issued": "📋 *Subpoena Issued*\n━━━━━━━━━━━━━━━━━━━\n👤 *Suspect:* {label}\n{emoji} {chain} · {addr}\n\n_Court surveillance activated. You will be notified of large movements._ 🔨",
+        "watchlist_empty": "📋 *Court Docket — No Active Cases*\n\nUse `/subpoena <address>` to open a case.",
+        "watchlist_header": "📋 *Court Docket — Active Cases*\n━━━━━━━━━━━━━━━━━━━\n",
+        "watchlist_footer": "\n_Total: {n} case(s) under surveillance_",
+        "unwatch_usage": "Usage: `/unwatch <address>`",
+        "unwatch_ok": "✅ *Case dismissed.* Surveillance order lifted. 🔨",
+        "unwatch_fail": "❌ Suspect not found in docket.",
+        "whale_session": "⚖️ *Meme Court — Suspect Lineup*\n🔍 Scanning {emoji} {chain} for whale activity...",
+        "whale_empty": "🐋 No whale activity detected. Court is in recess.",
+        "whale_footer": "\n_All suspects are innocent until proven otherwise_ ⚖️",
+        "compare_usage": "Usage: `/compare <address1> <address2> [chain]`\nExample: `/compare 0xAAA...aaa 0xBBB...bbb mantle`",
+        "compare_invalid": "❌ *Invalid address format.*",
+        "compare_session": "⚖️ *Court is comparing two wallets...*\n🔍 Summoning both defendants to the stand\n🔗 Chain: {emoji} {chain}",
+        "compare_disagree": "⚔️ *Disagree with the verdict?*\n_Issue a duel and let the chain decide!_",
+        "price_usage": "Usage:\n`/price MNT` — by token name\n`/price 0x1234...abcd mantle` — by contract address",
+        "price_fetching": "💰 *Fetching price data...*",
+        "price_not_found": "❌ *Token not found:* `{query}`\n\nTry using the contract address:\n`/price 0x... mantle`",
+        "mantle_loading": "🟢 *Mantle Ecosystem — Loading...*\n🔍 Fetching live data from DeFiLlama & Mantle RPC...",
+        "mantle_no_data": "_No data available_",
+        "mantle_rpc_unavail": "_RPC unavailable_",
+        "subpoena_issued": "📋 *Subpoena issued.* Suspect added to court docket. 🔨",
+        "already_watching": "⚠️ Already under surveillance.",
+        "handle_msg": "⚖️ *Court is in session.*\nPaste a wallet address to summon it before the judge, or use /help.",
+        "monitor_alert": "🚨 *COURT ALERT — {label}*\n━━━━━━━━━━━━━━━━━━━\n{emoji} {chain} · {direction}\n💰 `{val:.4f} {symbol}` detected\n[🔍 View Evidence]({explorer}/tx/{hash})\n\n_The court demands your attention._ ⚖️",
+        "monitor_outbound": "📤 OUTBOUND",
+        "monitor_inbound": "📥 INBOUND",
+    },
+    "zh": {
+        "start_intro": "⚖️ *MEME COURT — Verdict Protocol*\n_链上裁判所。每个钱包都将被审判。_",
+        "start_commands": "*命令列表：*\n⚖️ `/scan` `/judge` `<地址> [链]` — 传唤钱包上庭\n🐋 `/whale` `/suspect` `[链]` — 查看巨鲸嫌疑人\n🟢 `/mantle` — Mantle 生态实时数据\n💰 `/price` `<代币或地址>` — 代币价格与24h涨跌\n⚔️ `/compare` `<地址1> <地址2> [链]` — 对比两个钱包，获取 AI 裁决\n👁 `/watch` `/subpoena` `<地址> [标签]` — 发出监控令\n📋 `/watchlist` `/docket` — 查看活跃案件\n❌ `/unwatch` `<地址>` — 撤销案件\n🌐 `/lang en` 或 `/lang zh` — 切换语言",
+        "supported_chains": "支持的链",
+        "chains_note": "或直接粘贴钱包地址 — 法庭随时开庭",
+        "lang_set": "✅ 语言已切换为中文",
+        "lang_invalid": "请使用 `/lang en` 或 `/lang zh`",
+        "scan_usage": "用法：`/judge <地址> [链]`\n示例：`/judge 0x1234...abcd bnb`",
+        "scan_invalid": "❌ *异议！* 地址格式无效。",
+        "scan_detecting": "自动检测链中...",
+        "scan_session": "⚖️ *法庭开庭中...*\n🔍 正在传唤 {addr} 上庭\n🔗 链：{chain}",
+        "scan_no_tx": "_未找到交易记录_",
+        "scan_no_tokens": "_未找到 ERC20 资产_",
+        "watch_usage": "用法：`/subpoena <地址> [标签]`\n示例：`/subpoena 0x1234...abcd 嫌疑人A`",
+        "watch_invalid": "❌ 地址无效。",
+        "watch_exists": "⚠️ 该嫌疑人已在监控中。",
+        "watch_issued": "📋 *已发出传票*\n━━━━━━━━━━━━━━━━━━━\n👤 *嫌疑人：* {label}\n{emoji} {chain} · {addr}\n\n_法庭监控已激活。发现大额转账将立即通知你。_ 🔨",
+        "watchlist_empty": "📋 *案件台账 — 无活跃案件*\n\n使用 `/subpoena <地址>` 立案。",
+        "watchlist_header": "📋 *案件台账 — 活跃案件*\n━━━━━━━━━━━━━━━━━━━\n",
+        "watchlist_footer": "\n_共 {n} 个案件监控中_",
+        "unwatch_usage": "用法：`/unwatch <地址>`",
+        "unwatch_ok": "✅ *案件已撤销。* 监控令已解除。 🔨",
+        "unwatch_fail": "❌ 台账中未找到该嫌疑人。",
+        "whale_session": "⚖️ *法庭嫌疑人排查*\n🔍 正在扫描 {emoji} {chain} 巨鲸活动...",
+        "whale_empty": "🐋 未检测到巨鲸活动。法庭暂时休庭。",
+        "whale_footer": "\n_所有嫌疑人在定罪前均为无辜_ ⚖️",
+        "compare_usage": "用法：`/compare <地址1> <地址2> [链]`\n示例：`/compare 0xAAA...aaa 0xBBB...bbb mantle`",
+        "compare_invalid": "❌ *地址格式无效。*",
+        "compare_session": "⚖️ *法庭正在比对两个钱包...*\n🔍 正在传唤两位被告上庭\n🔗 链：{emoji} {chain}",
+        "compare_disagree": "⚔️ *对裁决有异议？*\n_发起对决，让链上数据说话！_",
+        "price_usage": "用法：\n`/price MNT` — 按代币名称\n`/price 0x1234...abcd mantle` — 按合约地址",
+        "price_fetching": "💰 *正在获取价格数据...*",
+        "price_not_found": "❌ *未找到代币：* `{query}`\n\n请尝试使用合约地址：\n`/price 0x... mantle`",
+        "mantle_loading": "🟢 *Mantle 生态报告 — 加载中...*\n🔍 正在从 DeFiLlama & Mantle RPC 获取实时数据...",
+        "mantle_no_data": "_暂无数据_",
+        "mantle_rpc_unavail": "_RPC 不可用_",
+        "subpoena_issued": "📋 *传票已发出。* 嫌疑人已加入案件台账。 🔨",
+        "already_watching": "⚠️ 已在监控中。",
+        "handle_msg": "⚖️ *法庭开庭中。*\n粘贴钱包地址即可传唤上庭，或使用 /help。",
+        "monitor_alert": "🚨 *法庭警报 — {label}*\n━━━━━━━━━━━━━━━━━━━\n{emoji} {chain} · {direction}\n💰 检测到 `{val:.4f} {symbol}`\n[🔍 查看证据]({explorer}/tx/{hash})\n\n_法庭要求你立即关注。_ ⚖️",
+        "monitor_outbound": "📤 转出",
+        "monitor_inbound": "📥 转入",
+    }
+}
+
+async def get_user_lang(username: str) -> str:
+    if not username: return "en"
+    lang = await kv_get(f"lang:{username.lower()}")
+    return lang if lang in ("en", "zh") else "en"
+
+async def lang_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    username = user.username if user else None
+    args = context.args
+    if not args or args[0] not in ("en", "zh"):
+        lang = await get_user_lang(username)
+        await update.message.reply_text(T[lang]["lang_invalid"], parse_mode="Markdown")
+        return
+    new_lang = args[0]
+    if username:
+        await kv_set(f"lang:{username.lower()}", new_lang)
+    await update.message.reply_text(T[new_lang]["lang_set"], parse_mode="Markdown")
 
 async def send_duel_notification(bot, username: str, message: str):
     chat_id = await kv_get(f"tg:user:{username.lower()}")
@@ -80,7 +183,6 @@ async def send_duel_notification(bot, username: str, message: str):
 
 watchlist: dict = {}
 
-# 案件编号生成
 def case_number(address: str) -> str:
     return f"#{abs(hash(address)) % 99999:05d}"
 
@@ -111,7 +213,6 @@ async def get_tokens(address, chain):
     return (data or {}).get("result", [])
 
 async def auto_detect_chain(address: str) -> str:
-    """自动检测地址在哪条链上有数据"""
     for chain in AUTO_DETECT_ORDER:
         bal = await get_balance(address, chain)
         try:
@@ -120,9 +221,8 @@ async def auto_detect_chain(address: str) -> str:
         except: pass
         txs = await get_transfers(address, chain, 1)
         if txs: return chain
-    return "bnb"  # fallback
+    return "bnb"
 
-# ── 工具函数 ──────────────────────────────────────────────
 def saddr(a): return f"`{a[:6]}...{a[-4:]}`"
 def fval(v, d=18):
     try:
@@ -137,7 +237,6 @@ def tago(ts):
     except: return "recently"
 
 def parse_chain(args: list) -> tuple:
-    """从 args 里解析链名，返回 (address, chain_or_None)"""
     address = args[0].strip()
     chain = None
     if len(args) > 1:
@@ -147,7 +246,6 @@ def parse_chain(args: list) -> tuple:
             chain = None
     return address, chain
 
-# ── AI 法官裁定 ───────────────────────────────────────────
 async def ai_judge(address, chain, transfers, balance):
     if not DEEPSEEK_KEY: return "The court stenographer is unavailable. Judgment deferred."
     ci = CHAINS[chain]
@@ -182,41 +280,30 @@ Be dramatic but factual. Use phrases like "The court finds...", "This defendant.
     return "The court is in recess. Judgment deferred pending further evidence."
 
 def verdict_label(balance_eth: float, tx_count: int) -> tuple:
-    """返回 (verdict_text, emoji)"""
     if balance_eth > 10000: return ("GUILTY — MEGA WHALE", "🔴")
     if balance_eth > 1000:  return ("GUILTY — WHALE ACTIVITY", "🟠")
     if balance_eth > 100:   return ("PERSON OF INTEREST", "🟡")
     if tx_count == 0:       return ("CASE DISMISSED — NO EVIDENCE", "⚪")
     return ("INNOCENT — ORDINARY CITIZEN", "🟢")
 
-# ── 命令处理 ──────────────────────────────────────────────
+# ── Commands ──────────────────────────────────────────────
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chains_list = " · ".join([f"{v['emoji']}{v['name']}" for v in CHAINS.values()])
-    # 记录用户 chat_id 到 Upstash，用于后续通知
     user = update.effective_user
     if user and user.username:
         await kv_set(f"tg:user:{user.username.lower()}", str(update.effective_chat.id))
         print(f"[KV] Registered @{user.username} → {update.effective_chat.id}")
+    lang = await get_user_lang(user.username if user else None)
+    L = T[lang]
     await update.message.reply_text(
-f"""⚖️ *MEME COURT — Verdict Protocol*
-_The On-Chain Tribunal. Every wallet gets judged._
+f"""{L["start_intro"]}
 
-*Commands:*
-⚖️ `/scan` `/judge` `<address> [chain]` — Summon wallet to court
-🐋 `/whale` `/suspect` `[chain]` — View whale suspects
-🟢 `/mantle` — Mantle ecosystem live data (TVL, protocols, gas)
-💰 `/price` `<token or address>` — Token price & 24h change
-⚔️ `/compare` `<addr1> <addr2> [chain]` — Compare two wallets, get AI ruling
-👁 `/watch` `/subpoena` `<address> [label]` — Issue surveillance order
-📋 `/watchlist` `/docket` — View active cases
-❌ `/unwatch` `<address>` — Dismiss case
+{L["start_commands"]}
 
-*Supported Chains:*
+{L["supported_chains"]}:
 {chains_list}
 
-*Chain shortcuts:* eth, bnb, polygon, arb, op, base, mantle, avax
-
-_Or paste any wallet address directly — court is always in session_ 🔨""",
+{L["chains_note"]} 🔨""",
         parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup([[
             InlineKeyboardButton("⚖️ verdictprotocol.online", url="https://verdictprotocol.online")
@@ -224,21 +311,23 @@ _Or paste any wallet address directly — court is always in session_ 🔨""",
         disable_web_page_preview=True)
 
 async def scan_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    lang = await get_user_lang(user.username if user else None)
+    L = T[lang]
     args = context.args or []
     if not args:
-        await update.message.reply_text("Usage: `/judge <address> [chain]`\nExample: `/judge 0x1234...abcd bnb`", parse_mode="Markdown")
+        await update.message.reply_text(L["scan_usage"], parse_mode="Markdown")
         return
     address, chain = parse_chain(args)
     if not EVM_RE.match(address):
-        await update.message.reply_text("❌ *Objection!* Invalid address format.", parse_mode="Markdown")
+        await update.message.reply_text(L["scan_invalid"], parse_mode="Markdown")
         return
 
-    ci_name = CHAINS.get(chain, {}).get("name", "detecting chain") if chain else "detecting chain..."
+    ci_name = CHAINS.get(chain, {}).get("name", L["scan_detecting"]) if chain else L["scan_detecting"]
     wait = await update.message.reply_text(
-        f"⚖️ *Court is now in session...*\n🔍 Summoning {saddr(address)} to the stand\n🔗 Chain: {ci_name}",
+        L["scan_session"].format(addr=saddr(address), chain=ci_name),
         parse_mode="Markdown")
 
-    # 自动检测链
     if not chain:
         chain = await auto_detect_chain(address)
 
@@ -273,10 +362,10 @@ async def scan_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 💰 Holdings: `{nb}`
 📊 Transactions reviewed: `{len(transfers)}`
 
-{chr(10).join(tx_lines) if tx_lines else "  _No transaction history found_"}
+{chr(10).join(tx_lines) if tx_lines else "  " + L["scan_no_tx"]}
 ━━━━━━━━━━━━━━━━━━━
 🪙 *ASSETS SEIZED FOR REVIEW*
-{chr(10).join(token_lines) if token_lines else "  _No ERC20 assets found_"}
+{chr(10).join(token_lines) if token_lines else "  " + L["scan_no_tokens"]}
 ━━━━━━━━━━━━━━━━━━━
 🔨 *VERDICT: {vtext}* {vemoji}
 ━━━━━━━━━━━━━━━━━━━
@@ -293,13 +382,16 @@ _{ruling}_
         ]]), disable_web_page_preview=True)
 
 async def watch_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    lang = await get_user_lang(user.username if user else None)
+    L = T[lang]
     args = context.args or []
     if not args:
-        await update.message.reply_text("Usage: `/subpoena <address> [label]`\nExample: `/subpoena 0x1234...abcd SuspectA`", parse_mode="Markdown")
+        await update.message.reply_text(L["watch_usage"], parse_mode="Markdown")
         return
     address = args[0].strip()
     if not EVM_RE.match(address):
-        await update.message.reply_text("❌ Invalid address."); return
+        await update.message.reply_text(L["watch_invalid"]); return
     label = args[1] if len(args)>1 else address[:8]+"..."
     chain = "bnb"
     if len(args)>2:
@@ -309,42 +401,43 @@ async def watch_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     if chat_id not in watchlist: watchlist[chat_id] = []
     if any(w["address"].lower()==address.lower() for w in watchlist[chat_id]):
-        await update.message.reply_text(f"⚠️ This suspect is already under surveillance."); return
+        await update.message.reply_text(L["watch_exists"]); return
     watchlist[chat_id].append({"address":address,"label":label,"chain":chain})
     await update.message.reply_text(
-        f"📋 *Subpoena Issued*\n━━━━━━━━━━━━━━━━━━━\n"
-        f"👤 *Suspect:* {label}\n{ci['emoji']} {ci['name']} · {saddr(address)}\n\n"
-        f"_Court surveillance activated. You will be notified of large movements._ 🔨",
+        L["watch_issued"].format(label=label, emoji=ci["emoji"], chain=ci["name"], addr=saddr(address)),
         parse_mode="Markdown")
 
 async def watchlist_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    lang = await get_user_lang(user.username if user else None)
+    L = T[lang]
     chat_id = update.effective_chat.id
     watches = watchlist.get(chat_id, [])
     if not watches:
-        await update.message.reply_text(
-            "📋 *Court Docket — No Active Cases*\n\nUse `/subpoena <address>` to open a case.",
-            parse_mode="Markdown"); return
-    lines = ["📋 *Court Docket — Active Cases*\n━━━━━━━━━━━━━━━━━━━\n"]
+        await update.message.reply_text(L["watchlist_empty"], parse_mode="Markdown"); return
+    lines = [L["watchlist_header"]]
     for i,w in enumerate(watches,1):
         ci = CHAINS.get(w["chain"], CHAINS["bnb"])
         lines.append(f"{i}. {ci['emoji']} *{w['label']}* · {saddr(w['address'])}")
-    lines.append(f"\n_Total: {len(watches)} case(s) under surveillance_")
-    await update.message.reply_text("\n".join(lines), parse_mode="Markdown")
+    lines.append(L["watchlist_footer"].format(n=len(watches)))
+    await update.message.reply_text("".join(lines) if L["watchlist_header"].endswith("\n") else "\n".join(lines), parse_mode="Markdown")
 
 async def unwatch_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    lang = await get_user_lang(user.username if user else None)
+    L = T[lang]
     args = context.args or []
     if not args:
-        await update.message.reply_text("Usage: `/unwatch <address>`", parse_mode="Markdown"); return
+        await update.message.reply_text(L["unwatch_usage"], parse_mode="Markdown"); return
     address = args[0].lower()
     chat_id = update.effective_chat.id
     before = len(watchlist.get(chat_id,[]))
     watchlist[chat_id] = [w for w in watchlist.get(chat_id,[]) if w["address"].lower()!=address]
     if len(watchlist.get(chat_id,[]))<before:
-        await update.message.reply_text("✅ *Case dismissed.* Surveillance order lifted. 🔨", parse_mode="Markdown")
+        await update.message.reply_text(L["unwatch_ok"], parse_mode="Markdown")
     else:
-        await update.message.reply_text("❌ Suspect not found in docket.")
+        await update.message.reply_text(L["unwatch_fail"])
 
-# 已知巨鲸
 KNOWN_WHALES = {
     "bnb": [
         {"address":"0x8894e0a0c962cb723c1976a4421c95949be2d4e3","label":"Binance Hot Wallet"},
@@ -361,6 +454,9 @@ KNOWN_WHALES = {
 }
 
 async def whale_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    lang = await get_user_lang(user.username if user else None)
+    L = T[lang]
     args = context.args or []
     raw = args[0].lower() if args else "bnb"
     chain = CHAIN_ALIASES.get(raw, raw) if raw in CHAIN_ALIASES else raw
@@ -369,7 +465,7 @@ async def whale_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     whales = KNOWN_WHALES.get(chain, KNOWN_WHALES["bnb"])
 
     wait = await update.message.reply_text(
-        f"⚖️ *Meme Court — Suspect Lineup*\n🔍 Scanning {ci['emoji']} {ci['name']} for whale activity...",
+        L["whale_session"].format(emoji=ci["emoji"], chain=ci["name"]),
         parse_mode="Markdown")
 
     results = []
@@ -385,19 +481,19 @@ async def whale_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                         "direction":direction,"last_val":val,"last_time":latest.get("block_timestamp","")})
 
     if not results:
-        await wait.edit_text("🐋 No whale activity detected. Court is in recess.", parse_mode="Markdown"); return
+        await wait.edit_text(L["whale_empty"], parse_mode="Markdown"); return
 
     lines = [f"⚖️ *MEME COURT — SUSPECT LINEUP*\n{ci['emoji']} *{ci['name']} Whale Watch*\n━━━━━━━━━━━━━━━━━━━"]
     for i, r in enumerate(results, 1):
         bal_fmt = f"{r['balance']/1e3:.1f}K" if r['balance']>=1000 else f"{r['balance']:.2f}"
-        status = "🔴 ACTIVE" if r['last_time'] and "ago" not in tago(r['last_time']) or "s ago" in tago(r['last_time']) or "m ago" in tago(r['last_time']) else "🟡 RECENT"
+        status = "🔴 ACTIVE" if r['last_time'] and ("s ago" in tago(r['last_time']) or "m ago" in tago(r['last_time'])) else "🟡 RECENT"
         lines.append(
             f"\n*Suspect #{i}:* {r['label']}\n"
             f"  💰 `{bal_fmt} {ci['symbol']}` · {status}\n"
             f"  {r['direction']} `{r['last_val']:.4f}` · {tago(r['last_time'])}\n"
             f"  {saddr(r['address'])}"
         )
-    lines.append(f"\n━━━━━━━━━━━━━━━━━━━\n_All suspects are innocent until proven otherwise_ ⚖️")
+    lines.append(L["whale_footer"])
 
     chain_buttons = [InlineKeyboardButton(f"{CHAINS[c]['emoji']} {CHAINS[c]['name']}", callback_data=f"whale:{c}")
                      for c in ["bnb","eth","base","mantle"]]
@@ -406,16 +502,17 @@ async def whale_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         disable_web_page_preview=True)
 
 async def compare_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    lang = await get_user_lang(user.username if user else None)
+    L = T[lang]
     args = context.args or []
     if len(args) < 2:
-        await update.message.reply_text(
-            "Usage: `/compare <address1> <address2> [chain]`\nExample: `/compare 0xAAA...aaa 0xBBB...bbb mantle`",
-            parse_mode="Markdown")
+        await update.message.reply_text(L["compare_usage"], parse_mode="Markdown")
         return
 
     addr1, addr2 = args[0].strip(), args[1].strip()
     if not EVM_RE.match(addr1) or not EVM_RE.match(addr2):
-        await update.message.reply_text("❌ *Invalid address format.*", parse_mode="Markdown")
+        await update.message.reply_text(L["compare_invalid"], parse_mode="Markdown")
         return
 
     chain = "bnb"
@@ -427,34 +524,22 @@ async def compare_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     case_no = case_number(addr1 + addr2)
 
     wait = await update.message.reply_text(
-        f"⚖️ *Court is comparing two wallets...*\n🔍 Summoning both defendants to the stand\n🔗 Chain: {ci['emoji']} {ci['name']}",
+        L["compare_session"].format(emoji=ci["emoji"], chain=ci["name"]),
         parse_mode="Markdown")
 
-    # Fetch data for both wallets concurrently
     txs1, bal1, tok1, txs2, bal2, tok2 = await asyncio.gather(
-        get_transfers(addr1, chain, 20),
-        get_balance(addr1, chain),
-        get_tokens(addr1, chain),
-        get_transfers(addr2, chain, 20),
-        get_balance(addr2, chain),
-        get_tokens(addr2, chain),
+        get_transfers(addr1, chain, 20), get_balance(addr1, chain), get_tokens(addr1, chain),
+        get_transfers(addr2, chain, 20), get_balance(addr2, chain), get_tokens(addr2, chain),
     )
 
     def analyze(addr, txs, bal, tokens):
         try: balance = float(bal.get("balance","0"))/1e18
         except: balance = 0
-
         inflow = sum(float(t.get("value","0"))/1e18 for t in txs if t.get("to_address","").lower()==addr.lower())
         outflow = sum(float(t.get("value","0"))/1e18 for t in txs if t.get("from_address","").lower()==addr.lower())
         net = inflow - outflow
-
         max_tx = max((float(t.get("value","0"))/1e18 for t in txs), default=0)
-
-        last_active = "N/A"
-        if txs:
-            last_active = tago(txs[0].get("block_timestamp",""))
-
-        # Scoring: balance(40) + tx_count(20) + net_flow(20) + token_diversity(10) + recency(10)
+        last_active = tago(txs[0].get("block_timestamp","")) if txs else "N/A"
         score = 0
         score += min(40, balance * 0.4)
         score += min(20, len(txs))
@@ -464,13 +549,9 @@ async def compare_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if "s ago" in last_active or "m ago" in last_active: score += 10
             elif "h ago" in last_active: score += 7
             elif "d ago" in last_active: score += 3
-
-        return {
-            "balance": balance, "tx_count": len(txs), "net": net,
-            "max_tx": max_tx, "token_count": len(tokens),
-            "last_active": last_active, "score": min(100, int(score)),
-            "inflow": inflow, "outflow": outflow,
-        }
+        return {"balance": balance, "tx_count": len(txs), "net": net, "max_tx": max_tx,
+                "token_count": len(tokens), "last_active": last_active, "score": min(100, int(score)),
+                "inflow": inflow, "outflow": outflow}
 
     a1 = analyze(addr1, txs1, bal1, tok1)
     a2 = analyze(addr2, txs2, bal2, tok2)
@@ -478,36 +559,13 @@ async def compare_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     def fmt(v): return f"{v:,.4f}" if v < 1000 else f"{v:,.2f}"
 
-    # AI verdict
     prompt = f"""You are the AI Judge of Verdict Protocol — an on-chain tribunal for wallet disputes.
-
 Compare these two {ci['name']} wallets and deliver a dramatic court ruling.
+RED CORNER: {addr1[:10]}... — Balance: {fmt(a1['balance'])} {symbol}, Txs: {a1['tx_count']}, Score: {a1['score']}/100
+BLUE CORNER: {addr2[:10]}... — Balance: {fmt(a2['balance'])} {symbol}, Txs: {a2['tx_count']}, Score: {a2['score']}/100
+Respond in exactly 2 dramatic sentences. Declare the winner."""
 
-RED CORNER (Wallet 1): {addr1[:10]}...
-- Balance: {fmt(a1['balance'])} {symbol}
-- Transactions: {a1['tx_count']}
-- Net flow: {'+' if a1['net']>=0 else ''}{fmt(a1['net'])} {symbol}
-- Largest tx: {fmt(a1['max_tx'])} {symbol}
-- Token diversity: {a1['token_count']} tokens
-- Last active: {a1['last_active']}
-- Score: {a1['score']}/100
-
-BLUE CORNER (Wallet 2): {addr2[:10]}...
-- Balance: {fmt(a2['balance'])} {symbol}
-- Transactions: {a2['tx_count']}
-- Net flow: {'+' if a2['net']>=0 else ''}{fmt(a2['net'])} {symbol}
-- Largest tx: {fmt(a2['max_tx'])} {symbol}
-- Token diversity: {a2['token_count']} tokens
-- Last active: {a2['last_active']}
-- Score: {a2['score']}/100
-
-Respond in exactly 2 sentences using dramatic court language:
-- Sentence 1: Compare the two wallets factually (activity, holdings, behavior)
-- Sentence 2: Declare the winner and why — use phrases like "The court rules...", "Red corner dominates...", "Blue corner prevails..."
-
-Be dramatic but factual."""
-
-    ruling = await ai_judge(addr1, chain, txs1, bal1) if not DEEPSEEK_KEY else ""
+    ruling = ""
     if DEEPSEEK_KEY:
         try:
             async with aiohttp.ClientSession(trust_env=False) as s:
@@ -520,6 +578,8 @@ Be dramatic but factual."""
                         d = await r.json()
                         ruling = d["choices"][0]["message"]["content"].strip()
         except: ruling = "The court is unable to reach a verdict at this time."
+    if not ruling:
+        ruling = await ai_judge(addr1, chain, txs1, bal1)
 
     winner = "🔴 RED" if a1['score'] >= a2['score'] else "🔵 BLUE"
     score_bar1 = "█" * (a1['score']//10) + "░" * (10 - a1['score']//10)
@@ -533,8 +593,6 @@ Be dramatic but factual."""
   💰 Balance: `{fmt(a1['balance'])} {symbol}`
   📊 Transactions: `{a1['tx_count']}`
   💸 Net Flow: `{'+' if a1['net']>=0 else ''}{fmt(a1['net'])} {symbol}`
-  🔝 Largest Tx: `{fmt(a1['max_tx'])} {symbol}`
-  🪙 Token Diversity: `{a1['token_count']} tokens`
   🕐 Last Active: `{a1['last_active']}`
 
 *🔵 BLUE CORNER*
@@ -542,8 +600,6 @@ Be dramatic but factual."""
   💰 Balance: `{fmt(a2['balance'])} {symbol}`
   📊 Transactions: `{a2['tx_count']}`
   💸 Net Flow: `{'+' if a2['net']>=0 else ''}{fmt(a2['net'])} {symbol}`
-  🔝 Largest Tx: `{fmt(a2['max_tx'])} {symbol}`
-  🪙 Token Diversity: `{a2['token_count']} tokens`
   🕐 Last Active: `{a2['last_active']}`
 ━━━━━━━━━━━━━━━━━━━
 📊 *COURT SCORING*
@@ -555,38 +611,35 @@ Be dramatic but factual."""
 👨‍⚖️ *AI Judge Ruling:*
 _{ruling}_
 ━━━━━━━━━━━━━━━━━━━
-⚔️ *Disagree with the verdict?*
-_Issue a duel and let the chain decide!_
+{L["compare_disagree"]}
 [⚖️ verdictprotocol.online](https://verdictprotocol.online)"""
 
     await wait.delete()
     await update.message.reply_text(report, parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup([[
             InlineKeyboardButton("⚔️ Issue a Duel", url="https://verdictprotocol.online"),
-            InlineKeyboardButton(f"🔍 Red — {ci['explorer']}", url=f"{ci['explorer']}/address/{addr1}"),
+            InlineKeyboardButton(f"🔍 Red", url=f"{ci['explorer']}/address/{addr1}"),
         ],[
-            InlineKeyboardButton(f"🔍 Blue — {ci['explorer']}", url=f"{ci['explorer']}/address/{addr2}"),
+            InlineKeyboardButton(f"🔍 Blue", url=f"{ci['explorer']}/address/{addr2}"),
         ]]), disable_web_page_preview=True)
 
 async def price_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    lang = await get_user_lang(user.username if user else None)
+    L = T[lang]
     args = context.args or []
     if not args:
-        await update.message.reply_text(
-            "Usage:\n`/price MNT` — by token name\n`/price 0x1234...abcd mantle` — by contract address",
-            parse_mode="Markdown")
+        await update.message.reply_text(L["price_usage"], parse_mode="Markdown")
         return
 
-    wait = await update.message.reply_text("💰 *Fetching price data...*", parse_mode="Markdown")
-
+    wait = await update.message.reply_text(L["price_fetching"], parse_mode="Markdown")
     query = args[0].strip()
     is_address = EVM_RE.match(query)
 
     async def fetch_by_address(addr, chain):
         chain_key = CHAINS.get(chain, {}).get("moralis_chain", chain)
-        # DeFiLlama chain name mapping
-        llama_chain = {"bsc": "bsc", "eth": "ethereum", "polygon": "polygon",
-                       "arbitrum": "arbitrum", "optimism": "optimism", "base": "base",
-                       "mantle": "mantle", "avalanche": "avax"}.get(chain_key, chain_key)
+        llama_chain = {"bsc":"bsc","eth":"ethereum","polygon":"polygon","arbitrum":"arbitrum",
+                       "optimism":"optimism","base":"base","mantle":"mantle","avalanche":"avax"}.get(chain_key, chain_key)
         url = f"https://coins.llama.fi/prices/current/{llama_chain}:{addr}"
         try:
             async with aiohttp.ClientSession(trust_env=False) as s:
@@ -602,16 +655,11 @@ async def price_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return None, None
 
     async def fetch_by_name(name):
-        # Try common tokens first
-        common = {
-            "mnt": "coingecko:mantle", "eth": "coingecko:ethereum",
-            "bnb": "coingecko:binancecoin", "btc": "coingecko:bitcoin",
-            "usdt": "coingecko:tether", "usdc": "coingecko:usd-coin",
-            "matic": "coingecko:matic-network", "avax": "coingecko:avalanche-2",
-        }
+        common = {"mnt":"coingecko:mantle","eth":"coingecko:ethereum","bnb":"coingecko:binancecoin",
+                  "btc":"coingecko:bitcoin","usdt":"coingecko:tether","usdc":"coingecko:usd-coin",
+                  "matic":"coingecko:matic-network","avax":"coingecko:avalanche-2"}
         coin_id = common.get(name.lower())
         if not coin_id:
-            # Search via DeFiLlama
             try:
                 async with aiohttp.ClientSession(trust_env=False) as s:
                     async with s.get(f"https://coins.llama.fi/search?query={name}",
@@ -619,12 +667,10 @@ async def price_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                         if r.status == 200:
                             d = await r.json()
                             coins = d.get("coins", [])
-                            if coins:
-                                coin_id = coins[0].get("coin", "")
+                            if coins: coin_id = coins[0].get("coin", "")
             except Exception as e:
                 print(f"Search error: {e}")
-        if not coin_id:
-            return None, None
+        if not coin_id: return None, None
         try:
             async with aiohttp.ClientSession(trust_env=False) as s:
                 async with s.get(f"https://coins.llama.fi/prices/current/{coin_id}",
@@ -639,7 +685,6 @@ async def price_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             print(f"Price by name error: {e}")
         return None, None
 
-    # Fetch data
     if is_address:
         chain = "mantle"
         if len(args) > 1:
@@ -652,25 +697,17 @@ async def price_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await wait.delete()
 
     if not data:
-        await update.message.reply_text(
-            f"❌ *Token not found:* `{query}`\n\nTry using the contract address:\n`/price 0x... mantle`",
-            parse_mode="Markdown")
+        await update.message.reply_text(L["price_not_found"].format(query=query), parse_mode="Markdown")
         return
 
     price = data.get("price", 0)
-    change = data.get("confidence", 0)
     symbol = data.get("symbol", query.upper())
     chain_name = coin_key.split(":")[0] if coin_key else "unknown"
 
-    # Format price
-    if price >= 1:
-        price_fmt = f"${price:,.4f}"
-    elif price >= 0.001:
-        price_fmt = f"${price:.6f}"
-    else:
-        price_fmt = f"${price:.8f}"
+    if price >= 1: price_fmt = f"${price:,.4f}"
+    elif price >= 0.001: price_fmt = f"${price:.6f}"
+    else: price_fmt = f"${price:.8f}"
 
-    # 24h change from DeFiLlama percentage endpoint
     change_24h = None
     try:
         async with aiohttp.ClientSession(trust_env=False) as s:
@@ -679,8 +716,7 @@ async def price_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 if r.status == 200:
                     d = await r.json()
                     coins = d.get("coins", {})
-                    if coins:
-                        change_24h = list(coins.values())[0]
+                    if coins: change_24h = list(coins.values())[0]
     except: pass
 
     change_line = ""
@@ -704,15 +740,18 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     data = query.data
+    user = update.effective_user
+    lang = await get_user_lang(user.username if user else None)
+    L = T[lang]
     if data.startswith("watch:"):
         _, address, chain = data.split(":")
         chat_id = update.effective_chat.id
         if chat_id not in watchlist: watchlist[chat_id] = []
         if not any(w["address"].lower()==address.lower() for w in watchlist[chat_id]):
             watchlist[chat_id].append({"address":address,"label":address[:8]+"...","chain":chain})
-            await context.bot.send_message(chat_id, "📋 *Subpoena issued.* Suspect added to court docket. 🔨", parse_mode="Markdown")
+            await context.bot.send_message(chat_id, L["subpoena_issued"], parse_mode="Markdown")
         else:
-            await context.bot.send_message(chat_id, "⚠️ Already under surveillance.")
+            await context.bot.send_message(chat_id, L["already_watching"])
     elif data.startswith("whale:"):
         context.args = [data.split(":")[1]]
         await whale_command(update, context)
@@ -720,11 +759,11 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await mantle_command(update, context)
 
 async def mantle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    wait = await update.message.reply_text(
-        "🟢 *Mantle Ecosystem — Loading...*\n🔍 Fetching live data from DeFiLlama & Mantle RPC...",
-        parse_mode="Markdown")
+    user = update.effective_user
+    lang = await get_user_lang(user.username if user else None)
+    L = T[lang]
+    wait = await update.message.reply_text(L["mantle_loading"], parse_mode="Markdown")
 
-    # 并发获取数据
     async def get_mantle_tvl():
         try:
             async with aiohttp.ClientSession(trust_env=False) as s:
@@ -771,8 +810,7 @@ async def mantle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     timeout=aiohttp.ClientTimeout(total=8)) as r:
                     if r.status == 200:
                         d = await r.json()
-                        gwei = int(d.get("result","0x0"), 16) / 1e9
-                        return gwei
+                        return int(d.get("result","0x0"), 16) / 1e9
         except Exception as e:
             print(f"Mantle gas error: {e}")
         return None
@@ -781,34 +819,23 @@ async def mantle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         get_mantle_tvl(), get_mantle_protocols(), get_mantle_rpc(), get_mantle_gas()
     )
 
-    # 格式化TVL
     tvl = tvl_data.get("tvl", 0)
     tvl_change = tvl_data.get("change_1d", 0) or 0
-    if tvl >= 1e9:
-        tvl_fmt = f"${tvl/1e9:.2f}B"
-    elif tvl >= 1e6:
-        tvl_fmt = f"${tvl/1e6:.2f}M"
-    else:
-        tvl_fmt = f"${tvl:,.0f}"
+    if tvl >= 1e9: tvl_fmt = f"${tvl/1e9:.2f}B"
+    elif tvl >= 1e6: tvl_fmt = f"${tvl/1e6:.2f}M"
+    else: tvl_fmt = f"${tvl:,.0f}"
     change_emoji = "📈" if tvl_change >= 0 else "📉"
     change_fmt = f"{'+' if tvl_change >= 0 else ''}{tvl_change:.2f}%"
 
-    # 协议列表
     proto_lines = []
     for i, p in enumerate(protocols, 1):
         ptv = p.get("tvl", 0)
-        if ptv >= 1e6:
-            ptv_fmt = f"${ptv/1e6:.1f}M"
-        else:
-            ptv_fmt = f"${ptv:,.0f}"
+        ptv_fmt = f"${ptv/1e6:.1f}M" if ptv >= 1e6 else f"${ptv:,.0f}"
         proto_lines.append(f"  {i}. *{p.get('name','?')}* — `{ptv_fmt}`")
 
-    # 网络状态
     network_lines = []
-    if block_num:
-        network_lines.append(f"  📦 Latest Block: `{block_num:,}`")
-    if gas is not None:
-        network_lines.append(f"  ⛽ Gas Price: `{gas:.4f} Gwei`")
+    if block_num: network_lines.append(f"  📦 Latest Block: `{block_num:,}`")
+    if gas is not None: network_lines.append(f"  ⛽ Gas Price: `{gas:.4f} Gwei`")
 
     report = f"""🟢 *MANTLE ECOSYSTEM REPORT*
 ━━━━━━━━━━━━━━━━━━━
@@ -816,10 +843,10 @@ async def mantle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
   💰 `{tvl_fmt}` {change_emoji} `{change_fmt}` (24h)
 ━━━━━━━━━━━━━━━━━━━
 🏆 *Top Protocols on Mantle*
-{chr(10).join(proto_lines) if proto_lines else "  _No data available_"}
+{chr(10).join(proto_lines) if proto_lines else "  " + L["mantle_no_data"]}
 ━━━━━━━━━━━━━━━━━━━
 🌐 *Network Status*
-{chr(10).join(network_lines) if network_lines else "  _RPC unavailable_"}
+{chr(10).join(network_lines) if network_lines else "  " + L["mantle_rpc_unavail"]}
 ━━━━━━━━━━━━━━━━━━━
 [🔍 MantleScan](https://mantlescan.xyz) · [🌉 Bridge](https://app.mantle.xyz/bridge) · [⚖️ verdictprotocol.online](https://verdictprotocol.online)"""
 
@@ -830,34 +857,19 @@ async def mantle_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             InlineKeyboardButton("🌉 Bridge", url="https://app.mantle.xyz/bridge"),
         ]]), disable_web_page_preview=True)
 
-
-    query = update.callback_query
-    await query.answer()
-    data = query.data
-    if data.startswith("watch:"):
-        _, address, chain = data.split(":")
-        chat_id = update.effective_chat.id
-        if chat_id not in watchlist: watchlist[chat_id] = []
-        if not any(w["address"].lower()==address.lower() for w in watchlist[chat_id]):
-            watchlist[chat_id].append({"address":address,"label":address[:8]+"...","chain":chain})
-            await context.bot.send_message(chat_id, "📋 *Subpoena issued.* Suspect added to court docket. 🔨", parse_mode="Markdown")
-        else:
-            await context.bot.send_message(chat_id, "⚠️ Already under surveillance.")
-    elif data.startswith("whale:"):
-        context.args = [data.split(":")[1]]
-        await whale_command(update, context)
-
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    lang = await get_user_lang(user.username if user else None)
+    L = T[lang]
     text = update.message.text.strip()
     addrs = EVM_RE.findall(text)
     if not addrs:
         if update.message.chat.type=="private":
-            await update.message.reply_text("⚖️ *Court is in session.*\nPaste a wallet address to summon it before the judge, or use /help.", parse_mode="Markdown")
+            await update.message.reply_text(L["handle_msg"], parse_mode="Markdown")
         return
     context.args = [addrs[0]]
     await scan_command(update, context)
 
-# ── 后台监控 ──────────────────────────────────────────────
 async def monitor_wallets(app):
     last_tx: dict = {}
     while True:
@@ -874,10 +886,10 @@ async def monitor_wallets(app):
                     val = float(tx.get("value","0"))/1e18
                     ci = CHAINS.get(w["chain"], CHAINS["bnb"])
                     if val < ci["whale_threshold"]/2000: continue
-                    direction = "📤 OUTBOUND" if tx.get("from_address","").lower()==w["address"].lower() else "📥 INBOUND"
+                    direction_en = "📤 OUTBOUND" if tx.get("from_address","").lower()==w["address"].lower() else "📥 INBOUND"
                     await app.bot.send_message(chat_id,
                         f"🚨 *COURT ALERT — {w['label']}*\n━━━━━━━━━━━━━━━━━━━\n"
-                        f"{ci['emoji']} {ci['name']} · {direction}\n"
+                        f"{ci['emoji']} {ci['name']} · {direction_en}\n"
                         f"💰 `{val:.4f} {ci['symbol']}` detected\n"
                         f"[🔍 View Evidence]({ci['explorer']}/tx/{h})\n\n"
                         f"_The court demands your attention._ ⚖️",
@@ -893,8 +905,8 @@ def main():
     print("⚖️  Meme Court Bot v3 starting...")
     app = Application.builder().token(TELEGRAM_TOKEN).build()
 
-    # 原始命令 + 法庭别名
     for cmd in ["start","help"]: app.add_handler(CommandHandler(cmd, start))
+    app.add_handler(CommandHandler("lang", lang_command))
     for cmd in ["scan","judge"]: app.add_handler(CommandHandler(cmd, scan_command))
     for cmd in ["watch","subpoena"]: app.add_handler(CommandHandler(cmd, watch_command))
     for cmd in ["watchlist","docket"]: app.add_handler(CommandHandler(cmd, watchlist_command))

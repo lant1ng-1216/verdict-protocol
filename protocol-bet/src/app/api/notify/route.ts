@@ -56,12 +56,12 @@ function fmtDeadline(deadlineStr: string): string {
     const now = Math.floor(Date.now() / 1000);
     const deadline = parseInt(deadlineStr);
     const diff = deadline - now;
-    if (diff <= 0) return '已到期';
+    if (diff <= 0) return 'Expired';
     const days = Math.floor(diff / 86400);
     const hours = Math.floor((diff % 86400) / 3600);
-    if (days > 0) return `约 ${days} 天 ${hours} 小时后`;
-    return `约 ${hours} 小时后`;
-  } catch { return '未知'; }
+    if (days > 0) return `~${days}d ${hours}h`;
+    return `~${hours}h`;
+  } catch { return 'unknown'; }
 }
 
 async function getDuel(id: number) {
@@ -86,41 +86,50 @@ async function getDuel(id: number) {
 
 function buildAcceptedMessage(i: number, duel: any, claimText: string, ruleText: string): string {
   const blue = duel.blue !== '0x0000000000000000000000000000000000000000'
-    ? `${duel.blue.slice(0, 6)}...${duel.blue.slice(-4)}` : '未知';
+    ? `${duel.blue.slice(0, 6)}...${duel.blue.slice(-4)}` : 'unknown';
   const wager = fmtEther(duel.wager);
   const totalPool = fmtEther((BigInt(duel.wager) * 2n).toString());
   const deadline = fmtDeadline(duel.deadline);
   const claim = claimText || `#${i} — on-chain duel`;
-  const rule = ruleText || '以链上数据为准';
+  const rule = ruleText || 'Based on on-chain data';
 
-  return `⚔️ *你的对决 #${i} 已被接受！*
+  return `⚔️ *Your duel #${i} has been accepted!*
 
-📋 *声明：* 「${claim}」
-📏 *裁定标准：* ${rule}
+📋 *Claim:* "${claim}"
+📏 *Ruling standard:* ${rule}
 
-🆚 *对手：* \`${blue}\`
-💰 *总池：* ${totalPool} tBNB（双方各 ${wager} tBNB）
-⏰ *到期：* ${deadline}
-🌐 *网络：* BNB Testnet
+🆚 *Opponent:* \`${blue}\`
+💰 *Total pool:* ${totalPool} tBNB (${wager} tBNB each)
+⏰ *Expires:* ${deadline}
+🌐 *Network:* BNB Testnet
 
-*接下来可以做：*
-• 到期前与对手协商 → 共识结算
-• 到期后提交证据 → 申请 AI 裁定
-• 胜方裁定后 48h 内领取奖励
+*What you can do:*
+• Negotiate before expiry → Mutual settlement
+• Submit evidence after expiry → Request AI ruling
+• Winner claims reward within 48h after verdict
 
-🔗 [查看对决详情](https://verdictprotocol.online/?duel=${i})`;
+🔗 [View duel](https://verdictprotocol.online/?duel=${i})`;
 }
 
-function buildSettledMessage(i: number, duel: any, claimText: string, won: boolean): string {
+function buildSettledMessage(i: number, claimText: string, won: boolean): string {
   const claim = claimText || `#${i} — on-chain duel`;
-  const result = won ? '🏆 你赢了！' : '💀 你输了';
-  return `${result}
+  if (won) {
+    return `🏆 *You won duel #${i}!*
 
-📋 *对决 #${i}：* 「${claim}」已结算
+📋 "${claim}"
 
-${won ? '🎉 恭喜！赶快领取你的奖励吧，48小时内有效。' : '下次再战！'}
+🎉 Congratulations! Claim your reward within 48 hours.
 
-🔗 [查看详情](https://verdictprotocol.online/?duel=${i})`;
+🔗 [Claim reward](https://verdictprotocol.online/?duel=${i})`;
+  } else {
+    return `💀 *Duel #${i} settled*
+
+📋 "${claim}"
+
+Better luck next time!
+
+🔗 [View result](https://verdictprotocol.online/?duel=${i})`;
+  }
 }
 
 async function processNotification(i: number, duel: any, prevStatus: number, notifications: string[], tgUsername: string, chatId: string) {
@@ -131,8 +140,8 @@ async function processNotification(i: number, duel: any, prevStatus: number, not
   if (duel.status === 1 && prevStatus === 0) {
     message = buildAcceptedMessage(i, duel, claimText, ruleText);
   } else if (duel.status === 2 && prevStatus !== 2) {
-    const won = duel.winner === 1; // 简化：红方=发起人
-    message = buildSettledMessage(i, duel, claimText, won);
+    const won = duel.winner === 1;
+    message = buildSettledMessage(i, claimText, won);
   }
 
   if (message) {
