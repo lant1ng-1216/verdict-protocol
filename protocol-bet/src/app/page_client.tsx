@@ -14,6 +14,55 @@ import { DuelStatus, DuelSide } from '../lib/contract';
 
 const WARRIOR_IMG = '/warrior.png';
 
+// Beam avatar — boring-avatars beam style, inline SVG implementation
+const BEAM_COLORS = [
+  ['#7C3AED','#F43F5E'],['#3B82F6','#06B6D4'],['#059669','#D97706'],
+  ['#EC4899','#8B5CF6'],['#F59E0B','#EF4444'],['#6366F1','#14B8A6'],
+  ['#0EA5E9','#7C3AED'],['#10B981','#F43F5E'],['#8B5CF6','#EC4899'],
+];
+function beamHash(addr: string): number[] {
+  const s = (addr || '0xabcdef').toLowerCase().replace('0x','').padEnd(40,'0');
+  return Array.from({length:10}, (_,i) => parseInt(s.slice(i*4,(i+1)*4)||'0',16) % 100);
+}
+function BeamAvatar({ addr, size = 36, square = false }: { addr: string; size?: number; square?: boolean }) {
+  const nums = beamHash(addr);
+  const ci = nums[0] % BEAM_COLORS.length;
+  const [bg, fg] = BEAM_COLORS[ci];
+  const angle = -15 + (nums[1] % 30);
+  const tx = -10 + (nums[2] % 20);
+  const ty = -10 + (nums[3] % 20);
+  // eyes
+  const ex1 = 10 + (nums[4] % 8); const ey = 14 + (nums[5] % 4);
+  const ex2 = 22 + (nums[6] % 8);
+  const er = 2.5 + (nums[7] % 2) * 0.5;
+  // mouth
+  const mx = 12 + (nums[8] % 6); const my = 24 + (nums[9] % 3);
+  const mw = 10 + (nums[8] % 6);
+  const radius = square ? 4 : size / 2;
+  const uid = addr.replace(/[^a-zA-Z0-9]/g,'').slice(0,8) || 'beam';
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style={{flexShrink:0,borderRadius:square?'8px':'50%',display:'block'}}>
+      <mask id={`bm-${uid}`} maskUnits="userSpaceOnUse" x="0" y="0" width="40" height="40">
+        <rect width="40" height="40" rx={radius} fill="#fff"/>
+      </mask>
+      <g mask={`url(#bm-${uid})`}>
+        <rect width="40" height="40" fill={bg}/>
+        <rect x="0" y="0" width="40" height="40"
+          transform={`translate(${tx} ${ty}) rotate(${angle} 20 20)`}
+          rx="8" fill={fg}/>
+        <circle cx={ex1} cy={ey} r={er} fill="rgba(255,255,255,0.85)"/>
+        <circle cx={ex2} cy={ey} r={er} fill="rgba(255,255,255,0.85)"/>
+        <path d={`M${mx} ${my} Q20 ${my+5} ${mx+mw} ${my}`}
+          stroke="rgba(255,255,255,0.9)" strokeWidth="2" fill="none" strokeLinecap="round"/>
+      </g>
+    </svg>
+  );
+}
+const GradientAvatar = ({ addr, size = 36, className = '' }: { addr: string; size?: number; className?: string }) => (
+  <BeamAvatar addr={addr} size={size} />
+);
+
+
 const CHAINS = [
   { key: 'mantle',   name: 'Mantle',    token: 'MNT',  logo: 'https://icons.llamao.fi/icons/chains/rsz_mantle.jpg' },
   { key: 'bnb',      name: 'BNB Chain', token: 'BNB',  logo: 'https://icons.llamao.fi/icons/chains/rsz_binance.jpg' },
@@ -265,13 +314,13 @@ function Ticker({ t, lang }: { t: typeof LANG['en']; lang: Lang }) {
     return () => cancelAnimationFrame(id);
   }, [lang]);
   return (
-    <div className="bg-[#0a0a18] border-b border-white/5 px-4 py-1.5 flex items-center gap-3 overflow-hidden">
-      <div className="flex items-center gap-1.5 text-[9px] tracking-widest uppercase text-red-400 whitespace-nowrap flex-shrink-0">
-        <div className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />{t.live}
+    <div className="bg-[#F3F0FB] border-b border-[#EEE9FC] px-4 py-1.5 flex items-center gap-3 overflow-hidden">
+      <div className="flex items-center gap-1.5 text-[9px] tracking-widest uppercase text-[#7C3AED] whitespace-nowrap flex-shrink-0">
+        <div className="w-1.5 h-1.5 rounded-full bg-[#7C3AED] animate-pulse" />{t.live}
       </div>
       <div className="overflow-hidden flex-1">
         <div ref={ref} className="flex gap-12 whitespace-nowrap" style={{ width: 'max-content' }}>
-          {[...t.ticker, ...t.ticker].map((item, i) => <span key={i} className="text-[10px] text-white/25">{item}</span>)}
+          {[...t.ticker, ...t.ticker].map((item, i) => <span key={i} className="text-[10px] text-[#9CA3AF]">{item}</span>)}
         </div>
       </div>
     </div>
@@ -288,18 +337,18 @@ function ChainSelector({ selectedChain, onSelect, placeholder }: { selectedChain
   }, []);
   return (
     <div className="relative" ref={ref}>
-      <button onClick={() => setOpen(o => !o)} className={`w-full bg-[#10101e] border rounded-xl px-3 py-2.5 flex items-center gap-2 text-sm outline-none transition-colors ${open ? 'border-red-400/50 rounded-b-none' : 'border-white/10 hover:border-white/20'}`}>
-        {selectedChain ? (<><img src={selectedChain.logo} alt={selectedChain.name} className="w-5 h-5 rounded-full flex-shrink-0" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} /><span className="text-white/80 flex-1 text-left">{selectedChain.name}</span><span className="text-white/40 text-xs">{selectedChain.token}</span></>) : <span className="text-white/25 flex-1 text-left">{placeholder}</span>}
-        <span className={`text-white/30 text-xs transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
+      <button onClick={() => setOpen(o => !o)} className={`w-full bg-[#F9F8FF] border rounded-xl px-3 py-2.5 flex items-center gap-2 text-sm outline-none transition-colors ${open ? 'border-[#7C3AED] rounded-b-none' : 'border-[#EEE9FC] hover:border-[#C4B5FD]'}`}>
+        {selectedChain ? (<><img src={selectedChain.logo} alt={selectedChain.name} className="w-5 h-5 rounded-full flex-shrink-0" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} /><span className="text-[#1A1A2E] flex-1 text-left">{selectedChain.name}</span><span className="text-[#9CA3AF] text-xs">{selectedChain.token}</span></>) : <span className="text-[#9CA3AF] flex-1 text-left">{placeholder}</span>}
+        <span className={`text-[#9CA3AF] text-xs transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
       </button>
       {open && (
-        <div className="absolute top-full left-0 right-0 bg-[#10101e] border border-red-400/30 border-t-0 rounded-b-xl overflow-hidden z-20 max-h-48 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 bg-white border border-[#7C3AED] border-t-0 rounded-b-xl overflow-hidden z-20 max-h-48 overflow-y-auto">
           {CHAINS.map(c => (
             <button key={c.key} onClick={() => { onSelect(c); setOpen(false); }} className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 ${selectedChain?.key === c.key ? 'bg-red-400/8' : ''}`}>
               <img src={c.logo} alt={c.name} className="w-5 h-5 rounded-full flex-shrink-0" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-              <span className="text-white/80 flex-1 text-left">{c.name}</span>
-              <span className="text-white/40 text-xs">{c.token}</span>
-              {selectedChain?.key === c.key && <span className="text-red-400 text-xs">✓</span>}
+              <span className="text-[#1A1A2E] flex-1 text-left">{c.name}</span>
+              <span className="text-[#9CA3AF] text-xs">{c.token}</span>
+              {selectedChain?.key === c.key && <span className="text-[#7C3AED] text-xs">✓</span>}
             </button>
           ))}
         </div>
@@ -365,12 +414,12 @@ function IssueModal({ t, onClose, chainId = 97 }: { t: typeof LANG['en']; onClos
   const btnLabel = isSuccess ? '✓ 发起成功!' : isConfirming ? '链上确认中...' : isPending ? '等待签名...' : visibility === 'ai' ? m.submitAI : m.submit;
 
   return (
-    <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.8)',zIndex:50,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'}} onClick={onClose}>
-      <div style={{background:'#0c0c1a',border:'1px solid rgba(255,107,107,0.3)',borderRadius:'16px',width:'100%',maxWidth:'448px',overflow:'hidden'}} onClick={e => e.stopPropagation()}>
+    <div style={{position:'fixed',inset:0,background:'rgba(100,80,160,0.25)',zIndex:50,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'}} onClick={onClose}>
+      <div style={{background:'#fff',border:'1.5px solid #EEE9FC',borderRadius:'20px',width:'100%',maxWidth:'448px',overflow:'hidden',boxShadow:'0 8px 40px rgba(124,58,237,0.10)'}} onClick={e => e.stopPropagation()}>
         {/* HEADER */}
-        <div style={{background:'#10101e',borderBottom:'1px solid rgba(255,255,255,0.05)',padding:'14px 20px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-          <span style={{fontSize:'14px',fontWeight:600,color:'rgba(255,255,255,0.9)'}}>{m.title}</span>
-          <button onClick={onClose} style={{color:'rgba(255,255,255,0.3)',fontSize:'20px',lineHeight:1,background:'none',border:'none',cursor:'pointer'}}>×</button>
+        <div style={{background:'#F7F5FF',borderBottom:'1px solid #EEE9FC',padding:'14px 20px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <span style={{fontSize:'14px',fontWeight:600,color:'#1A1A2E'}}>{m.title}</span>
+          <button onClick={onClose} style={{color:'#9CA3AF',fontSize:'20px',lineHeight:1,background:'none',border:'none',cursor:'pointer'}}>×</button>
         </div>
 
         {/* BODY */}
@@ -378,104 +427,104 @@ function IssueModal({ t, onClose, chainId = 97 }: { t: typeof LANG['en']; onClos
 
           {/* 你的声明 */}
           <div>
-            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'rgba(255,255,255,0.3)',marginBottom:'6px'}}>{m.claimLabel}</div>
+            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#374151',marginBottom:'6px'}}>{m.claimLabel}</div>
             <textarea
               value={claim}
               onChange={e => setClaim(e.target.value)}
               rows={3}
               placeholder={m.claimPlaceholder}
-              style={{width:'100%',background:'#10101e',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'rgba(255,255,255,0.8)',outline:'none',resize:'none',boxSizing:'border-box'}}
+              style={{width:'100%',background:'#F9F8FF',border:'1.5px solid #DDD6FE',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'#1A1A2E',outline:'none',resize:'none',boxSizing:'border-box'}}
             />
           </div>
 
           {/* 裁定标准 */}
           <div>
-            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'rgba(255,255,255,0.3)',marginBottom:'6px'}}>{m.rulingLabel}</div>
+            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#374151',marginBottom:'6px'}}>{m.rulingLabel}</div>
             <textarea
               value={rule}
               onChange={e => setRule(e.target.value)}
               rows={2}
               placeholder={m.rulingPlaceholder}
-              style={{width:'100%',background:'#10101e',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'rgba(255,255,255,0.8)',outline:'none',resize:'none',boxSizing:'border-box'}}
+              style={{width:'100%',background:'#F9F8FF',border:'1.5px solid #DDD6FE',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'#1A1A2E',outline:'none',resize:'none',boxSizing:'border-box'}}
             />
           </div>
 
           {/* Telegram 通知 */}
           <div>
-            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'rgba(255,255,255,0.3)',marginBottom:'6px'}}>{m.tgLabel}</div>
+            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#374151',marginBottom:'6px'}}>{m.tgLabel}</div>
             <input
               type="text"
               value={tgUsername}
               onChange={e => setTgUsername(e.target.value)}
               placeholder={m.tgPlaceholder}
-              style={{width:'100%',background:'#10101e',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'rgba(255,255,255,0.8)',outline:'none',boxSizing:'border-box'}}
+              style={{width:'100%',background:'#F9F8FF',border:'1.5px solid #DDD6FE',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'#1A1A2E',outline:'none',boxSizing:'border-box'}}
             />
-            <div style={{fontSize:'9px',color:'rgba(255,255,255,0.2)',marginTop:'4px'}}>先给 @MemeCourt_Bot 发 /start 才能收到通知</div>
+            <div style={{fontSize:'9px',color:'#6B7280',marginTop:'4px'}}>先给 @MemeCourt_Bot 发 /start 才能收到通知</div>
           </div>
 
           {/* 网络 */}
           <div>
-            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'rgba(255,255,255,0.3)',marginBottom:'6px'}}>{m.networkLabel}</div>
-            <div style={{background:'#10101e',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'10px 12px',display:'flex',alignItems:'center',gap:'8px'}}>
+            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#374151',marginBottom:'6px'}}>{m.networkLabel}</div>
+            <div style={{background:'#F9F8FF',border:'1px solid #EEE9FC',borderRadius:'12px',padding:'10px 12px',display:'flex',alignItems:'center',gap:'8px'}}>
               <div style={{width:'8px',height:'8px',borderRadius:'50%',background:'#4ade80',flexShrink:0}} />
-              <span style={{color:'rgba(255,255,255,0.7)',flex:1,fontSize:'14px'}}>{currentNetwork}</span>
-              <span style={{color:'rgba(255,255,255,0.4)',fontSize:'12px'}}>{currentToken}</span>
+              <span style={{color:'#1A1A2E',flex:1,fontSize:'14px',fontWeight:500}}>{currentNetwork}</span>
+              <span style={{color:'#9CA3AF',fontSize:'12px'}}>{currentToken}</span>
             </div>
           </div>
 
           {/* 押注金额 */}
           <div>
-            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'rgba(255,255,255,0.3)',marginBottom:'6px'}}>{m.stakeLabel}</div>
+            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#374151',marginBottom:'6px'}}>{m.stakeLabel}</div>
             <div style={{display:'flex',gap:'8px'}}>
               <input
                 type="number" min="0" step="0.001"
                 value={stake}
                 onChange={e => setStake(e.target.value)}
                 placeholder={m.stakePlaceholder}
-                style={{flex:1,background:'#10101e',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'rgba(255,255,255,0.8)',outline:'none'}}
+                style={{flex:1,background:'#F9F8FF',border:'1.5px solid #DDD6FE',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'#1A1A2E',outline:'none'}}
               />
-              <div style={{background:'#10101e',border:'1px solid rgba(255,107,107,0.3)',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',fontWeight:600,color:'#ff6b6b',minWidth:'60px',textAlign:'center'}}>{currentToken}</div>
+              <div style={{background:'#F5F3FF',border:'1px solid #DDD6FE',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',fontWeight:600,color:'#7C3AED',minWidth:'60px',textAlign:'center'}}>{currentToken}</div>
             </div>
           </div>
 
           {/* 分配比例 */}
-          <div style={{background:'rgba(250,212,0,0.05)',border:'1px solid rgba(250,212,0,0.2)',borderRadius:'12px',padding:'16px'}}>
+          <div style={{background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'12px',padding:'16px'}}>
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'12px'}}>
-              <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'rgba(250,212,0,0.6)'}}>对决池分配比例</div>
-              <div style={{fontSize:'16px',fontWeight:'bold',color:'#fad400'}}>{audienceRatio}%</div>
+              <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#D97706'}}>对决池分配比例</div>
+              <div style={{fontSize:'16px',fontWeight:'bold',color:'#D97706'}}>{audienceRatio}%</div>
             </div>
-            <input type="range" min="0" max="100" step="5" value={audienceRatio} onChange={e => setAudienceRatio(Number(e.target.value))} style={{width:'100%',marginBottom:'12px',accentColor:'#fad400'}} />
+            <input type="range" min="0" max="100" step="5" value={audienceRatio} onChange={e => setAudienceRatio(Number(e.target.value))} style={{width:'100%',marginBottom:'12px',accentColor:'#7C3AED'}} />
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginBottom:'12px'}}>
-              <div style={{background:'rgba(255,107,107,0.08)',border:'1px solid rgba(255,107,107,0.2)',borderRadius:'8px',padding:'10px',textAlign:'center'}}>
-                <div style={{fontSize:'7px',letterSpacing:'0.1em',textTransform:'uppercase',color:'rgba(255,107,107,0.5)',marginBottom:'4px'}}>赢家获得</div>
-                <div style={{fontSize:'16px',fontWeight:'bold',color:'#ff6b6b'}}>{100-audienceRatio}%</div>
-                <div style={{fontSize:'8px',color:'rgba(255,107,107,0.4)'}}>对决池</div>
+              <div style={{background:'#FFF1F2',border:'1px solid #FFE4E6',borderRadius:'8px',padding:'10px',textAlign:'center'}}>
+                <div style={{fontSize:'7px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#F43F5E',marginBottom:'4px'}}>赢家获得</div>
+                <div style={{fontSize:'16px',fontWeight:'bold',color:'#F43F5E'}}>{100-audienceRatio}%</div>
+                <div style={{fontSize:'8px',color:'#F43F5E'}}>对决池</div>
               </div>
-              <div style={{background:'rgba(107,159,255,0.08)',border:'1px solid rgba(107,159,255,0.2)',borderRadius:'8px',padding:'10px',textAlign:'center'}}>
-                <div style={{fontSize:'7px',letterSpacing:'0.1em',textTransform:'uppercase',color:'rgba(107,159,255,0.5)',marginBottom:'4px'}}>观众瓜分</div>
-                <div style={{fontSize:'16px',fontWeight:'bold',color:'#6b9fff'}}>{audienceRatio}%</div>
-                <div style={{fontSize:'8px',color:'rgba(107,159,255,0.4)'}}>对决池</div>
+              <div style={{background:'#EFF6FF',border:'1px solid #DBEAFE',borderRadius:'8px',padding:'10px',textAlign:'center'}}>
+                <div style={{fontSize:'7px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#3B82F6',marginBottom:'4px'}}>观众瓜分</div>
+                <div style={{fontSize:'16px',fontWeight:'bold',color:'#3B82F6'}}>{audienceRatio}%</div>
+                <div style={{fontSize:'8px',color:'#3B82F6'}}>对决池</div>
               </div>
             </div>
-            <div style={{fontSize:'10px',color:'rgba(255,255,255,0.25)',lineHeight:1.5}}>
+            <div style={{fontSize:'10px',color:'#9CA3AF',lineHeight:1.5,color:'#6B7280'}}>
               {audienceRatio === 0 ? '赢家独得 100% 对决池，观众押注收益来自独立的观众池。' : audienceRatio === 100 ? '赢家放弃全部收益，100% 对决池归押对的观众瓜分。' : `赢家获得对决池的 ${100-audienceRatio}%，押对的观众瓜分 ${audienceRatio}%。`}
             </div>
           </div>
 
           {/* 时长 */}
           <div>
-            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'rgba(255,255,255,0.3)',marginBottom:'6px'}}>{m.durationLabel}</div>
+            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#374151',marginBottom:'6px'}}>{m.durationLabel}</div>
             <div style={{display:'flex',gap:'8px',marginBottom:'8px'}}>
               <input
                 type="number" min="1" step="1"
                 value={duration}
                 onChange={e => setDuration(e.target.value)}
-                style={{flex:1,background:'#10101e',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'rgba(255,255,255,0.8)',outline:'none'}}
+                style={{flex:1,background:'#F9F8FF',border:'1.5px solid #DDD6FE',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'#1A1A2E',outline:'none'}}
               />
               <select
                 value={durationUnit}
                 onChange={e => setDurationUnit(Number(e.target.value))}
-                style={{background:'#10101e',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'rgba(255,255,255,0.8)',outline:'none'}}
+                style={{background:'#F9F8FF',border:'1.5px solid #DDD6FE',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'#1A1A2E',outline:'none'}}
               >
                 {unitLabels.map((u, i) => <option key={i} value={i}>{u}</option>)}
               </select>
@@ -485,7 +534,7 @@ function IssueModal({ t, onClose, chainId = 97 }: { t: typeof LANG['en']; onClos
                 <button
                   key={d}
                   onClick={() => { setDuration(String(d)); setDurationUnit(0); }}
-                  style={{flex:1,padding:'6px',borderRadius:'8px',fontSize:'10px',border: duration === String(d) && durationUnit === 0 ? '1px solid rgba(255,107,107,0.5)' : '1px solid rgba(255,255,255,0.1)',background: duration === String(d) && durationUnit === 0 ? 'rgba(255,107,107,0.1)' : 'transparent',color: duration === String(d) && durationUnit === 0 ? '#ff6b6b' : 'rgba(255,255,255,0.3)',cursor:'pointer'}}
+                  style={{flex:1,padding:'7px',borderRadius:'10px',fontSize:'11px',fontWeight:500,border: duration === String(d) && durationUnit === 0 ? '1.5px solid #7C3AED' : '1px solid #DDD6FE',background: duration === String(d) && durationUnit === 0 ? '#F5F3FF' : '#F9F8FF',color: duration === String(d) && durationUnit === 0 ? '#7C3AED' : '#6B7280',cursor:'pointer'}}
                 >{presetLabels[i]}</button>
               ))}
             </div>
@@ -493,7 +542,7 @@ function IssueModal({ t, onClose, chainId = 97 }: { t: typeof LANG['en']; onClos
 
           {/* 可见范围 */}
           <div>
-            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'rgba(255,255,255,0.3)',marginBottom:'8px'}}>{m.visibilityLabel}</div>
+            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#374151',marginBottom:'8px'}}>{m.visibilityLabel}</div>
             <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
               {[
                 { key: 'public' as const, label: m.visibilities[0], desc: m.visibilityDescPublic },
@@ -503,14 +552,14 @@ function IssueModal({ t, onClose, chainId = 97 }: { t: typeof LANG['en']; onClos
                 <div
                   key={opt.key}
                   onClick={() => setVisibility(opt.key)}
-                  style={{borderRadius:'12px',padding:'10px 12px',cursor:'pointer',display:'flex',alignItems:'flex-start',gap:'12px',border: visibility === opt.key ? (opt.key === 'ai' ? '1px solid rgba(168,107,255,0.4)' : '1px solid rgba(96,165,250,0.4)') : '1px solid rgba(255,255,255,0.08)',background: visibility === opt.key ? (opt.key === 'ai' ? 'rgba(168,107,255,0.05)' : 'rgba(96,165,250,0.05)') : '#10101e'}}
+                  style={{borderRadius:'12px',padding:'10px 12px',cursor:'pointer',display:'flex',alignItems:'flex-start',gap:'12px',border: visibility === opt.key ? (opt.key === 'ai' ? '1.5px solid #C4B5FD' : '1.5px solid #DBEAFE') : '1px solid #EEE9FC',background: visibility === opt.key ? (opt.key === 'ai' ? '#F5F3FF' : '#EFF6FF') : '#F9F8FF'}}
                 >
-                  <div style={{width:'14px',height:'14px',borderRadius:'50%',border: visibility === opt.key ? (opt.key === 'ai' ? '2px solid #a86bff' : '2px solid #60a5fa') : '2px solid rgba(255,255,255,0.2)',background: visibility === opt.key ? (opt.key === 'ai' ? '#a86bff' : '#60a5fa') : 'transparent',flexShrink:0,marginTop:'2px',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                  <div style={{width:'14px',height:'14px',borderRadius:'50%',border: visibility === opt.key ? (opt.key === 'ai' ? '2px solid #7C3AED' : '2px solid #3B82F6') : '2px solid #C4B5FD',background: visibility === opt.key ? (opt.key === 'ai' ? '#7C3AED' : '#3B82F6') : 'transparent',flexShrink:0,marginTop:'2px',display:'flex',alignItems:'center',justifyContent:'center'}}>
                     {visibility === opt.key && <div style={{width:'6px',height:'6px',borderRadius:'50%',background:'white'}} />}
                   </div>
                   <div>
-                    <div style={{fontSize:'12px',fontWeight:600,color: visibility === opt.key ? (opt.key === 'ai' ? '#c084fc' : '#93c5fd') : 'rgba(255,255,255,0.6)',marginBottom:'2px'}}>{opt.label}</div>
-                    <div style={{fontSize:'10px',color:'rgba(255,255,255,0.3)'}}>{opt.desc}</div>
+                    <div style={{fontSize:'13px',fontWeight:600,color: visibility === opt.key ? (opt.key === 'ai' ? '#7C3AED' : '#1D4ED8') : '#374151',marginBottom:'3px'}}>{opt.label}</div>
+                    <div style={{fontSize:'11px',color:'#6B7280'}}>{opt.desc}</div>
                   </div>
                 </div>
               ))}
@@ -522,11 +571,11 @@ function IssueModal({ t, onClose, chainId = 97 }: { t: typeof LANG['en']; onClos
 
         {/* FOOTER */}
         <div style={{padding:'0 20px 20px',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px'}}>
-          <button onClick={onClose} style={{padding:'10px',borderRadius:'12px',fontSize:'14px',fontWeight:500,color:'rgba(255,255,255,0.4)',border:'1px solid rgba(255,255,255,0.1)',background:'transparent',cursor:'pointer'}}>{m.cancel}</button>
+          <button onClick={onClose} style={{padding:'10px',borderRadius:'12px',fontSize:'14px',fontWeight:500,color:'#9CA3AF',border:'1px solid #E5E7EB',background:'transparent',cursor:'pointer'}}>{m.cancel}</button>
           <button
             onClick={handleSubmit}
             disabled={!canSubmit}
-            style={{padding:'10px',borderRadius:'12px',fontSize:'14px',fontWeight:600,border: isSuccess ? '1px solid rgba(74,222,128,0.5)' : visibility === 'ai' ? '1px solid rgba(168,107,255,0.5)' : '1px solid rgba(255,107,107,0.5)',background: isSuccess ? 'rgba(74,222,128,0.1)' : visibility === 'ai' ? 'rgba(168,107,255,0.1)' : 'rgba(255,107,107,0.1)',color: isSuccess ? '#4ade80' : visibility === 'ai' ? '#c084fc' : '#ff6b6b',cursor: canSubmit ? 'pointer' : 'not-allowed',opacity: canSubmit ? 1 : 0.5}}
+            style={{padding:'10px',borderRadius:'12px',fontSize:'14px',fontWeight:600,border: isSuccess ? '1px solid #A7F3D0' : '1px solid #7C3AED',background: isSuccess ? '#ECFDF5' : '#7C3AED',color: isSuccess ? '#059669' : '#fff',cursor: canSubmit ? 'pointer' : 'not-allowed',opacity: canSubmit ? 1 : 0.5}}
           >{btnLabel}</button>
         </div>
       </div>
@@ -602,18 +651,18 @@ function LiveCard({ t, onEnter }: { t: typeof LANG['en']; onEnter: () => void })
   useEffect(() => { if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight; }, [chatMsgs]);
   const red = Math.round(supportRed); const isRedLeading = red > 50;
   return (
-    <div className="bg-[#0c0c1a] border border-white/10 rounded-2xl overflow-hidden" style={{ display: 'grid', gridTemplateColumns: '70% 30%', height: '540px' }}>
+    <div className="bg-white border border-[#EEE9FC] rounded-2xl overflow-hidden" style={{ display: 'grid', gridTemplateColumns: '70% 30%', height: '540px' }}>
       <div className="flex flex-col border-r border-white/10 bg-[#07070f] overflow-hidden">
         <div className="bg-[#09091e] border-b border-white/5 px-3 py-2 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-1.5 bg-red-500/10 border border-red-500/30 rounded-full px-2.5 py-1"><div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /><span className="text-[9px] font-bold text-red-400 tracking-widest">LIVE</span></div>
-          <div className="flex items-center gap-2"><div className="flex">{['#6a1a3a','#1a3a6a','#1a6a2a'].map((c,i) => (<div key={i} className="w-4 h-4 rounded-full overflow-hidden border border-[#09091e] -ml-1 first:ml-0 relative"><div className="absolute inset-0" style={{ background: c }} /><img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" /></div>))}</div><span className="text-[10px] text-white/40"><span className="text-green-400 font-semibold">{watchers}</span> {lt.watching}</span></div>
-          <div className="flex items-center gap-2"><span className="text-[8px] text-red-400 border border-red-400/30 bg-red-400/10 rounded px-1.5 py-0.5 tracking-wider">KOL BATTLE</span><span className="text-[8px] tracking-widest text-white/20">#{LIVE_DUEL.id}</span></div>
+          <div className="flex items-center gap-2"><div className="flex">{['#6a1a3a','#1a3a6a','#1a6a2a'].map((c,i) => (<div key={i} className="w-4 h-4 rounded-full overflow-hidden border border-[#09091e] -ml-1 first:ml-0 relative"><div className="absolute inset-0" style={{ background: c }} /><img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" /></div>))}</div><span className="text-[10px] text-[#9CA3AF]"><span className="text-green-400 font-semibold">{watchers}</span> {lt.watching}</span></div>
+          <div className="flex items-center gap-2"><span className="text-[8px] text-red-400 border border-red-400/30 bg-red-400/10 rounded px-1.5 py-0.5 tracking-wider">KOL BATTLE</span><span className="text-[8px] tracking-widest text-[#C4B5FD]">#{LIVE_DUEL.id}</span></div>
         </div>
         <div className="bg-[#0a0a1e] border-b border-white/5 px-3 py-2 flex-shrink-0 flex items-center gap-3">
           <div className="flex-1 min-w-0">
             <div className="text-[7px] tracking-widest uppercase text-white/20 mb-1">{t.events.duelIssued}</div>
             <div className="text-[11px] font-semibold text-white/80 leading-snug mb-1">{t.duels[0].claim}</div>
-            <div className="flex items-center gap-2"><span className="text-[7px] tracking-widest uppercase text-white/15">Ruling</span><span className="text-[9px] text-white/25">DeFiLlama TVL data at expiry · 00:00 UTC</span></div>
+            <div className="flex items-center gap-2"><span className="text-[7px] tracking-widest uppercase text-[#C4B5FD]">Ruling</span><span className="text-[9px] text-[#C4B5FD]">DeFiLlama TVL data at expiry · 00:00 UTC</span></div>
           </div>
           <button onClick={onEnter} className="px-3 py-1.5 rounded-lg text-[10px] font-semibold text-red-400 border border-red-400/40 bg-red-400/10 hover:bg-red-400/20 transition-colors whitespace-nowrap flex-shrink-0">{lt.enterDuel}</button>
         </div>
@@ -626,8 +675,8 @@ function LiveCard({ t, onEnter }: { t: typeof LANG['en']; onEnter: () => void })
             </div>
             <div className="text-[10px] font-semibold text-white/80">{LIVE_DUEL.challenger.name}</div>
             <div className="text-[8px] text-white/25 font-mono">{LIVE_DUEL.challenger.addr}</div>
-            <div className="text-[8px] text-white/40">Bullish — Mantle flips</div>
-            <div className="text-lg font-bold text-red-400">{LIVE_DUEL.amount} <span className="text-[8px] text-white/25">ETH</span></div>
+            <div className="text-[8px] text-[#9CA3AF]">Bullish — Mantle flips</div>
+            <div className="text-lg font-bold text-red-400">{LIVE_DUEL.amount} <span className="text-[8px] text-[#C4B5FD]">ETH</span></div>
             <div className="w-full flex flex-col gap-1.5">
               {[{label:'SUP',val:`${red}%`,pct:red},{label:'TVL',val:'$588M',pct:22},{label:'MOM',val:'+40%',pct:78}].map(s => (<div key={s.label} className="flex items-center gap-1.5"><span className="text-[7px] text-white/20 w-6 text-right uppercase">{s.label}</span><div className="flex-1 h-[3px] bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-red-400 rounded-full transition-all duration-700" style={{ width: `${s.pct}%` }} /></div><span className="text-[7px] text-red-400 w-8 font-semibold">{s.val}</span></div>))}
             </div>
@@ -651,8 +700,8 @@ function LiveCard({ t, onEnter }: { t: typeof LANG['en']; onEnter: () => void })
             </div>
             <div className="text-[10px] font-semibold text-white/80">{LIVE_DUEL.defender.name}</div>
             <div className="text-[8px] text-white/25 font-mono">{LIVE_DUEL.defender.addr}</div>
-            <div className="text-[8px] text-white/40">Bearish — Arbitrum holds</div>
-            <div className="text-lg font-bold text-blue-400">{LIVE_DUEL.amount} <span className="text-[8px] text-white/25">ETH</span></div>
+            <div className="text-[8px] text-[#9CA3AF]">Bearish — Arbitrum holds</div>
+            <div className="text-lg font-bold text-blue-400">{LIVE_DUEL.amount} <span className="text-[8px] text-[#C4B5FD]">ETH</span></div>
             <div className="w-full flex flex-col gap-1.5">
               {[{label:'SUP',val:`${100-red}%`,pct:100-red},{label:'TVL',val:'$2.08B',pct:80},{label:'MOM',val:'-1.2%',pct:18}].map(s => (<div key={s.label} className="flex items-center gap-1.5"><span className="text-[7px] text-white/20 w-6 text-right uppercase">{s.label}</span><div className="flex-1 h-[3px] bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-blue-400 rounded-full transition-all duration-700" style={{ width: `${s.pct}%` }} /></div><span className="text-[7px] text-blue-400 w-8 font-semibold">{s.val}</span></div>))}
             </div>
@@ -664,7 +713,7 @@ function LiveCard({ t, onEnter }: { t: typeof LANG['en']; onEnter: () => void })
           <div className="flex justify-between mt-0.5"><span className="text-[7px] text-red-400/40">{LIVE_DUEL.challenger.name}</span><span className="text-[7px] text-blue-400/40">{LIVE_DUEL.defender.name}</span></div>
         </div>
         <div className="px-3 pb-2 flex-shrink-0">
-          <div className="flex items-center justify-between mb-1.5"><span className="text-[7px] tracking-widest uppercase text-white/20">support_rate · live</span><div className="flex items-center gap-2"><div className="flex items-center gap-1"><span className="text-[7px] text-white/15">less</span>{[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-1.5 rounded-sm" style={{ background: RED_STOPS[i] }} />)}<span className="text-[7px] text-red-400/40">red</span></div><div className="flex items-center gap-1">{[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-1.5 rounded-sm" style={{ background: BLU_STOPS[i] }} />)}<span className="text-[7px] text-blue-400/40">blue</span><span className="text-[7px] text-white/15">more</span></div></div></div>
+          <div className="flex items-center justify-between mb-1.5"><span className="text-[7px] tracking-widest uppercase text-[#C4B5FD]">support_rate · live</span><div className="flex items-center gap-2"><div className="flex items-center gap-1"><span className="text-[7px] text-[#C4B5FD]">less</span>{[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-1.5 rounded-sm" style={{ background: RED_STOPS[i] }} />)}<span className="text-[7px] text-red-400/40">red</span></div><div className="flex items-center gap-1">{[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-1.5 rounded-sm" style={{ background: BLU_STOPS[i] }} />)}<span className="text-[7px] text-blue-400/40">blue</span><span className="text-[7px] text-[#C4B5FD]">more</span></div></div></div>
           <div className="flex gap-3">
             <div className="flex gap-[3px] flex-shrink-0">{heatmap.map((col, ci) => (<div key={ci} className="flex flex-col gap-[3px]">{col.map((cell, ri) => (<div key={ri} className="w-[10px] h-[10px] rounded-sm" style={{ background: cell.side === 'r' ? RED_STOPS[cell.intensity] : BLU_STOPS[cell.intensity], transition: 'background 1s ease' }} />))}</div>))}</div>
             <div className="flex-1 border-l border-white/5 pl-3 flex flex-col justify-between gap-2">
@@ -676,15 +725,15 @@ function LiveCard({ t, onEnter }: { t: typeof LANG['en']; onEnter: () => void })
                 <div className="flex justify-between mt-0.5"><span className="text-[6px] text-red-400/50">{LIVE_DUEL.challenger.name}</span><span className="text-[6px] text-purple-400/50">⚖️ {red > 55 ? 'leans RED' : red < 45 ? 'leans BLUE' : 'neutral'}</span><span className="text-[6px] text-blue-400/50">{LIVE_DUEL.defender.name}</span></div>
                 <div className="text-[8px] text-purple-300/50 italic leading-snug mt-1">"{red > 55 ? 'Momentum favors challenger.' : red < 45 ? 'Defender holds ground.' : 'Outcome uncertain.'}"</div>
               </div>
-              <div><div className="text-[6px] tracking-widest uppercase text-white/15 mb-0.5">Time elapsed</div><div className="h-1 bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-orange-400/50 rounded-full" style={{ width: '41%' }} /></div><div className="flex justify-between mt-0.5"><span className="text-[6px] text-orange-400/40">41% elapsed</span><span className="text-[6px] text-white/15">44d left</span></div></div>
+              <div><div className="text-[6px] tracking-widest uppercase text-white/15 mb-0.5">Time elapsed</div><div className="h-1.5 bg-[#F3F0FB] rounded-full overflow-hidden"><div className="h-full bg-orange-400/50 rounded-full" style={{ width: '41%' }} /></div><div className="flex justify-between mt-0.5"><span className="text-[6px] text-orange-400/40">41% elapsed</span><span className="text-[6px] text-[#C4B5FD]">44d left</span></div></div>
             </div>
           </div>
         </div>
-        <div className="bg-[#04040c] border-t border-white/5 px-3 py-1.5 flex justify-between items-center flex-shrink-0"><span className="text-[7px] tracking-widest uppercase text-white/20">{lt.expiresIn}</span><span className="text-[9px] font-mono text-red-400/50">{timer}</span></div>
+        <div className="bg-[#04040c] border-t border-white/5 px-3 py-1.5 flex justify-between items-center flex-shrink-0"><span className="text-[7px] tracking-widest uppercase text-[#C4B5FD]">{lt.expiresIn}</span><span className="text-[9px] font-mono text-red-400/50">{timer}</span></div>
       </div>
       {/* CHAT */}
       <div className="flex flex-col bg-[#07070f] overflow-hidden">
-        <div className="bg-[#08081a] border-b border-white/5 px-3 py-2 flex items-center justify-between flex-shrink-0"><span className="text-[9px] font-semibold tracking-widest uppercase text-white/40">{lt.liveChat}</span><span className="text-[8px] text-white/20">{Math.floor(watchers * 0.15)} {lt.online}</span></div>
+        <div className="bg-[#08081a] border-b border-white/5 px-3 py-2 flex items-center justify-between flex-shrink-0"><span className="text-[9px] font-semibold tracking-widest uppercase text-[#9CA3AF]">{lt.liveChat}</span><span className="text-[8px] text-[#C4B5FD]">{Math.floor(watchers * 0.15)} {lt.online}</span></div>
         <div ref={chatRef} className="flex-1 overflow-y-auto p-2 flex flex-col gap-2" style={{ scrollbarWidth: 'none' }}>
           {chatMsgs.map((m, i) => (<div key={i} className="flex items-start gap-1.5"><div className="w-4 h-4 rounded-full overflow-hidden relative flex-shrink-0 mt-0.5"><div className="absolute inset-0" style={{ background: m.color }} /><img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" /></div><div className="flex-1 min-w-0"><div className="flex items-center gap-1.5 mb-0.5 flex-wrap"><span className={`text-[8px] font-bold ${m.cls}`}>{m.name}</span>{m.pill && <span className={`text-[7px] font-semibold rounded px-1 py-0.5 ${m.pill==='r'?'text-red-400 bg-red-400/15 border border-red-400/25':'text-blue-400 bg-blue-400/15 border border-blue-400/25'}`}>{m.pill==='r'?'RED':'BLUE'}</span>}</div><div className="text-[9px] text-white/35 leading-snug">{m.text}</div></div></div>))}
         </div>
@@ -699,69 +748,141 @@ function DuelCard({ duel, t, onClick, onEnter }: { duel: Duel; t: typeof LANG['e
   const timer = useCountdown(duel.expires);
   const d = t.duels[duel.index];
   const isAI = duel.isAIJudge;
-  const ac = t.aiCard;
-  const border = isAI ? 'border-purple-400/30' : duel.rarity === 'legendary' ? 'border-yellow-400/25' : duel.status === 'ending' ? 'border-orange-400/35' : 'border-white/10';
-  const hoverBorder = isAI ? 'hover:border-purple-400/50' : 'hover:border-red-400/50';
+  const isEnding = duel.status === 'ending';
+  const isOpen = duel.status === 'open';
+  const claimText = (duel as any)._claimText || d.claim;
+  const ruleText = (duel as any)._ruleText || d.rulingStd;
+  const totalPot = (duel.challenger.amount + (duel.defender?.amount ?? duel.challenger.amount)).toFixed(3);
+  const chain = CHAINS.find(c => duel.network.includes(c.name));
+  const borderColor = isAI ? '#DDD6FE' : isEnding ? '#FED7AA' : '#EEE9FC';
+  const challengerAddr = (duel as any)._onChainId ? duel.challenger.addr : duel.challenger.addr;
+
   return (
-    <div onClick={onClick} className={`bg-[#0c0c1a] border ${border} rounded-xl overflow-hidden cursor-pointer transition-all duration-150 ${hoverBorder} hover:-translate-y-0.5 flex flex-col`} style={isAI ? { background: 'linear-gradient(180deg, rgba(168,107,255,0.06) 0%, #0c0c1a 50%)' } : undefined}>
-      <div className="px-3 pt-2.5 pb-1.5 flex items-center justify-between gap-1">
-        <div className="flex items-center gap-1 flex-wrap">
-          <span className={`text-[8px] tracking-widest uppercase px-1.5 py-0.5 rounded border ${typeStyle[duel.type]}`}>{t.tags[duel.type]}</span>
-          {duel.rarity !== 'common' && <span className={`text-[8px] tracking-wide px-1.5 py-0.5 rounded border ${rarityStyle[duel.rarity]}`}>{t.tags[duel.rarity]}</span>}
-          {isAI && <span className="text-[8px] tracking-widest uppercase px-1.5 py-0.5 rounded border text-purple-400 border-purple-400/50 bg-purple-400/10">vs AI Judge</span>}
+    <div onClick={onClick} className="bg-white rounded-3xl overflow-hidden cursor-pointer group flex flex-col" style={{border:`1.5px solid ${borderColor}`,transition:'box-shadow 0.2s,transform 0.2s'}} onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.transform='translateY(-3px)';(e.currentTarget as HTMLDivElement).style.boxShadow='0 12px 32px rgba(124,58,237,0.10)'}} onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.transform='';(e.currentTarget as HTMLDivElement).style.boxShadow=''}}>
+      
+      {/* HEADER */}
+      <div className="px-4 pt-3.5 pb-0 flex items-center justify-between">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full ${duel.type==='kolBattle'?'text-[#F43F5E] bg-[#FFF1F2]':duel.type==='friendsBet'?'text-[#3B82F6] bg-[#EFF6FF]':duel.type==='communityWar'?'text-[#7C3AED] bg-[#F5F3FF]':'text-[#059669] bg-[#ECFDF5]'}`}>{t.tags[duel.type]}</span>
+          {isAI && <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full text-[#7C3AED] bg-[#F5F3FF]">vs AI</span>}
         </div>
-        <span className={`text-[8px] tracking-widest uppercase px-1.5 py-0.5 rounded border flex-shrink-0 ${statusStyle[duel.status]}`}>{t.tags[duel.status]}</span>
-      </div>
-      <div className="px-3 pb-2" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: '4px' }}>
         <div className="flex items-center gap-2">
-          <div className="relative flex-shrink-0">
-            <div className="w-12 h-12 rounded-xl overflow-hidden relative border-2 border-red-400"><div className="absolute inset-0" style={{ background: duel.challenger.color }} /><img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" /><div className="absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full bg-green-400 border border-[#0c0c1a]" /></div>
-            {(() => { const chain = CHAINS.find(c => duel.network.includes(c.name)); return chain ? <img src={chain.logo} alt="" className="absolute -bottom-1 -left-1 w-4 h-4 rounded-full border-2 border-[#0c0c1a]" onError={e => { (e.target as HTMLImageElement).style.display='none'; }} /> : null; })()}
-          </div>
-          <div className="flex flex-col gap-0.5 min-w-0"><div className="text-[11px] font-semibold text-white/85 truncate">{duel.challenger.name}</div><div className="text-[8px] text-white/25 font-mono truncate">{duel.challenger.addr}</div><div className="flex items-center gap-1.5 mt-0.5"><span className="text-[17px] font-bold text-red-400 leading-none">{duel.challenger.amount}</span><span className={`text-[8px] font-semibold px-1.5 py-0.5 rounded border ${isAI ? 'text-purple-400/70 border-purple-400/20 bg-purple-400/8' : 'text-red-400/70 border-red-400/20 bg-red-400/8'}`}>{duel.token}</span></div></div>
-        </div>
-        <div className="flex flex-col items-center gap-1 px-1">
-          <div className="w-px h-2 bg-white/10" /><span className="text-[9px] font-medium text-white/15 tracking-widest">VS</span>
-          <div className="flex items-center gap-1">
-            <div className={`rounded-lg px-1.5 py-1 text-center ${isAI ? 'bg-purple-400/10 border border-purple-400/20' : 'bg-red-400/10 border border-red-400/20'}`} style={{minWidth:'50px'}}><div className={`text-[6px] tracking-widest uppercase mb-1 ${isAI ? 'text-purple-400/50' : 'text-red-400/50'}`}>对决池</div><div className={`text-[10px] font-bold leading-none ${isAI ? 'text-purple-400' : 'text-red-400'}`}>{duel.challenger.amount + (duel.defender?.amount ?? duel.challenger.amount)}</div><div className={`text-[7px] font-semibold mt-0.5 ${isAI ? 'text-purple-400/60' : 'text-red-400/60'}`}>{duel.token}</div></div>
-            <div className="bg-blue-400/10 border border-blue-400/20 rounded-lg px-1.5 py-1 text-center" style={{minWidth:'50px'}}><div className="text-[6px] tracking-widest uppercase text-blue-400/50 mb-1">观众池</div><div className="text-[10px] font-bold leading-none text-blue-400">{(duel as any)._audiencePool !== undefined ? Number((duel as any)._audiencePool).toFixed(3) : ((duel.challenger.amount + (duel.defender?.amount ?? duel.challenger.amount)) * (1 + duel.watchers * 0.003)).toFixed(2)}</div><div className="text-[7px] font-semibold mt-0.5 text-blue-400/60">{duel.token}</div></div>
-          </div>
-          <div className="w-px h-2 bg-white/10" />
-        </div>
-        <div className="flex items-center gap-2 flex-row-reverse">
-          {isAI ? (<div className="w-12 h-12 rounded-xl bg-purple-400/15 border-2 border-purple-400/50 flex items-center justify-center flex-shrink-0 text-xl">⚖️</div>)
-          : duel.defender ? (<div className="relative flex-shrink-0"><div className={`w-12 h-12 rounded-xl overflow-hidden relative border-2 ${duel.status === 'ending' ? 'border-orange-400' : 'border-blue-400'}`}><div className="absolute inset-0" style={{ background: duel.defender.color }} /><img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" /><div className="absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full bg-green-400 border border-[#0c0c1a]" /></div>{(() => { const chain = CHAINS.find(c => duel.network.includes(c.name)); return chain ? <img src={chain.logo} alt="" className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#0c0c1a]" onError={e => { (e.target as HTMLImageElement).style.display='none'; }} /> : null; })()}</div>)
-          : (<div className="w-12 h-12 rounded-xl border border-dashed border-white/10 flex items-center justify-center flex-shrink-0"><span className="text-white/20 text-lg">?</span></div>)}
-          <div className="flex flex-col gap-0.5 min-w-0 text-right">
-            {isAI ? (<><div className="text-[11px] font-semibold text-purple-400">AI Judge</div><div className="text-[8px] text-white/25 truncate">{ac.treasury}</div><div className="flex items-center gap-1.5 mt-0.5 justify-end"><span className="text-[8px] font-semibold px-1.5 py-0.5 rounded border text-purple-400/70 border-purple-400/20 bg-purple-400/8">{duel.token}</span><span className="text-[17px] font-bold text-purple-400 leading-none">{duel.challenger.amount}</span></div></>)
-            : duel.defender ? (<><div className="text-[11px] font-semibold text-white/85 truncate">{duel.defender.name}</div><div className="text-[8px] text-white/25 font-mono truncate">{duel.defender.addr}</div><div className="flex items-center gap-1.5 mt-0.5 justify-end"><span className="text-[8px] font-semibold px-1.5 py-0.5 rounded border text-blue-400/70 border-blue-400/20 bg-blue-400/8">ETH</span><span className="text-[17px] font-bold text-blue-400 leading-none">{duel.defender.amount}</span></div></>)
-            : (<><div className="text-[11px] font-semibold text-white/25">{t.card.openSlot}</div><div className="text-[8px] text-white/15">{t.card.awaiting}</div><div className="flex items-center gap-1.5 mt-0.5 justify-end"><span className="text-[17px] font-bold text-white/20 leading-none">???</span></div></>)}
-          </div>
+          <span className="text-[10px] text-[#C4B5FD] font-medium">#{(duel as any)._onChainId || duel.id}</span>
+          <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full ${duel.status==='live'?'text-[#F43F5E] bg-[#FFF1F2]':isOpen?'text-[#3B82F6] bg-[#EFF6FF]':isEnding?'text-[#EA580C] bg-[#FFF7ED]':'text-[#059669] bg-[#ECFDF5]'}`}>{t.tags[duel.status]}</span>
         </div>
       </div>
-      <div className="px-3 pb-2"><div className="h-1 bg-white/5 rounded-full overflow-hidden flex"><div className="bg-red-400/65 rounded-l-full transition-all duration-1000" style={{ width: `${duel.supportRed}%` }} /><div className={`rounded-r-full flex-1 ${isAI ? 'bg-purple-400/65' : 'bg-blue-400/65'}`} /></div><div className="flex justify-between mt-1"><span className="text-[8px] font-semibold text-red-400/75">{duel.supportRed}%</span><span className="text-[7px] tracking-widest uppercase text-white/15">社区投票</span><span className={`text-[8px] font-semibold ${isAI ? 'text-purple-400/75' : 'text-blue-400/75'}`}>{100 - duel.supportRed}%</span></div></div>
-      <div className="px-3 pb-1.5"><p className="text-[11px] font-medium text-white/65 leading-snug line-clamp-2">{(duel as any)._claimText || d.claim}</p></div>
-      <div className="px-3 pb-2 flex items-center gap-1.5"><span className="text-[7px] tracking-widest uppercase text-white/15">裁定</span><span className="text-[9px] text-blue-400/50 truncate">{(() => { const rt = (duel as any)._ruleText || d.rulingStd; return rt.length > 40 ? rt.slice(0, 40) + '...' : rt; })()}</span></div>
-      <div className="mx-3 border-t border-white/5" style={{ display: 'grid', gridTemplateColumns: '1fr 1px 1fr 1px 1fr' }}>
-        <div className="py-2 text-center"><div className="text-[6px] tracking-widest uppercase text-white/20 mb-0.5">{isAI ? ac.reward : t.card.watching}</div><div className={`text-[10px] font-bold ${isAI ? 'text-purple-400' : duel.watchers > 100 ? 'text-orange-400' : 'text-white/40'}`}>{isAI ? '$VRD' : `${duel.watchers > 100 ? '🔥 ' : ''}${duel.watchers}`}</div></div>
-        <div className="bg-white/5" />
-        <div className="py-2 text-center"><div className="text-[6px] tracking-widest uppercase text-white/20 mb-0.5">{t.card.expires}</div><div className={`text-[10px] font-bold ${duel.status === 'ending' ? 'text-orange-400' : 'text-white/40'}`}>{duel.expires}</div></div>
-        <div className="bg-white/5" />
-        <div className="py-2 text-center"><div className="text-[6px] tracking-widest uppercase text-white/20 mb-0.5">参与人数</div><div className="text-[10px] font-bold text-white/40">{Math.floor(duel.watchers * 0.3)}</div></div>
+
+      {/* CLAIM — accent bar style */}
+      <div className="mx-4 mt-3 mb-3 rounded-2xl overflow-hidden flex" style={{background:'#F9F8FF',border:'1px solid #EEE9FC'}}>
+        <div className="w-1 flex-shrink-0 rounded-l-2xl" style={{background: isEnding?'#EA580C':isAI?'#7C3AED':'#7C3AED'}} />
+        <div className="px-3 py-2.5 min-w-0">
+          <p className="text-[12px] font-semibold text-[#1A1A2E] leading-snug line-clamp-2">{claimText}</p>
+          {ruleText && <p className="text-[10px] text-[#9CA3AF] mt-1 truncate">⚖️ {ruleText.length>50?ruleText.slice(0,50)+'...':ruleText}</p>}
+        </div>
       </div>
-      <div className="px-3 py-2 flex items-center gap-1.5">
-        <div className="flex">{['#6a1a3a','#1a3a6a','#1a6a3a','#6a5a1a'].map((c,i) => (<div key={i} className="w-4 h-4 rounded-full overflow-hidden border border-[#0c0c1a] -ml-1 first:ml-0 relative"><div className="absolute inset-0" style={{ background: c }} /><img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" /></div>))}</div>
-        <span className="text-[8px] text-white/25">+{duel.watchers} {t.card.watching}</span>
-        <div className="ml-auto flex items-center gap-1">{(() => { const chain = CHAINS.find(c => duel.network.includes(c.name)); return chain ? <img src={chain.logo} alt="" className="w-3.5 h-3.5 rounded-full" onError={e => { (e.target as HTMLImageElement).style.display='none'; }} /> : null; })()}<span className="text-[8px] text-white/25">{duel.network}</span></div>
+
+      {/* PLAYERS */}
+      <div className="px-4 pb-3" style={{display:'grid',gridTemplateColumns:'1fr 44px 1fr',gap:'8px',alignItems:'center'}}>
+        {/* RED */}
+        <div className="rounded-2xl p-3" style={{background:'#FFF1F2',border:'1px solid #FFE4E6'}}>
+          <div className="flex items-center gap-2 mb-2.5">
+            <GradientAvatar addr={duel.challenger.addr || '0xabc'} size={36} />
+            <div className="min-w-0">
+              <div className="text-[11px] font-semibold text-[#1A1A2E] truncate">{duel.challenger.name}</div>
+              <div className="text-[9px] text-[#9CA3AF] mt-0.5">{t.nav.arena === '广场' ? '发起方' : 'Challenger'}</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[22px] font-bold text-[#F43F5E] leading-none">{duel.challenger.amount}</span>
+            <span className="text-[10px] font-semibold text-[#F43F5E] bg-[#FFE4E6] px-2 py-0.5 rounded-lg">{duel.token}</span>
+          </div>
+        </div>
+
+        {/* VS */}
+        <div className="flex flex-col items-center gap-2">
+          <div className="text-[10px] font-bold text-[#7C3AED] bg-[#F5F3FF] px-2 py-1.5 rounded-xl w-full text-center">VS</div>
+          {chain && <img src={chain.logo} alt={chain.name} className="w-5 h-5 rounded-full border border-[#EEE9FC]" onError={e=>{(e.target as HTMLImageElement).style.display='none'}} />}
+        </div>
+
+        {/* BLUE / EMPTY */}
+        {isAI ? (
+          <div className="rounded-2xl p-3 flex flex-col items-center justify-center gap-1.5" style={{background:'#F5F3FF',border:'1px solid #DDD6FE',minHeight:'84px'}}>
+            <div className="w-9 h-9 rounded-full bg-[#EDE9FD] flex items-center justify-center text-xl">⚖️</div>
+            <div className="text-[11px] font-semibold text-[#7C3AED]">AI Judge</div>
+          </div>
+        ) : duel.defender ? (
+          <div className="rounded-2xl p-3" style={{background:'#EFF6FF',border:'1px solid #DBEAFE'}}>
+            <div className="flex items-center gap-2 mb-2.5">
+              <GradientAvatar addr={duel.defender.addr || '0xdef'} size={36} />
+              <div className="min-w-0">
+                <div className="text-[11px] font-semibold text-[#1A1A2E] truncate">{duel.defender.name}</div>
+                <div className="text-[9px] text-[#9CA3AF] mt-0.5">{t.nav.arena === '广场' ? '接受方' : 'Defender'}</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[22px] font-bold text-[#3B82F6] leading-none">{duel.defender.amount}</span>
+              <span className="text-[10px] font-semibold text-[#3B82F6] bg-[#DBEAFE] px-2 py-0.5 rounded-lg">{duel.token}</span>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-2xl p-3 flex flex-col items-center justify-center gap-1.5" style={{background:'#F9F8FF',border:'1.5px dashed #C4B5FD',minHeight:'84px'}}>
+            <div className="text-3xl text-[#C4B5FD]">?</div>
+            <div className="text-[10px] font-medium text-[#C4B5FD]">等待应战</div>
+          </div>
+        )}
       </div>
-      <div className="px-3 pb-3 flex flex-col gap-1.5 mt-auto border-t border-white/5 pt-2">
-        <button onClick={e => { e.stopPropagation(); onEnter(); }} className={`w-full py-2.5 rounded-lg text-[10px] font-semibold border transition-colors ${isAI ? 'text-purple-400 border-purple-400/40 bg-purple-400/10 hover:bg-purple-400/20' : 'text-red-400 border-red-400/40 bg-red-400/10 hover:bg-red-400/20'}`}>{t.card.enterDuel}</button>
-        <button onClick={e => e.stopPropagation()} className="py-1.5 rounded-lg text-[8px] text-white/25 border border-dashed border-white/10 hover:border-white/20 transition-colors">{t.card.share}</button>
+
+      {/* SUPPORT BAR */}
+      <div className="px-4 pb-3">
+        <div className="h-2.5 bg-[#F3F0FB] rounded-full overflow-hidden flex mb-2" style={{position:'relative'}}>
+          <div className="bg-[#F43F5E] rounded-l-full transition-all duration-700" style={{width:`${duel.supportRed}%`}} />
+          <div className={`rounded-r-full flex-1 ${isAI?'bg-[#7C3AED]':'bg-[#3B82F6]'}`} />
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-[11px] font-bold text-[#F43F5E]">{duel.supportRed}%</span>
+          <span className="text-[9px] text-[#C4B5FD] tracking-wide">{t.nav.arena === '广场' ? '社区投票' : 'Community Vote'}</span>
+          <span className={`text-[11px] font-bold ${isAI?'text-[#7C3AED]':'text-[#3B82F6]'}`}>{100-duel.supportRed}%</span>
+        </div>
       </div>
-      <div className="bg-[#080812] border-t border-white/5 px-3 py-1.5 flex justify-between items-center"><span className="text-[6px] tracking-widest uppercase text-white/20">{t.card.expiresIn}</span><span className={`text-[8px] font-mono ${isAI ? 'text-purple-400/50' : duel.status === 'ending' ? 'text-orange-400/70' : 'text-red-400/50'}`}>{timer}</span></div>
+
+      {/* CHIPS ROW */}
+      <div className="px-4 pb-3 flex gap-2 flex-wrap">
+        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-semibold border ${isEnding?'bg-[#FFF7ED] border-[#FED7AA] text-[#EA580C]':'bg-[#F9F8FF] border-[#EEE9FC] text-[#374151]'}`}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          {duel.expires}
+        </div>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-semibold border bg-[#F9F8FF] border-[#EEE9FC] text-[#374151]">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6"/><path d="M8 14h8"/></svg>
+          {totalPot} {duel.token}
+        </div>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-semibold border bg-[#F9F8FF] border-[#EEE9FC] text-[#374151]">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          {duel.watchers}
+        </div>
+      </div>
+
+      {/* FOOTER BUTTONS */}
+      <div className="px-4 pb-4 mt-auto flex gap-2 border-t border-[#F3F0FB] pt-3">
+        <button onClick={e=>{e.stopPropagation();onEnter();}} className="flex-1 py-2.5 rounded-2xl text-[12px] font-bold text-white transition-all hover:opacity-90 active:scale-95" style={{background:isOpen?'#EA580C':'#7C3AED'}}>
+          {isOpen ? (t.nav.arena === '广场' ? '⚔️ 接受挑战' : '⚔️ Accept Challenge') : t.card.enterDuel}
+        </button>
+        <button onClick={e=>e.stopPropagation()} className="px-3 py-2.5 rounded-2xl text-[12px] font-semibold bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE] hover:bg-[#EDE9FD] transition-colors">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        </button>
+      </div>
+
+      {/* NETWORK BAR */}
+      <div className="px-4 py-2 flex justify-between items-center" style={{background:'#F7F5FF',borderTop:'1px solid #EEE9FC'}}>
+        <div className="flex items-center gap-1.5">
+          {chain && <img src={chain.logo} alt="" className="w-3.5 h-3.5 rounded-full" onError={e=>{(e.target as HTMLImageElement).style.display='none'}} />}
+          <span className="text-[9px] font-medium text-[#9CA3AF]">{duel.network}</span>
+        </div>
+        <span className={`text-[9px] font-mono font-semibold ${isEnding?'text-[#EA580C]':'text-[#F43F5E]'}`}>{timer}</span>
+      </div>
     </div>
   );
 }
+
 
 // ─── DuelDetailModal — 五种视角统一入口 ─────────────────────────────────────
 function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typeof LANG['en']; onClose: () => void; onChainDuel?: OnChainDuel }) {
@@ -808,61 +929,61 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
   const payout = betStakeNum > 0 ? ((totalPot+betStakeNum)/supportPool*betStakeNum).toFixed(3) : '—';
 
   const S = { // inline styles shortcuts
-    overlay: {position:'fixed' as const,inset:0,background:'rgba(0,0,0,0.8)',zIndex:50,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'},
-    modal: {background:'#0c0c1a',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'16px',width:'100%',maxWidth:'440px',overflow:'hidden'},
-    head: {background:'#10101e',borderBottom:'1px solid rgba(255,255,255,0.05)',padding:'11px 14px',display:'flex',alignItems:'center',justifyContent:'space-between'},
+    overlay: {position:'fixed' as const,inset:0,background:'rgba(100,80,160,0.25)',zIndex:50,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'},
+    modal: {background:'#fff',border:'1.5px solid #EEE9FC',borderRadius:'20px',width:'100%',maxWidth:'440px',overflow:'hidden',boxShadow:'0 8px 40px rgba(124,58,237,0.10)'},
+    head: {background:'#F7F5FF',borderBottom:'1px solid #EEE9FC',padding:'11px 14px',display:'flex',alignItems:'center',justifyContent:'space-between'},
     body: {padding:'14px',display:'flex',flexDirection:'column' as const,gap:'10px',maxHeight:'76vh',overflowY:'auto' as const},
     foot: {padding:'0 14px 14px',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'},
-    label: {fontSize:'9px',letterSpacing:'0.08em',textTransform:'uppercase' as const,color:'rgba(255,255,255,0.25)',marginBottom:'4px'},
-    claimBox: {background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'10px 12px',fontSize:'12px',color:'rgba(255,255,255,0.85)',lineHeight:1.5},
-    ruleBox: {background:'rgba(107,159,255,0.05)',border:'1px solid rgba(107,159,255,0.2)',borderRadius:'10px',padding:'8px 12px',fontSize:'11px',color:'rgba(107,159,255,0.8)',lineHeight:1.5},
-    sideRed: {background:'rgba(255,107,107,0.05)',border:'1px solid rgba(255,107,107,0.2)',borderRadius:'10px',padding:'8px 10px'},
-    sideBlue: {background:'rgba(107,159,255,0.05)',border:'1px solid rgba(107,159,255,0.2)',borderRadius:'10px',padding:'8px 10px',textAlign:'right' as const},
-    sideDash: {background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'10px',padding:'8px 10px',textAlign:'center' as const},
-    aiBox: {background:'rgba(168,107,255,0.05)',border:'1px solid rgba(168,107,255,0.15)',borderRadius:'10px',padding:'8px 12px',display:'flex',alignItems:'flex-start',gap:'8px'},
+    label: {fontSize:'9px',letterSpacing:'0.08em',textTransform:'uppercase' as const,color:'#9CA3AF',marginBottom:'4px'},
+    claimBox: {background:'#F5F3FF',border:'1px solid #DDD6FE',borderRadius:'12px',padding:'11px 13px',fontSize:'13px',color:'#1A1A2E',lineHeight:1.6,fontWeight:500},
+    ruleBox: {background:'#EFF6FF',border:'1px solid #DBEAFE',borderRadius:'12px',padding:'9px 12px',fontSize:'12px',color:'#1D4ED8',lineHeight:1.5,fontWeight:500},
+    sideRed: {background:'#FFF1F2',border:'1px solid #FFE4E6',borderRadius:'12px',padding:'8px 10px'},
+    sideBlue: {background:'#EFF6FF',border:'1px solid #DBEAFE',borderRadius:'12px',padding:'8px 10px',textAlign:'right' as const},
+    sideDash: {background:'#F9F8FF',border:'1px dashed #C4B5FD',borderRadius:'12px',padding:'8px 10px',textAlign:'center' as const},
+    aiBox: {background:'#F0EDFB',border:'1.5px solid #C4B5FD',borderRadius:'12px',padding:'10px 13px',display:'flex',alignItems:'flex-start',gap:'8px'},
     statRow: {display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'6px'},
-    statBox: {background:'rgba(255,255,255,0.04)',borderRadius:'8px',padding:'6px 8px',textAlign:'center' as const},
-    divider: {height:'0.5px',background:'rgba(255,255,255,0.07)'},
-    phaseBox: {background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:'10px',padding:'8px 12px'},
-    resultWin: {background:'rgba(74,222,128,0.06)',border:'1px solid rgba(74,222,128,0.2)',borderRadius:'10px',padding:'10px 12px',display:'flex',alignItems:'center',gap:'10px'},
-    resultLose: {background:'rgba(255,107,107,0.06)',border:'1px solid rgba(255,107,107,0.2)',borderRadius:'10px',padding:'10px 12px',display:'flex',alignItems:'center',gap:'10px'},
-    disputeNote: {background:'rgba(250,199,117,0.08)',border:'1px solid rgba(250,199,117,0.25)',borderRadius:'10px',padding:'7px 10px',fontSize:'10px',color:'rgba(250,199,117,0.8)',lineHeight:1.5},
+    statBox: {background:'#F9F8FF',borderRadius:'10px',padding:'6px 8px',textAlign:'center' as const,border:'1px solid #EEE9FC'},
+    divider: {height:'0.5px',background:'#EEE9FC'},
+    phaseBox: {background:'#F0EDFB',border:'1.5px solid #C4B5FD',borderRadius:'12px',padding:'10px 13px'},
+    resultWin: {background:'#ECFDF5',border:'1px solid #A7F3D0',borderRadius:'12px',padding:'10px 12px',display:'flex',alignItems:'center',gap:'10px'},
+    resultLose: {background:'#FFF1F2',border:'1px solid #FFE4E6',borderRadius:'12px',padding:'10px 12px',display:'flex',alignItems:'center',gap:'10px'},
+    disputeNote: {background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'12px',padding:'7px 10px',fontSize:'10px',color:'#D97706',lineHeight:1.5},
   };
 
   const Pill = ({ label, color }: { label: string; color: string }) => (
-    <span style={{fontSize:'9px',padding:'2px 7px',borderRadius:'20px',fontWeight:500,border:`1px solid ${color}40`,color,background:`${color}10`}}>{label}</span>
+    <span style={{fontSize:'9px',padding:'2px 7px',borderRadius:'20px',fontWeight:500,border:`1px solid ${color}40`,color,background:`${color}15`}}>{label}</span>
   );
 
-  const statusLabel = isOpen ? t.tags.open : isActive ? t.tags.live : isSettled ? t.tags.settled : t.tags.open;
-  const statusColor = isOpen ? '#6b9fff' : isActive ? '#4ade80' : '#888780';
+  const statusLabel = isOpen ? t.tags.open : isActive ? t.tags.live : isSettled ? (t.tags as any).settled ?? 'Settled' : t.tags.open;
+  const statusColor = isOpen ? '#3B82F6' : isActive ? '#7C3AED' : '#9CA3AF';
 
   const SideCard = ({ side }: { side: 'red'|'blue' }) => {
     const isRed = side === 'red';
     const name = isRed ? duel.challenger.name : (duel.defender?.name ?? '???');
     const amt = isRed ? duel.challenger.amount : (duel.defender?.amount ?? duel.challenger.amount);
     const isMe = (isRed && isMyRed) || (!isRed && isMyBlue);
-    const c = isRed ? '#ff6b6b' : '#6b9fff';
+    const c = isRed ? '#F43F5E' : '#3B82F6';
     return (
       <div style={isRed ? S.sideRed : S.sideBlue}>
-        <div style={{display:'flex',alignItems:'center',gap:'4px',justifyContent: isRed ? 'flex-start' : 'flex-end',marginBottom:'2px'}}>
+        <div style={{display:'flex',alignItems:'center',gap:'4px',justifyContent: isRed ? 'flex-start' : 'flex-end',marginBottom:'3px'}}>
           <span style={{fontSize:'11px',fontWeight:500,color:c}}>{isRed ? '👑' : '⚔️'} {name}</span>
           {isMe && <span style={{fontSize:'9px',padding:'1px 5px',borderRadius:'20px',background:`${c}15`,color:c,border:`1px solid ${c}30`}}>나</span>}
         </div>
-        <div style={{fontSize:'9px',color:`${c}60`,marginBottom:'3px'}}>{isRed ? '발기인' : '수락인'}</div>
-        <div style={{fontSize:'13px',fontWeight:500,color:c}}>{amt} <span style={{fontSize:'9px',color:'rgba(255,255,255,0.3)'}}>{token}</span></div>
+        <div style={{fontSize:'10px',color:`${c}`,marginBottom:'3px',fontWeight:500,opacity:0.75}}>{isRed ? '发起方' : '接受方'}</div>
+        <div style={{fontSize:'15px',fontWeight:700,color:c}}>{amt} <span style={{fontSize:'9px',color:'#9CA3AF'}}>{token}</span></div>
       </div>
     );
   };
 
   const StatBox = ({ label, val, color }: { label: string; val: string; color?: string }) => (
     <div style={S.statBox}>
-      <div style={{fontSize:'8px',letterSpacing:'0.06em',textTransform:'uppercase',color:'rgba(255,255,255,0.25)',marginBottom:'3px'}}>{label}</div>
-      <div style={{fontSize:'12px',fontWeight:500,color:color||'rgba(255,255,255,0.8)'}}>{val}</div>
+      <div style={{fontSize:'8px',letterSpacing:'0.06em',textTransform:'uppercase',color:'#9CA3AF',marginBottom:'3px'}}>{label}</div>
+      <div style={{fontSize:'13px',fontWeight:600,color:color||'#1A1A2E'}}>{val}</div>
     </div>
   );
 
   const Btn = ({ label, color, bg, border, onClick, disabled }: { label:string; color:string; bg:string; border:string; onClick?:()=>void; disabled?:boolean }) => (
-    <button onClick={onClick} disabled={disabled} style={{padding:'9px',borderRadius:'10px',fontSize:'12px',fontWeight:500,color,border:`1px solid ${border}`,background:bg,cursor:disabled?'not-allowed':'pointer',opacity:disabled?0.5:1}}>{label}</button>
+    <button onClick={onClick} disabled={disabled} style={{padding:'10px',borderRadius:'12px',fontSize:'12px',fontWeight:600,color,border:`1.5px solid ${border}`,background:bg,cursor:disabled?'not-allowed':'pointer',opacity:disabled?0.5:1}}>{label}</button>
   );
 
   const BaseInfo = () => (
@@ -875,23 +996,23 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
   const VsRow = () => (
     <div style={{display:'grid',gridTemplateColumns:'1fr auto 1fr',gap:'8px',alignItems:'center'}}>
       <SideCard side="red" />
-      <div style={{fontSize:'10px',color:'rgba(255,255,255,0.2)',textAlign:'center'}}>VS</div>
+      <div style={{fontSize:'10px',color:'#9CA3AF',textAlign:'center',fontWeight:500}}>VS</div>
       {duel.defender ? <SideCard side="blue" /> :
-        <div style={S.sideDash}><div style={{fontSize:'11px',color:'rgba(255,255,255,0.3)'}}>等待应战</div><div style={{fontSize:'20px',color:'rgba(255,255,255,0.2)',lineHeight:1.2}}>?</div></div>
+        <div style={S.sideDash}><div style={{fontSize:'11px',color:'#9CA3AF'}}>等待应战</div><div style={{fontSize:'20px',color:'#C4B5FD',lineHeight:1.2}}>?</div></div>
       }
     </div>
   );
 
   const SupportBar = () => (
     <div>
-      <div style={{height:'4px',background:'rgba(255,255,255,0.05)',borderRadius:'2px',overflow:'hidden',display:'flex'}}>
-        <div style={{background:'rgba(255,107,107,0.8)',width:`${duel.supportRed}%`,transition:'width 0.5s'}} />
-        <div style={{background:'rgba(107,159,255,0.8)',flex:1}} />
+      <div style={{height:'5px',background:'#F3F0FB',borderRadius:'3px',overflow:'hidden',display:'flex'}}>
+        <div style={{background:'#F43F5E',width:`${duel.supportRed}%`,transition:'width 0.5s'}} />
+        <div style={{background:'#3B82F6',flex:1}} />
       </div>
       <div style={{display:'flex',justifyContent:'space-between',marginTop:'3px'}}>
-        <span style={{fontSize:'10px',fontWeight:500,color:'rgba(255,107,107,0.8)'}}>{duel.supportRed}%</span>
-        <span style={{fontSize:'9px',color:'rgba(255,255,255,0.2)'}}>社区支持率</span>
-        <span style={{fontSize:'10px',fontWeight:500,color:'rgba(107,159,255,0.8)'}}>{100-duel.supportRed}%</span>
+        <span style={{fontSize:'10px',fontWeight:500,color:'#F43F5E'}}>{duel.supportRed}%</span>
+        <span style={{fontSize:'9px',color:'#9CA3AF'}}>社区支持率</span>
+        <span style={{fontSize:'10px',fontWeight:500,color:'#3B82F6'}}>{100-duel.supportRed}%</span>
       </div>
     </div>
   );
@@ -901,18 +1022,18 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
     <>
       <BaseInfo />
       <VsRow />
-      <div style={S.aiBox}><span style={{fontSize:'16px',flexShrink:0}}>⚖️</span><p style={{fontSize:'10px',color:'rgba(168,107,255,0.8)',lineHeight:1.5,margin:0}}>{t.detail.judgeNote}</p></div>
+      <div style={S.aiBox}><span style={{fontSize:'16px',flexShrink:0}}>⚖️</span><p style={{fontSize:'10px',color:'#7C3AED',lineHeight:1.5,margin:0}}>{t.detail.judgeNote}</p></div>
       <div style={S.statRow}>
-        <StatBox label="到期" val={duel.expires} color="rgba(250,199,117,0.9)" />
+        <StatBox label="到期" val={duel.expires} color="#D97706" />
         <StatBox label="需押注" val={`${wager} ${token}`} />
         <StatBox label="网络" val={duel.network} />
       </div>
       <div style={S.divider} />
       <div style={S.foot}>
-        <Btn label="取消" color="rgba(255,255,255,0.4)" bg="transparent" border="rgba(255,255,255,0.15)" onClick={onClose} />
+        <Btn label="取消" color="#9CA3AF" bg="transparent" border="#E5E7EB" onClick={onClose} />
         <Btn
           label={!address ? '🔗 连接钱包后参与' : isWrongNetwork ? '⚠️ 切换到 BNB Testnet' : acceptSuccess ? '✓ 已接受!' : acceptConfirming ? '确认中...' : acceptPending ? '等待签名...' : '⚔️ 接受挑战'}
-          color={isWrongNetwork ? 'rgba(250,199,117,0.9)' : '#ff6b6b'} bg={isWrongNetwork ? 'rgba(250,199,117,0.06)' : 'rgba(255,107,107,0.1)'} border={isWrongNetwork ? 'rgba(250,199,117,0.4)' : 'rgba(255,107,107,0.4)'}
+          color={isWrongNetwork ? '#D97706' : '#fff'} bg={isWrongNetwork ? '#FFF7ED' : '#7C3AED'} border={isWrongNetwork ? '#FDE68A' : '#7C3AED'}
           onClick={async () => {
             const chainDuelId = onChainDuel?.id ?? (duel as any)._onChainId;
             const wagerBigInt = onChainDuel?.wager ?? (duel as any)._wager;
@@ -959,7 +1080,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
       <div style={S.divider} />
       <div style={S.foot}>
         <Btn label={cancelPending ? '等待签名...' : cancelSuccess ? '✓ 已取消' : '取消对决'} color="rgba(255,107,107,0.6)" bg="rgba(255,107,107,0.06)" border="rgba(255,107,107,0.2)" onClick={() => onChainDuel && cancel(onChainDuel.id)} disabled={cancelPending} />
-        <Btn label="复制分享链接" color="rgba(255,255,255,0.5)" bg="rgba(255,255,255,0.05)" border="rgba(255,255,255,0.15)"
+        <Btn label="复制分享链接" color="#9CA3AF" bg="transparent" border="#E5E7EB"
           onClick={() => {
             const url = `${window.location.origin}${window.location.pathname}?duel=${onChainDuel?.id}`;
             navigator.clipboard?.writeText(url);
@@ -981,8 +1102,8 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
         <StatBox label="观战" val={String(duel.watchers)} />
       </div>
       <div style={S.phaseBox}>
-        <div style={{fontSize:'11px',fontWeight:500,color:'rgba(255,255,255,0.7)',marginBottom:'3px'}}>⏳ 对决进行中 — 到期后可操作</div>
-        <div style={{fontSize:'10px',color:'rgba(255,255,255,0.3)',lineHeight:1.5}}>到期后可提交证据申请裁定，或与对方达成共识直接结算。</div>
+        <div style={{fontSize:'11px',fontWeight:500,color:'#1A1A2E',marginBottom:'3px',fontWeight:600}}>⏳ 对决进行中 — 到期后可操作</div>
+        <div style={{fontSize:'10px',color:'#374151',lineHeight:1.5}}>到期后可提交证据申请裁定，或与对方达成共识直接结算。</div>
       </div>
       {isJudge && <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px'}}>
         <Btn label={settlePending ? '裁定中...' : '⚖️ 裁红方胜'} color="rgba(255,107,107,0.9)" bg="rgba(255,107,107,0.06)" border="rgba(255,107,107,0.3)" onClick={() => onChainDuel && settle(onChainDuel.id, 1)} disabled={settlePending} />
@@ -995,7 +1116,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
           <Btn label="提交证据" color="rgba(107,159,255,0.9)" bg="rgba(107,159,255,0.06)" border="rgba(107,159,255,0.3)" disabled={true} />
           <Btn label="申请裁定" color="rgba(250,199,117,0.9)" bg="rgba(250,199,117,0.06)" border="rgba(250,199,117,0.3)" disabled={true} />
         </div>
-        <Btn label="复制分享链接" color="rgba(255,255,255,0.5)" bg="rgba(255,255,255,0.05)" border="rgba(255,255,255,0.15)"
+        <Btn label="复制分享链接" color="#9CA3AF" bg="transparent" border="#E5E7EB"
           onClick={() => {
             const url = `${window.location.origin}${window.location.pathname}?duel=${onChainDuel?.id}`;
             navigator.clipboard?.writeText(url);
@@ -1017,7 +1138,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
         <StatBox label="观战" val={String(duel.watchers)} />
       </div>
       <div style={S.divider} />
-      <div style={{fontSize:'9px',letterSpacing:'0.08em',textTransform:'uppercase' as const,color:'rgba(255,255,255,0.25)',marginBottom:'6px'}}>选择支持方</div>
+      <div style={{fontSize:'9px',letterSpacing:'0.08em',textTransform:'uppercase' as const,color:'#374151',marginBottom:'6px'}}>选择支持方</div>
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'}}>
         {([1,2] as const).map(side => {
           const isRed = side === 1;
@@ -1034,14 +1155,14 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
       </div>
       <div style={{display:'flex',gap:'8px'}}>
         <input type="number" min="0" step="0.001" value={betStake} onChange={e=>setBetStake(e.target.value)} placeholder="0.00"
-          style={{flex:1,background:'#10101e',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'10px',padding:'9px 12px',fontSize:'13px',color:'rgba(255,255,255,0.8)',outline:'none'}} />
-        <div style={{padding:'9px 12px',borderRadius:'10px',fontSize:'12px',fontWeight:600,color:'#ff6b6b',border:'1px solid rgba(255,107,107,0.3)',background:'rgba(255,107,107,0.08)',display:'flex',alignItems:'center'}}>{token}</div>
+          style={{flex:1,background:'#F9F8FF',border:'1px solid #EEE9FC',borderRadius:'10px',padding:'9px 12px',fontSize:'13px',color:'#1A1A2E',outline:'none'}} />
+        <div style={{padding:'9px 12px',borderRadius:'10px',fontSize:'12px',fontWeight:600,color:'#F43F5E',border:'1px solid rgba(255,107,107,0.3)',background:'rgba(255,107,107,0.08)',display:'flex',alignItems:'center'}}>{token}</div>
       </div>
       {betStakeNum > 0 && (
         <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'9px 12px',display:'grid',gridTemplateColumns:'1fr 1px 1fr',gap:'10px',alignItems:'center'}}>
-          <div style={{textAlign:'center'}}><div style={{fontSize:'8px',color:'rgba(255,255,255,0.25)',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'3px'}}>预计赔率</div><div style={{fontSize:'14px',fontWeight:500,color:'rgba(255,255,255,0.7)'}}>{odds}x</div></div>
+          <div style={{textAlign:'center'}}><div style={{fontSize:'8px',color:'#9CA3AF',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'3px'}}>预计赔率</div><div style={{fontSize:'14px',fontWeight:500,color:'rgba(255,255,255,0.7)'}}>{odds}x</div></div>
           <div style={{background:'rgba(255,255,255,0.08)',height:'24px'}} />
-          <div style={{textAlign:'center'}}><div style={{fontSize:'8px',color:'rgba(255,255,255,0.25)',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'3px'}}>赢了可得</div><div style={{fontSize:'14px',fontWeight:500,color:'#ff6b6b'}}>{payout} {token}</div></div>
+          <div style={{textAlign:'center'}}><div style={{fontSize:'8px',color:'#9CA3AF',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'3px'}}>赢了可得</div><div style={{fontSize:'14px',fontWeight:500,color:'#F43F5E'}}>{payout} {token}</div></div>
         </div>
       )}
       <div style={S.foot}>
@@ -1112,9 +1233,9 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
           <div style={{display:'flex',gap:'6px',alignItems:'center'}}>
             <span className={`text-[8px] tracking-widest uppercase px-1.5 py-0.5 rounded border ${typeStyle[duel.type]}`}>{t.tags[duel.type]}</span>
             <Pill label={statusLabel} color={statusColor} />
-            {isParticipant && <Pill label={isMyRed ? '红方' : '蓝方'} color={isMyRed ? '#ff6b6b' : '#6b9fff'} />}
+            {isParticipant && <Pill label={isMyRed ? '红方' : '蓝方'} color={isMyRed ? '#F43F5E' : '#3B82F6'} />}
           </div>
-          <button onClick={onClose} style={{color:'rgba(255,255,255,0.3)',fontSize:'20px',lineHeight:1,background:'none',border:'none',cursor:'pointer'}}>×</button>
+          <button onClick={onClose} style={{color:'#9CA3AF',fontSize:'20px',lineHeight:1,background:'none',border:'none',cursor:'pointer'}}>×</button>
         </div>
         <div style={S.body}>{renderBody()}</div>
       </div>
@@ -1139,144 +1260,115 @@ function MyDuelCard({ record, t, onClaim, claimingId, fullWidth = false, onViewD
   const isLost = record.result === 'lost';
   const isClaimable = record.tab === 'claimable';
   const isActive = record.tab === 'active';
-  const sideColor = record.side === 'red' ? 'text-red-400' : 'text-blue-400';
-  const sideBg = record.side === 'red' ? 'bg-red-400/10 border-red-400/20' : 'bg-blue-400/10 border-blue-400/20';
-
-  const cardBorder = isClaimable ? 'border-yellow-400/30' : isWon ? 'border-green-400/20' : isLost ? 'border-white/8' : 'border-white/10';
-  const cardBg = isClaimable ? 'bg-[#0c0c1a]' : 'bg-[#0c0c1a]';
+  const chain = CHAINS.find(c => c.name === record.network);
+  const sideIsRed = record.side === 'red';
+  const initials = (name: string) => name.replace('0x','').slice(0,2).toUpperCase();
+  const borderColor = isClaimable ? '#FDE68A' : isWon ? '#A7F3D0' : '#EEE9FC';
 
   return (
-    <div className={`${cardBg} border ${cardBorder} rounded-xl overflow-hidden transition-all`}>
-      {/* TOP STRIP */}
+    <div className="bg-white rounded-3xl overflow-hidden transition-all" style={{border:`1.5px solid ${borderColor}`}}>
+      {/* CLAIMABLE STRIP */}
       {isClaimable && (
-        <div className="bg-yellow-400/10 border-b border-yellow-400/20 px-3 py-1 flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse flex-shrink-0" />
-          <span className="text-[8px] font-semibold text-yellow-400 tracking-widest uppercase">Reward Ready · Claim within {record.disputeHoursLeft}h</span>
+        <div className="bg-[#FFFBEB] border-b border-[#FDE68A] px-4 py-2 flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-[#D97706] animate-pulse" />
+          <span className="text-[10px] font-semibold text-[#D97706]">奖励已就绪 · {record.disputeHoursLeft}h 内领取</span>
         </div>
       )}
-
-      <div className={`p-3 ${fullWidth ? 'grid grid-cols-2 gap-4' : 'flex flex-col gap-2.5'}`}>
-        {/* LEFT / TOP SECTION */}
-        <div className="flex flex-col gap-2.5 min-w-0">
-          {/* META + CLAIM TEXT */}
-          <div>
-            <div className="flex items-center gap-1.5 mb-1">
-              <span className="text-[7px] tracking-widest uppercase text-white/20 font-mono">#{record.id}</span>
-              <span className="text-[7px] text-white/15">·</span>
-              {(() => { const chain = CHAINS.find(c => c.name === record.network); return chain ? <img src={chain.logo} alt="" className="w-2.5 h-2.5 rounded-full flex-shrink-0" onError={e => { (e.target as HTMLImageElement).style.display='none'; }} /> : null; })()}
-              <span className="text-[7px] text-white/20">{record.network}</span>
-              <div className="ml-auto">
-                {record.result ? (
-                  <span className={`text-[8px] font-bold px-2 py-0.5 rounded border ${isWon ? 'text-green-400 border-green-400/25 bg-green-400/8' : isLost ? 'text-red-400/60 border-red-400/15 bg-red-400/5' : 'text-white/30 border-white/10'}`}>
-                    {m.results[record.result]}
-                  </span>
-                ) : isActive ? (
-                  <span className="text-[8px] font-semibold text-blue-400 border border-blue-400/20 bg-blue-400/8 rounded px-2 py-0.5">⏳ {record.expires}</span>
-                ) : null}
-              </div>
-            </div>
-            <p className="text-[11px] font-semibold text-white/80 leading-snug line-clamp-2">{record.claim}</p>
+      <div className="p-4">
+        {/* HEADER */}
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-[#C4B5FD] font-medium font-mono">#{record.id}</span>
+            {chain && <img src={chain.logo} alt="" className="w-3.5 h-3.5 rounded-full" onError={e=>{(e.target as HTMLImageElement).style.display='none'}} />}
+            <span className="text-[10px] text-[#9CA3AF]">{record.network}</span>
           </div>
-
-          {/* FIGHTERS */}
-          <div className="flex items-center gap-2 bg-white/3 rounded-lg p-2 border border-white/5">
-            <div className="flex items-center gap-1.5 flex-1 min-w-0">
-              <div className="w-6 h-6 rounded-md overflow-hidden relative border border-red-400 flex-shrink-0">
-                <div className="absolute inset-0" style={{ background: record.challengerColor }} />
-                <img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-[7px] text-white/25">Your side</div>
-                <div className={`text-[9px] font-semibold ${record.side === 'red' ? 'text-red-400' : 'text-blue-400'}`}>
-                  {record.side === 'red' ? m.sides.red : m.sides.blue}
-                </div>
-              </div>
-            </div>
-            <div className="text-center flex-shrink-0">
-              <div className="text-[7px] text-white/15">VS</div>
-              <div className="text-[9px] font-bold text-white/30">{record.totalPot}<span className="text-[7px] text-white/15 ml-0.5">{record.token}</span></div>
-            </div>
-            <div className="flex items-center gap-1.5 flex-1 min-w-0 flex-row-reverse">
-              <div className="w-6 h-6 rounded-md overflow-hidden relative border border-blue-400 flex-shrink-0">
-                <div className="absolute inset-0" style={{ background: record.opponentColor }} />
-                <img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" />
-              </div>
-              <div className="min-w-0 text-right">
-                <div className="text-[7px] text-white/25">Opponent</div>
-                <div className="text-[9px] font-semibold text-white/55 truncate">{record.opponentName}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* STATS ROW */}
-          <div className="grid grid-cols-3 gap-1.5">
-            <div className="bg-white/3 rounded-lg p-2 text-center border border-white/5">
-              <div className="text-[6px] tracking-widest uppercase text-white/20 mb-0.5">{m.labels.yourStake}</div>
-              <div className="text-[10px] font-bold text-white/65">{record.stake} <span className="text-[7px] text-white/25">{record.token}</span></div>
-            </div>
-            <div className={`rounded-lg p-2 text-center border ${sideBg}`}>
-              <div className="text-[6px] tracking-widest uppercase text-white/20 mb-0.5">{m.labels.side}</div>
-              <div className={`text-[10px] font-bold ${sideColor}`}>{record.side === 'red' ? m.sides.red : m.sides.blue}</div>
-            </div>
-            <div className="bg-white/3 rounded-lg p-2 text-center border border-white/5">
-              <div className="text-[6px] tracking-widest uppercase text-white/20 mb-0.5">{m.labels.payout}</div>
-              <div className={`text-[10px] font-bold ${isWon || isClaimable ? 'text-green-400' : isLost ? 'text-red-400/40' : 'text-white/30'}`}>
-                {isClaimable || isWon ? `${record.payout}` : '—'}
-                {(isClaimable || isWon) && <span className="text-[7px] text-white/25 ml-0.5">{record.token}</span>}
-              </div>
-            </div>
-          </div>
-
-          {/* ACTION BUTTON (non-claimable) */}
-          {!isClaimable && (
-            <button onClick={onViewDuel} className="w-full py-1.5 rounded-lg text-[9px] font-semibold text-white/25 border border-white/8 hover:border-white/18 transition-colors cursor-pointer">
-              {m.actions.viewDuel}
-            </button>
-          )}
+          {record.result ? (
+            <span className={`text-[11px] font-semibold px-3 py-1 rounded-full ${isWon ? 'bg-[#ECFDF5] text-[#059669]' : isLost ? 'bg-[#FFF1F2] text-[#F43F5E]' : 'bg-[#F9F8FF] text-[#9CA3AF]'}`}>{m.results[record.result]}</span>
+          ) : isActive ? (
+            <span className="text-[11px] font-semibold px-3 py-1 rounded-full bg-[#EFF6FF] text-[#3B82F6]">⏳ {record.expires}</span>
+          ) : null}
         </div>
-
-        {/* RIGHT SECTION (claimable only, visible in both layouts) */}
-        {isClaimable && (
-          <div className="flex flex-col gap-2.5 min-w-0">
-            {/* AI ANALYSIS */}
-            {record.aiAnalysis && (
-              <div className="bg-purple-400/5 border border-purple-400/15 rounded-lg p-2.5 flex items-start gap-2 flex-1">
-                <span className="text-xs flex-shrink-0 mt-0.5">⚖️</span>
-                <div>
-                  <div className="text-[7px] tracking-widest uppercase text-purple-400/40 mb-1">AI Judge Analysis</div>
-                  <p className="text-[9px] text-purple-300/60 leading-relaxed italic">"{record.aiAnalysis}"</p>
-                </div>
-              </div>
-            )}
-            {/* DISPUTE WINDOW */}
-            {record.disputeHoursLeft !== undefined && (
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-[7px] text-white/25">{m.labels.disputeWindow}</span>
-                  <span className="text-[7px] text-orange-400">{record.disputeHoursLeft}h remaining</span>
-                </div>
-                <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                  <div className="h-full bg-orange-400/60 rounded-full" style={{ width: `${(record.disputeHoursLeft / 48) * 100}%` }} />
-                </div>
-                <div className="text-[7px] text-white/15 mt-1">{m.labels.claimBy}: {record.claimBy}</div>
-              </div>
-            )}
-            {/* CLAIM ACTIONS */}
-            <div className="flex gap-1.5 mt-auto">
-              <button onClick={() => onClaim(record.id)}
-                className={`flex-1 py-2 rounded-lg text-[10px] font-semibold border transition-all ${isClaiming ? 'text-green-400 border-green-400/40 bg-green-400/10 cursor-not-allowed' : 'text-yellow-400 border-yellow-400/40 bg-yellow-400/10 hover:bg-yellow-400/18'}`}>
-                {isClaiming ? '✓ Claimed!' : m.actions.claim}
-              </button>
-              <button className="px-3 py-2 rounded-lg text-[9px] font-semibold text-red-400/50 border border-red-400/15 hover:bg-red-400/8 transition-colors flex-shrink-0">
-                {m.actions.dispute}
-              </button>
+        {/* CLAIM TEXT */}
+        <p className="text-[13px] font-semibold text-[#1A1A2E] leading-snug mb-3 line-clamp-2">{record.claim}</p>
+        {/* PLAYERS ROW */}
+        <div className="grid gap-2 mb-3" style={{gridTemplateColumns:'1fr auto 1fr'}}>
+          {/* MY SIDE */}
+          <div className={`rounded-2xl p-3 ${sideIsRed ? 'bg-[#FFF1F2] border border-[#FFE4E6]' : 'bg-[#EFF6FF] border border-[#DBEAFE]'}`}>
+            <div className="text-[9px] text-[#9CA3AF] mb-2">{sideIsRed ? '👑 我的立场' : '⚔️ 我的立场'}</div>
+            <div className="flex items-center gap-2 mb-2">
+              <BeamAvatar addr={record.challengerColor || '0xB008'} size={32} />
+              <div className="min-w-0"><div className="text-[10px] font-semibold text-[#1A1A2E] truncate">{record.challengerColor ? '나' : 'Me'}</div><div className="text-[9px] text-[#9CA3AF]">{sideIsRed ? 'Red' : 'Blue'} side</div></div>
+            </div>
+            <div className={`text-[18px] font-semibold ${sideIsRed ? 'text-[#F43F5E]' : 'text-[#3B82F6]'}`}>{record.stake} <span className="text-[10px]">{record.token}</span></div>
+          </div>
+          {/* POT CENTER */}
+          <div className="flex flex-col items-center justify-center gap-1">
+            <div className="text-[9px] text-[#9CA3AF]">总奖池</div>
+            <div className="text-[16px] font-semibold text-[#7C3AED]">{record.totalPot}</div>
+            <div className="text-[9px] text-[#C4B5FD]">{record.token}</div>
+          </div>
+          {/* OPPONENT */}
+          <div className={`rounded-2xl p-3 ${sideIsRed ? 'bg-[#EFF6FF] border border-[#DBEAFE]' : 'bg-[#FFF1F2] border border-[#FFE4E6]'}`}>
+            <div className="text-[9px] text-[#9CA3AF] mb-2">⚔️ 对手</div>
+            <div className="flex items-center gap-2 mb-2">
+              <BeamAvatar addr={record.opponentColor || '0xabc123'} size={32} />
+              <div className="min-w-0"><div className="text-[10px] font-semibold text-[#1A1A2E] truncate">{record.opponentName}</div><div className="text-[9px] text-[#9CA3AF]">{sideIsRed ? 'Blue' : 'Red'} side</div></div>
+            </div>
+            <div className={`text-[18px] font-semibold ${sideIsRed ? 'text-[#3B82F6]' : 'text-[#F43F5E]'}`}>{record.stake} <span className="text-[10px]">{record.token}</span></div>
+          </div>
+        </div>
+        {/* STATS ROW */}
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          <div className="bg-[#F9F8FF] rounded-2xl p-2.5 text-center border border-[#EEE9FC]">
+            <div className="text-[9px] text-[#9CA3AF] mb-1">{m.labels.yourStake}</div>
+            <div className="text-[12px] font-semibold text-[#1A1A2E]">{record.stake} <span className="text-[9px] text-[#C4B5FD]">{record.token}</span></div>
+          </div>
+          <div className="bg-[#F9F8FF] rounded-2xl p-2.5 text-center border border-[#EEE9FC]">
+            <div className="text-[9px] text-[#9CA3AF] mb-1">{m.labels.side}</div>
+            <div className={`text-[12px] font-semibold ${sideIsRed ? 'text-[#F43F5E]' : 'text-[#3B82F6]'}`}>{sideIsRed ? m.sides.red : m.sides.blue}</div>
+          </div>
+          <div className="bg-[#F9F8FF] rounded-2xl p-2.5 text-center border border-[#EEE9FC]">
+            <div className="text-[9px] text-[#9CA3AF] mb-1">{m.labels.payout}</div>
+            <div className={`text-[12px] font-semibold ${isWon || isClaimable ? 'text-[#059669]' : isLost ? 'text-[#F43F5E]' : 'text-[#9CA3AF]'}`}>{isClaimable || isWon ? `${record.payout}` : '—'}{(isClaimable || isWon) && <span className="text-[9px] ml-0.5 text-[#C4B5FD]">{record.token}</span>}</div>
+          </div>
+        </div>
+        {/* AI ANALYSIS */}
+        {(isClaimable || isWon || isLost) && record.aiAnalysis && (
+          <div className="bg-[#F5F3FF] rounded-2xl p-3 mb-3 flex gap-2.5 items-start border border-[#DDD6FE]">
+            <span className="text-lg flex-shrink-0 mt-0.5">⚖️</span>
+            <div>
+              <div className="text-[9px] font-semibold text-[#7C3AED] uppercase tracking-wide mb-1">AI Judge 裁定</div>
+              <p className="text-[11px] text-[#6D28D9] leading-relaxed italic">"{record.aiAnalysis}"</p>
             </div>
           </div>
+        )}
+        {/* DISPUTE WINDOW */}
+        {isClaimable && record.disputeHoursLeft !== undefined && (
+          <div className="mb-3">
+            <div className="flex justify-between mb-1.5">
+              <span className="text-[10px] text-[#9CA3AF]">{m.labels.disputeWindow}</span>
+              <span className="text-[10px] font-medium text-[#D97706]">{record.disputeHoursLeft}h 剩余</span>
+            </div>
+            <div className="h-1.5 bg-[#F3F0FB] rounded-full overflow-hidden">
+              <div className="h-full bg-[#D97706] rounded-full" style={{width:`${(record.disputeHoursLeft/48)*100}%`}} />
+            </div>
+            <div className="text-[9px] text-[#9CA3AF] mt-1">{m.labels.claimBy}: {record.claimBy}</div>
+          </div>
+        )}
+        {/* ACTIONS */}
+        {isClaimable ? (
+          <div className="flex gap-2">
+            <button onClick={()=>onClaim(record.id)} className={`flex-1 py-2.5 rounded-2xl text-[11px] font-semibold transition-all ${isClaiming ? 'bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]' : 'text-white hover:opacity-90'}`} style={isClaiming ? {} : {background:'#D97706'}}>{isClaiming ? '✓ 已领取!' : m.actions.claim}</button>
+            <button className="px-3 py-2.5 rounded-2xl text-[11px] font-semibold text-[#F43F5E] border border-[#FFE4E6] bg-[#FFF1F2] hover:bg-[#FFE4E6] transition-colors flex-shrink-0">{m.actions.dispute}</button>
+          </div>
+        ) : (
+          <button onClick={onViewDuel} className="w-full py-2.5 rounded-2xl text-[11px] font-semibold text-[#7C3AED] border border-[#DDD6FE] bg-[#F5F3FF] hover:bg-[#EDE9FD] transition-colors">{m.actions.viewDuel}</button>
         )}
       </div>
     </div>
   );
 }
+
 
 // ─── MY DUELS PAGE (sidebar + grid) ──────────────────────────────────────────
 function MyDuelsPage({ t, onGoToArena, onChainDuels, chainId, onViewDuel }: { t: typeof LANG['en']; onGoToArena: () => void; onChainDuels: OnChainDuel[]; chainId: number; onViewDuel: (d: OnChainDuel) => void }) {
@@ -1314,41 +1406,38 @@ function MyDuelsPage({ t, onGoToArena, onChainDuels, chainId, onViewDuel }: { t:
   const handleClaim = (id: number) => { claim(id); };
 
   const TAB_CONFIG = [
-    { key: 'active' as MyDuelTab, icon: '⚔️', activeStyle: 'bg-red-400/15 text-red-400 border-red-400/30', badgeStyle: 'bg-red-400 text-black' },
-    { key: 'claimable' as MyDuelTab, icon: '💰', activeStyle: 'bg-yellow-400/15 text-yellow-400 border-yellow-400/30', badgeStyle: 'bg-yellow-400 text-black' },
-    { key: 'history' as MyDuelTab, icon: '📜', activeStyle: 'bg-white/8 text-white/70 border-white/15', badgeStyle: 'bg-white/20 text-white' },
+    { key: 'active' as MyDuelTab, icon: '⚔️', activeStyle: 'bg-[#F5F3FF] text-[#7C3AED] border-[#DDD6FE]', badgeStyle: 'bg-[#7C3AED] text-white' },
+    { key: 'claimable' as MyDuelTab, icon: '💰', activeStyle: 'bg-[#FFFBEB] text-[#D97706] border-[#FDE68A]', badgeStyle: 'bg-[#D97706] text-white' },
+    { key: 'history' as MyDuelTab, icon: '📜', activeStyle: 'bg-[#F9F8FF] text-[#374151] border-[#EEE9FC]', badgeStyle: 'bg-[#EEE9FC] text-[#374151]' },
   ];
 
   return (
-    <div className="flex" style={{ minHeight: 'calc(100vh - 52px)' }}>
+    <div className="flex bg-[#F7F5FF]" style={{ minHeight: 'calc(100vh - 56px)' }}>
       {/* ── SIDEBAR ── */}
-      <div className="w-56 flex-shrink-0 border-r border-white/8 bg-[#09091a] flex flex-col" style={{ minHeight: 'calc(100vh - 52px)' }}>
+      <div className="w-56 flex-shrink-0 border-r border-[#EEE9FC] bg-white flex flex-col" style={{ minHeight: 'calc(100vh - 52px)' }}>
         {/* WALLET */}
-        <div className="px-4 py-4 border-b border-white/8">
+        <div className="px-4 py-4 border-b border-[#EEE9FC]">
           <div className="flex items-center gap-2.5 mb-3">
-            <div className="w-8 h-8 rounded-xl overflow-hidden relative border border-red-400/40 flex-shrink-0">
-              <div className="absolute inset-0 bg-red-400/20" />
-              <img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" />
-            </div>
+            <BeamAvatar addr={address || '0xabc'} size={36} square />
             <div className="min-w-0">
-              <div className="text-[11px] font-semibold text-white/70">My Account</div>
-              <div className="text-[9px] text-white/25 font-mono">{address ? shortAddr(address) : "—"}</div>
+              <div className="text-[11px] font-semibold text-[#374151]">My Account</div>
+              <div className="text-[9px] text-[#9CA3AF] font-mono">{address ? shortAddr(address) : "—"}</div>
             </div>
           </div>
         </div>
 
         {/* OVERVIEW STATS */}
-        <div className="px-3 py-3 border-b border-white/8">
-          <div className="text-[8px] tracking-widest uppercase text-white/20 mb-2 px-1">Overview</div>
+        <div className="px-3 py-3 border-b border-[#EEE9FC]">
+          <div className="text-[8px] tracking-widest uppercase text-[#9CA3AF] mb-2 px-1">Overview</div>
           <div className="flex flex-col gap-1.5">
             {[
-              { label: 'Total Staked', value: totalStaked > 0 ? `${totalStaked.toFixed(3)} ${token}` : '—', color: 'text-white/60' },
+              { label: 'Total Staked', value: totalStaked > 0 ? `${totalStaked.toFixed(3)} ${token}` : '—', color: 'text-[#374151]' },
               { label: 'Total Won', value: wonDuels.length > 0 ? `${wonDuels.reduce((a,d)=>a+parseFloat(fmtEther(d.wager*2n)),0).toFixed(3)} ${token}` : '—', color: 'text-green-400' },
               { label: 'Win Rate', value: myDuels.filter(d=>d.status===DuelStatus.Settled).length > 0 ? `${winRate}%` : '—', color: 'text-yellow-400' },
               { label: 'Duels Played', value: String(myDuels.length), color: 'text-white/50' },
             ].map(s => (
-              <div key={s.label} className="flex items-center justify-between px-2.5 py-1.5 bg-[#0c0c1a] rounded-lg border border-white/5">
-                <span className="text-[9px] text-white/35">{s.label}</span>
+              <div key={s.label} className="flex items-center justify-between px-2.5 py-1.5 bg-[#F9F8FF] rounded-lg border border-[#EEE9FC]">
+                <span className="text-[9px] text-[#9CA3AF]">{s.label}</span>
                 <span className={`text-[10px] font-semibold ${s.color}`}>{s.value}</span>
               </div>
             ))}
@@ -1357,14 +1446,14 @@ function MyDuelsPage({ t, onGoToArena, onChainDuels, chainId, onViewDuel }: { t:
 
         {/* TAB NAV */}
         <div className="px-3 py-3 flex-1">
-          <div className="text-[8px] tracking-widest uppercase text-white/20 mb-2 px-1">Filter</div>
+          <div className="text-[8px] tracking-widest uppercase text-[#9CA3AF] mb-2 px-1">Filter</div>
           <div className="flex flex-col gap-1">
             {TAB_CONFIG.map(({ key, icon, activeStyle }) => (
               <button key={key} onClick={() => setActiveTab(key)}
-                className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-[11px] font-semibold border transition-all ${activeTab === key ? activeStyle + ' border' : 'text-white/30 border-transparent hover:text-white/55 hover:bg-white/3'}`}>
+                className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-[11px] font-semibold border transition-all ${activeTab === key ? activeStyle + ' border' : 'text-[#9CA3AF] border-transparent hover:text-[#7C3AED] hover:bg-[#F5F3FF]'}`}>
                 <span>{icon} {m.tabs[key]}</span>
                 {tabCounts[key] > 0 && (
-                  <span className={`text-[8px] rounded-full w-4 h-4 flex items-center justify-center font-bold ${activeTab === key ? TAB_CONFIG.find(c => c.key === key)!.badgeStyle : 'bg-white/10 text-white/35'}`}>
+                  <span className={`text-[8px] rounded-full w-4 h-4 flex items-center justify-center font-bold ${activeTab === key ? TAB_CONFIG.find(c => c.key === key)!.badgeStyle : 'bg-[#EEE9FC] text-[#9CA3AF]'}`}>
                     {tabCounts[key]}
                   </span>
                 )}
@@ -1375,8 +1464,8 @@ function MyDuelsPage({ t, onGoToArena, onChainDuels, chainId, onViewDuel }: { t:
 
         {/* BOTTOM NOTICE */}
         <div className="px-3 pb-4">
-          <div className="bg-[#0c0c1a] border border-white/8 rounded-lg p-2.5">
-            <div className="text-[8px] text-white/20 leading-relaxed">
+          <div className="bg-[#F9F8FF] border border-[#EEE9FC] rounded-lg p-2.5">
+            <div className="text-[8px] text-[#9CA3AF] leading-relaxed">
               🛡 Dispute window: 48h after settlement. Disputes cost 5% of stake.
             </div>
           </div>
@@ -1384,26 +1473,26 @@ function MyDuelsPage({ t, onGoToArena, onChainDuels, chainId, onViewDuel }: { t:
       </div>
 
       {/* ── MAIN CONTENT ── */}
-      <div className="flex-1 min-w-0 p-5">
+      <div className="flex-1 min-w-0 p-5 bg-[#F7F5FF]">
         {/* CONTENT HEADER */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <div className="text-sm font-semibold text-white/80">{m.tabs[activeTab]}</div>
-            <div className="text-[10px] text-white/30 mt-0.5">
+            <div className="text-sm font-semibold text-[#1A1A2E]">{m.tabs[activeTab]}</div>
+            <div className="text-[10px] text-[#9CA3AF] mt-0.5">
               {currentDuels.length > 0 ? `${currentDuels.length} duels` : m.emptyDesc[activeTab]}
             </div>
           </div>
-          <div className="text-[9px] text-white/20">sorted by expiry</div>
+          <div className="text-[9px] text-[#C4B5FD]">sorted by expiry</div>
         </div>
 
         {/* EMPTY STATE */}
         {currentDuels.length === 0 ? (
-          <div className="bg-[#0c0c1a] border border-white/8 rounded-2xl p-16 text-center">
+          <div className="bg-white border border-[#EEE9FC] rounded-2xl p-16 text-center">
             <div className="text-4xl mb-3">{activeTab === 'active' ? '⚔️' : activeTab === 'claimable' ? '💰' : '📜'}</div>
-            <div className="text-sm font-semibold text-white/40 mb-2">{m.empty[activeTab]}</div>
-            <div className="text-[11px] text-white/20 mb-5">{m.emptyDesc[activeTab]}</div>
+            <div className="text-sm font-semibold text-[#374151] mb-2">{m.empty[activeTab]}</div>
+            <div className="text-[11px] text-[#9CA3AF] mb-5">{m.emptyDesc[activeTab]}</div>
             {activeTab === 'active' && (
-              <button onClick={onGoToArena} className="text-xs font-semibold text-red-400 border border-red-400/40 bg-red-400/10 rounded-xl px-4 py-2 hover:bg-red-400/20 transition-colors">
+              <button onClick={onGoToArena} className="text-xs font-semibold text-white rounded-xl px-4 py-2 hover:opacity-90 transition-colors" style={{background:'#7C3AED'}}>
                 {m.actions.goToArena}
               </button>
             )}
@@ -1460,46 +1549,47 @@ function NavBar({ t, lang, activePage, onPageChange, onLangToggle, onIssueClick 
   }, []);
   const claimableCount = 0; // AppInner에서 props로 전달 예정
   return (
-    <div className="bg-[#0c0c1a] border-b border-white/10 px-4 flex items-center" style={{ height: '52px' }}>
+    <div className="bg-white border-b border-[#EEE9FC] px-4 flex items-center" style={{ height: '64px' }}>
       {/* LEFT */}
       <div className="flex items-center gap-2 flex-shrink-0">
-        <span className="text-base font-semibold text-white/90">⚖️ {t.appName}</span>
+        <img src="/verdict_logo.png" alt="Verdict Protocol" className="w-12 h-12 object-contain" />
+        <span className="text-[17px] font-bold text-[#1A1A2E]" style={{letterSpacing:'-0.3px'}}>{t.appName}</span>
       </div>
       {/* CENTER NAV */}
       <div className="flex-1 flex items-center justify-center">
-        <div className="flex items-center bg-[#0a0a18] rounded-xl p-1 border border-white/8 gap-1">
-          <button onClick={() => onPageChange('arena')} className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${activePage === 'arena' ? 'bg-red-400/15 text-red-400 border border-red-400/30' : 'text-white/30 hover:text-white/60'}`}>
-            ⚔️ {t.nav.arena}
+        <div className="flex items-center bg-[#F3F0FB] rounded-2xl p-1.5 gap-1">
+          <button onClick={() => onPageChange('arena')} className={`px-5 py-2 rounded-xl text-[13px] font-bold transition-all ${activePage === 'arena' ? 'bg-white text-[#7C3AED]' : 'text-[#9CA3AF] hover:text-[#7C3AED]'}`}>
+            {t.nav.arena}
           </button>
-          <button onClick={() => onPageChange('myDuels')} className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${activePage === 'myDuels' ? 'bg-yellow-400/15 text-yellow-400 border border-yellow-400/30' : 'text-white/30 hover:text-white/60'}`}>
-            📋 {t.nav.myDuels}
-            {claimableCount > 0 && <span className={`text-[8px] rounded-full w-3.5 h-3.5 flex items-center justify-center font-bold ${activePage === 'myDuels' ? 'bg-yellow-400 text-black' : 'bg-yellow-400/60 text-black'}`}>{claimableCount}</span>}
+          <button onClick={() => onPageChange('myDuels')} className={`px-5 py-2 rounded-xl text-[13px] font-bold transition-all flex items-center gap-1.5 ${activePage === 'myDuels' ? 'bg-white text-[#7C3AED]' : 'text-[#9CA3AF] hover:text-[#7C3AED]'}`}>
+            {t.nav.myDuels}
+            {claimableCount > 0 && <span className="text-[8px] bg-[#7C3AED] text-white rounded-full w-4 h-4 flex items-center justify-center font-bold">{claimableCount}</span>}
           </button>
         </div>
       </div>
       {/* RIGHT */}
       <div className="flex items-center gap-2 flex-shrink-0">
-        <button onClick={onLangToggle} className="text-xs text-white/40 bg-[#10101e] border border-white/10 rounded-lg px-3 py-1.5 hover:border-white/20 transition-colors">{lang === 'en' ? '中文' : 'EN'}</button>
+        <button onClick={onLangToggle} className="text-[13px] font-medium text-[#6B7280] bg-[#F7F5FF] border border-[#EEE9FC] rounded-xl px-3 py-2 hover:border-[#C4B5FD] transition-colors">{lang === 'en' ? '中文' : 'EN'}</button>
         <ConnectButton.Custom>
           {({ account, chain, openAccountModal, openConnectModal, mounted }) => {
             const connected = mounted && account && chain;
-            if (!connected) return (<button onClick={openConnectModal} className="text-xs font-semibold text-red-400 bg-red-400/10 border border-red-400/40 rounded-lg px-3 py-1.5 hover:bg-red-400/20 transition-colors whitespace-nowrap">{t.connectWallet}</button>);
+            if (!connected) return (<button onClick={openConnectModal} className="text-[13px] font-bold text-white rounded-xl px-4 py-2 transition-colors whitespace-nowrap hover:opacity-90" style={{background:'#7C3AED'}}>{t.connectWallet}</button>);
             return (
               <div className="relative" ref={menuRef}>
-                <button onClick={() => setMenuOpen(o => !o)} className="flex items-center gap-2 bg-[#10101e] border border-white/10 rounded-lg px-2.5 py-1.5 hover:border-white/20 transition-colors">
-                  <div className="w-5 h-5 rounded-full overflow-hidden relative flex-shrink-0 border border-white/20"><div className="absolute inset-0 bg-red-400/30" /><img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" /></div>
-                  <span className="text-xs text-white/60">{account.displayName}</span>
-                  <span className="text-white/30 text-[10px]">▾</span>
+                <button onClick={() => setMenuOpen(o => !o)} className="flex items-center gap-2 bg-[#F7F5FF] border border-[#EEE9FC] rounded-xl px-3 py-2 hover:border-[#C4B5FD] transition-colors">
+                  <BeamAvatar addr={account.address || '0xabc'} size={22} />
+                  <span className="text-[13px] font-semibold text-[#6D28D9]">{account.displayName}</span>
+                  <span className="text-[#C4B5FD] text-[10px]">▾</span>
                 </button>
                 {menuOpen && (
-                  <div className="absolute right-0 top-full mt-1 bg-[#10101e] border border-white/10 rounded-xl overflow-hidden z-50 min-w-[160px] shadow-xl">
-                    <button onClick={() => { onPageChange('myDuels'); setMenuOpen(false); }} className="w-full flex items-center gap-2 px-3 py-2.5 text-xs text-white/60 hover:bg-white/5 transition-colors border-b border-white/5">
+                  <div className="absolute right-0 top-full mt-1 bg-white border border-[#EEE9FC] rounded-2xl overflow-hidden z-50 min-w-[160px]" style={{boxShadow:'0 4px 24px rgba(124,58,237,0.10)'}}>
+                    <button onClick={() => { onPageChange('myDuels'); setMenuOpen(false); }} className="w-full flex items-center gap-2 px-3 py-2.5 text-xs text-[#1A1A2E] hover:bg-[#F7F5FF] transition-colors border-b border-[#F3F0FB]">
                       <span>📋</span> {t.nav.myDuels}
-                      {claimableCount > 0 && <span className="ml-auto text-[8px] bg-yellow-400 text-black rounded-full w-4 h-4 flex items-center justify-center font-bold">{claimableCount}</span>}
+                      {claimableCount > 0 && <span className="ml-auto text-[8px] bg-[#7C3AED] text-white rounded-full w-4 h-4 flex items-center justify-center font-bold">{claimableCount}</span>}
                     </button>
-                    <button onClick={() => { onIssueClick(); setMenuOpen(false); }} className="w-full flex items-center gap-2 px-3 py-2.5 text-xs text-white/60 hover:bg-white/5 transition-colors border-b border-white/5"><span>⚔️</span> {t.issueBtn}</button>
-                    <button onClick={() => { navigator.clipboard?.writeText(account.address); setMenuOpen(false); }} className="w-full flex items-center gap-2 px-3 py-2.5 text-xs text-white/60 hover:bg-white/5 transition-colors border-b border-white/5"><span>📋</span> Copy address</button>
-                    <button onClick={() => { openAccountModal(); setMenuOpen(false); }} className="w-full flex items-center gap-2 px-3 py-2.5 text-xs text-red-400/70 hover:bg-red-400/8 transition-colors"><span>⏏</span> Disconnect</button>
+                    <button onClick={() => { onIssueClick(); setMenuOpen(false); }} className="w-full flex items-center gap-2 px-3 py-2.5 text-xs text-[#1A1A2E] hover:bg-[#F7F5FF] transition-colors border-b border-[#F3F0FB]"><span>⚔️</span> {t.issueBtn}</button>
+                    <button onClick={() => { navigator.clipboard?.writeText(account.address); setMenuOpen(false); }} className="w-full flex items-center gap-2 px-3 py-2.5 text-xs text-[#1A1A2E] hover:bg-[#F7F5FF] transition-colors border-b border-[#F3F0FB]"><span>📋</span> Copy address</button>
+                    <button onClick={() => { openAccountModal(); setMenuOpen(false); }} className="w-full flex items-center gap-2 px-3 py-2.5 text-xs text-[#F43F5E] hover:bg-[#FFF1F2] transition-colors"><span>⏏</span> Disconnect</button>
                   </div>
                 )}
               </div>
@@ -1566,9 +1656,15 @@ function AppInner() {
   useEffect(() => { fetchDuels(); fetch("/api/notify").catch(()=>{}); }, []);
   const totalCount = onChainDuels.length;
 
-  // 过滤：只展示 Open 和 Active 状态，且未过期
+  // ── 本地模拟数据（仅用于开发预览，部署时删除）──
+  const MOCK_DUELS: OnChainDuel[] = [
+    { id: 1, red: '0xB0088d6Eb46c3C15D878b54900ce1d5AEad54bD7' as `0x${string}`, blue: '0x4531000000000000000000000000000000000ebe4' as `0x${string}`, token: '0x0000000000000000000000000000000000000000' as `0x${string}`, wager: BigInt(1e15), audioBps: 0n, deadline: BigInt(Math.floor(Date.now()/1000) + 86400), claimHash: '0x0000000000000000000000000000000000000000000000000000000000000001' as `0x${string}`, ruleHash: '0x0000000000000000000000000000000000000000000000000000000000000001' as `0x${string}`, vis: 1, status: DuelStatus.Active, winner: 0, settledAt: 0n, poolRed: 0n, poolBlue: 0n, _claimText: t.duels[0].claim, _ruleText: t.duels[0].rulingStd } as any,
+    { id: 2, red: '0xabc0000000000000000000000000000000000001' as `0x${string}`, blue: '0x0000000000000000000000000000000000000000' as `0x${string}`, token: '0x0000000000000000000000000000000000000000' as `0x${string}`, wager: BigInt(5e15), audioBps: 0n, deadline: BigInt(Math.floor(Date.now()/1000) + 7*86400), claimHash: '0x0000000000000000000000000000000000000000000000000000000000000002' as `0x${string}`, ruleHash: '0x0000000000000000000000000000000000000000000000000000000000000002' as `0x${string}`, vis: 0, status: DuelStatus.Open, winner: 0, settledAt: 0n, poolRed: 0n, poolBlue: 0n, _claimText: t.duels[1].claim, _ruleText: t.duels[1].rulingStd } as any,
+    { id: 3, red: '0xdef0000000000000000000000000000000000001' as `0x${string}`, blue: '0xfff0000000000000000000000000000000000001' as `0x${string}`, token: '0x0000000000000000000000000000000000000000' as `0x${string}`, wager: BigInt(2e15), audioBps: 0n, deadline: BigInt(Math.floor(Date.now()/1000) + 2*3600), claimHash: '0x0000000000000000000000000000000000000000000000000000000000000003' as `0x${string}`, ruleHash: '0x0000000000000000000000000000000000000000000000000000000000000003' as `0x${string}`, vis: 0, status: DuelStatus.Active, winner: 0, settledAt: 0n, poolRed: BigInt(8e14), poolBlue: BigInt(5e14), _claimText: t.duels[2].claim, _ruleText: t.duels[2].rulingStd } as any,
+  ];
+  const displayDuels = onChainDuels.length > 0 ? onChainDuels : MOCK_DUELS;
   const now = BigInt(Math.floor(Date.now() / 1000));
-  const visibleDuels = onChainDuels.filter(d =>
+  const visibleDuels = displayDuels.filter(d =>
     (d.status === DuelStatus.Open || d.status === DuelStatus.Active) && d.deadline > now
   );
 
@@ -1655,47 +1751,52 @@ function AppInner() {
   const totalPotStr = totalCount > 0 ? `${fmtEther(totalPotBigInt)} BNB` : '—';
 
   return (
-    <div className="min-h-screen bg-[#080812] text-white">
-      <style>{`@keyframes fadeInUp { from { opacity:0; transform:translateX(-50%) translateY(6px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }`}</style>
+    <div className="min-h-screen bg-[#F7F5FF] text-[#1A1A2E]">
+      <style>{`
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+* { font-family: 'DM Sans', sans-serif; }
+.font-mono, code { font-family: 'DM Mono', monospace !important; }
+@keyframes fadeInUp { from { opacity:0; transform:translateX(-50%) translateY(6px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+@keyframes cardIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+.duel-card-grid > * { animation: cardIn 0.35s ease both; }
+.duel-card-grid > *:nth-child(1) { animation-delay: 0.05s; }
+.duel-card-grid > *:nth-child(2) { animation-delay: 0.10s; }
+.duel-card-grid > *:nth-child(3) { animation-delay: 0.15s; }
+.duel-card-grid > *:nth-child(4) { animation-delay: 0.20s; }
+.duel-card-grid > *:nth-child(5) { animation-delay: 0.25s; }
+.duel-card-grid > *:nth-child(6) { animation-delay: 0.30s; }
+`}</style>
       <NavBar t={t} lang={lang} activePage={activePage} onPageChange={setActivePage} onLangToggle={() => setLang(l => l === 'en' ? 'zh' : 'en')} onIssueClick={() => setShowModal(true)} />
       {activePage === 'arena' ? (
         <>
           <Ticker t={t} lang={lang} />
-          <div className="border-b border-white/5" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr' }}>
+          <div className="border-b border-[#EEE9FC]" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr' }}>
             {[
               { label: t.stats.duels, value: totalCount > 0 ? String(totalCount) : '—' },
               { label: t.stats.pool, value: totalPotStr },
-              { label: t.stats.settled, value: onChainDuels.filter(d => d.status === DuelStatus.Settled).length > 0 ? String(onChainDuels.filter(d => d.status === DuelStatus.Settled).length) + ' settled' : '—' },
+              { label: t.stats.settled, value: onChainDuels.filter(d => d.status === DuelStatus.Settled).length > 0 ? String(onChainDuels.filter(d => d.status === DuelStatus.Settled).length) : '—' },
             ].map((s, i) => (
-              <div key={i} className={`py-2.5 text-center ${i < 2 ? 'border-r border-white/5' : ''}`}>
-                <div className="text-[8px] tracking-widest uppercase text-white/20 mb-0.5">{s.label}</div>
-                <div className="text-base font-bold text-white/75">{s.value}</div>
+              <div key={i} className={`py-3 text-center bg-white ${i < 2 ? 'border-r border-[#EEE9FC]' : ''}`}>
+                <div className="text-[9px] tracking-widest uppercase text-[#9CA3AF] mb-1 font-medium">{s.label}</div>
+                <div className="text-lg font-bold text-[#1A1A2E]">{s.value}</div>
               </div>
             ))}
           </div>
-          <div className="bg-[#0a0a18] border-b border-white/5 px-4 py-2 flex items-center justify-between">
+          <div className="bg-white border-b border-[#EEE9FC] px-4 py-3 flex items-center justify-between">
             <div className="flex gap-1.5">
-              {t.filters.map((f, i) => (<button key={f} onClick={() => setActiveFilter(i)} className={`text-[10px] px-3 py-1.5 rounded-full border transition-colors ${activeFilter === i ? 'bg-red-400/15 text-red-400 border-red-400/50' : 'bg-[#10101e] text-white/30 border-white/10 hover:border-white/20'}`}>{f}</button>))}
+              {t.filters.map((f, i) => (<button key={f} onClick={() => setActiveFilter(i)} className={`text-[10px] px-3 py-1.5 rounded-full border transition-colors font-medium ${activeFilter === i ? 'bg-[#7C3AED] text-white border-[#7C3AED]' : 'bg-[#F7F5FF] text-[#9CA3AF] border-[#EEE9FC] hover:border-[#C4B5FD]'}`}>{f}</button>))}
             </div>
-            <button onClick={() => setShowModal(true)} className="text-xs font-semibold text-red-300 bg-[#10101e] border border-red-400/70 rounded-xl px-4 py-1.5 hover:bg-red-400/10 transition-colors" style={{ boxShadow: '0 0 10px rgba(255,107,107,0.2)' }}>{t.issueBtn}</button>
+            <button onClick={() => setShowModal(true)} className="text-xs font-semibold text-white rounded-xl px-4 py-1.5 transition-colors" style={{background:'#7C3AED'}}>{t.issueBtn}</button>
           </div>
           <div className="p-4">
-            <LiveCard t={t} onEnter={() => {
-              const liveDuel = { id: '0042', type: 'kolBattle' as DuelType, rarity: 'legendary' as Rarity, status: 'live' as Status, challenger: { name: '@CryptoKing', addr: '0x3f...a21c', color: '#6a1a1a', amount: 2.0 }, defender: { name: '@BlockWizard', addr: '0x8b...cc44', color: '#1a1a6a', amount: 2.0 }, supportRed: 63, watchers: 875, expires: '44d · 08h', network: 'Mantle', token: 'ETH', index: 0, _claimText: '"Mantle将在6个月内TVL总量超越Arbitrum — 我押2 ETH"', _ruleText: '以到期日00:00 UTC的DeFiLlama TVL数据为准。' };
-              const mockOnChain: OnChainDuel = { id: 42, red: '0x3fa21c0000000000000000000000000000000000' as `0x${string}`, blue: '0x8bcc440000000000000000000000000000000000' as `0x${string}`, token: '0x0000000000000000000000000000000000000000' as `0x${string}`, wager: BigInt(2e18), audioBps: 0n, deadline: BigInt(Math.floor(Date.now()/1000) + 44*86400), claimHash: '0x0000000000000000000000000000000000000000000000000000000000000000' as `0x${string}`, ruleHash: '0x0000000000000000000000000000000000000000000000000000000000000000' as `0x${string}`, vis: 0, status: DuelStatus.Active, winner: 0, settledAt: 0n, poolRed: BigInt(1.2e18), poolBlue: BigInt(0.8e18) };
-              setSelectedDuel(liveDuel);
-              setSelectedOnChainDuel(mockOnChain);
-            }} />
-          </div>
-          <div className="px-4 pb-2">
-            <div className="text-[9px] tracking-widest uppercase text-white/20 mb-3 flex items-center gap-2">
+            <div className="text-[11px] font-semibold text-[#9CA3AF] mb-4 flex items-center gap-2 uppercase tracking-widest">
               All Duels
-              {isLoading && <span className="text-white/15">loading...</span>}
+              {isLoading && <span className="text-[#C4B5FD]">loading...</span>}
               {!isLoading && visibleDuels.length === 0 && totalCount === 0 && (
-                <span className="text-white/15">— no active duels</span>
+                <span className="text-[#C4B5FD]">— no active duels</span>
               )}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+            <div className="duel-card-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
               {visibleDuels.map((od, i) => {
                 const duel = onChainToDuel(od, i);
                 return <DuelCard key={od.id} duel={duel} t={t} onClick={() => handleSelectDuel(duel, od)} onEnter={() => handleSelectDuel(duel, od)} />;
@@ -1703,7 +1804,7 @@ function AppInner() {
             </div>
           </div>
           <div className="pb-8 pt-4 text-center">
-            <button onClick={() => refetch()} className="text-xs text-white/30 bg-[#0c0c1a] border border-white/10 rounded-xl px-6 py-2.5 hover:border-white/20 transition-colors">↻ Refresh</button>
+            <button onClick={() => refetch()} className="text-xs text-[#9CA3AF] bg-white border border-[#EEE9FC] rounded-xl px-6 py-2.5 hover:border-[#C4B5FD] transition-colors">↻ Refresh</button>
           </div>
         </>
       ) : (
