@@ -1,6 +1,6 @@
 """
-Verdict Protocol — Meme Court Telegram Bot v3
-⚖️ Full EVM Support + Meme Court Theme + Bilingual (EN/ZH)
+Verdict Protocol — Verdict Protocol Telegram Bot v3
+⚖️ Full EVM Support + Verdict Protocol Theme + Bilingual (EN/ZH)
 """
 
 import os, re, json, asyncio, aiohttp
@@ -63,88 +63,88 @@ async def kv_get(key: str) -> str:
 # ── Language system ───────────────────────────────────────
 T = {
     "en": {
-        "start_intro": "⚖️ *MEME COURT — Verdict Protocol*\n_The On-Chain Tribunal. Every wallet gets judged._",
-        "start_commands": "*Commands:*\n⚖️ `/scan` `/judge` `<address> [chain]` — Summon wallet to court\n🐋 `/whale` `/suspect` `[chain]` — View whale suspects\n🟢 `/mantle` — Mantle ecosystem live data\n💰 `/price` `<token or address>` — Token price & 24h change\n⚔️ `/compare` `<addr1> <addr2> [chain]` — Compare two wallets, get AI ruling\n👁 `/watch` `/subpoena` `<address> [label]` — Issue surveillance order\n📋 `/watchlist` `/docket` — View active cases\n❌ `/unwatch` `<address>` — Dismiss case\n🌐 `/lang en` or `/lang zh` — Switch language",
+        "start_intro": "⚖️ *VERDICT PROTOCOL — Verdict Protocol*\n_The On-Chain Tribunal. Every wallet gets judged._",
+        "start_commands": "*Commands:*\n⚖️ `/scan` `/judge` `<address> [chain]` — Analyze wallet on-chain\n🐋 `/whale` `/wallet` `[chain]` — View whale wallets\n🟢 `/mantle` — Mantle ecosystem live data\n💰 `/price` `<token or address>` — Token price & 24h change\n⚔️ `/compare` `<addr1> <addr2> [chain]` — Compare two wallets, get AI ruling\n👁 `/watch` `/subpoena` `<address> [label]` — Issue surveillance order\n📋 `/watchlist` `/docket` — View active cases\n❌ `/unwatch` `<address>` — Dismiss case\n🌐 `/lang en` or `/lang zh` — Switch language",
         "supported_chains": "Supported Chains",
-        "chains_note": "Or paste any wallet address directly — court is always in session",
+        "chains_note": "Or paste any wallet address directly — protocol is always live",
         "lang_set": "✅ Language set to English",
         "lang_invalid": "Please use `/lang en` or `/lang zh`",
         "scan_usage": "Usage: `/judge <address> [chain]`\nExample: `/judge 0x1234...abcd bnb`",
         "scan_invalid": "❌ *Objection!* Invalid address format.",
         "scan_detecting": "detecting chain...",
-        "scan_session": "⚖️ *Court is now in session...*\n🔍 Summoning {addr} to the stand\n🔗 Chain: {chain}",
+        "scan_session": "⚖️ *Protocol is now live...*\n🔍 Analyzeing {addr} for analysis\n🔗 Chain: {chain}",
         "scan_no_tx": "_No transaction history found_",
         "scan_no_tokens": "_No ERC20 assets found_",
-        "watch_usage": "Usage: `/subpoena <address> [label]`\nExample: `/subpoena 0x1234...abcd SuspectA`",
+        "watch_usage": "Usage: `/subpoena <address> [label]`\nExample: `/subpoena 0x1234...abcd WalletA`",
         "watch_invalid": "❌ Invalid address.",
-        "watch_exists": "⚠️ This suspect is already under surveillance.",
-        "watch_issued": "📋 *Subpoena Issued*\n━━━━━━━━━━━━━━━━━━━\n👤 *Suspect:* {label}\n{emoji} {chain} · {addr}\n\n_Court surveillance activated. You will be notified of large movements._ 🔨",
-        "watchlist_empty": "📋 *Court Docket — No Active Cases*\n\nUse `/subpoena <address>` to open a case.",
-        "watchlist_header": "📋 *Court Docket — Active Cases*\n━━━━━━━━━━━━━━━━━━━\n",
-        "watchlist_footer": "\n_Total: {n} case(s) under surveillance_",
+        "watch_exists": "⚠️ This wallet is already being watched.",
+        "watch_issued": "📋 *Watch Added*\n━━━━━━━━━━━━━━━━━━━\n👤 *Wallet:* {label}\n{emoji} {chain} · {addr}\n\n_Protocol watch activated. You will be notified of large movements._ 🔨",
+        "watchlist_empty": "📋 *Watch List — No Active Watches*\n\nUse `/subpoena <address>` to add a watch.",
+        "watchlist_header": "📋 *Watch List — Active Watches*\n━━━━━━━━━━━━━━━━━━━\n",
+        "watchlist_footer": "\n_Total: {n} case(s) being watched_",
         "unwatch_usage": "Usage: `/unwatch <address>`",
-        "unwatch_ok": "✅ *Case dismissed.* Surveillance order lifted. 🔨",
-        "unwatch_fail": "❌ Suspect not found in docket.",
-        "whale_session": "⚖️ *Meme Court — Suspect Lineup*\n🔍 Scanning {emoji} {chain} for whale activity...",
+        "unwatch_ok": "✅ *Report dismissed.* Watch removed. 🔨",
+        "unwatch_fail": "❌ Wallet not found in docket.",
+        "whale_session": "⚖️ *Verdict Protocol — Wallet Analysis*\n🔍 Scanning {emoji} {chain} for whale activity...",
         "whale_empty": "🐋 No whale activity detected. Court is in recess.",
-        "whale_footer": "\n_All suspects are innocent until proven otherwise_ ⚖️",
+        "whale_footer": "\n_All wallets are innocent until proven otherwise_ ⚖️",
         "compare_usage": "Usage: `/compare <address1> <address2> [chain]`\nExample: `/compare 0xAAA...aaa 0xBBB...bbb mantle`",
         "compare_invalid": "❌ *Invalid address format.*",
-        "compare_session": "⚖️ *Court is comparing two wallets...*\n🔍 Summoning both defendants to the stand\n🔗 Chain: {emoji} {chain}",
-        "compare_disagree": "⚔️ *Disagree with the verdict?*\n_Issue a duel and let the chain decide!_",
+        "compare_session": "⚖️ *Protocol is comparing two wallets...*\n🔍 Analyzeing both defendants for analysis\n🔗 Chain: {emoji} {chain}",
+        "compare_disagree": "⚔️ *Challenge the result?*\n_Issue a duel and let on-chain data decide!_",
         "price_usage": "Usage:\n`/price MNT` — by token name\n`/price 0x1234...abcd mantle` — by contract address",
         "price_fetching": "💰 *Fetching price data...*",
         "price_not_found": "❌ *Token not found:* `{query}`\n\nTry using the contract address:\n`/price 0x... mantle`",
         "mantle_loading": "🟢 *Mantle Ecosystem — Loading...*\n🔍 Fetching live data from DeFiLlama & Mantle RPC...",
         "mantle_no_data": "_No data available_",
         "mantle_rpc_unavail": "_RPC unavailable_",
-        "subpoena_issued": "📋 *Subpoena issued.* Suspect added to court docket. 🔨",
-        "already_watching": "⚠️ Already under surveillance.",
-        "handle_msg": "⚖️ *Court is in session.*\nPaste a wallet address to summon it before the judge, or use /help.",
-        "monitor_alert": "🚨 *COURT ALERT — {label}*\n━━━━━━━━━━━━━━━━━━━\n{emoji} {chain} · {direction}\n💰 `{val:.4f} {symbol}` detected\n[🔍 View Evidence]({explorer}/tx/{hash})\n\n_The court demands your attention._ ⚖️",
+        "subpoena_issued": "📋 *Watch added.* Wallet added to watch list. 🔨",
+        "already_watching": "⚠️ Already being watched.",
+        "handle_msg": "⚖️ *Protocol is live.*\nPaste a wallet address to analyze it before the judge, or use /help.",
+        "monitor_alert": "🚨 *PROTOCOL ALERT — {label}*\n━━━━━━━━━━━━━━━━━━━\n{emoji} {chain} · {direction}\n💰 `{val:.4f} {symbol}` detected\n[🔍 View Evidence]({explorer}/tx/{hash})\n\n_Protocol requires your attention._ ⚖️",
         "monitor_outbound": "📤 OUTBOUND",
         "monitor_inbound": "📥 INBOUND",
     },
     "zh": {
-        "start_intro": "⚖️ *MEME COURT — Verdict Protocol*\n_链上裁判所。每个钱包都将被审判。_",
-        "start_commands": "*命令列表：*\n⚖️ `/scan` `/judge` `<地址> [链]` — 传唤钱包上庭\n🐋 `/whale` `/suspect` `[链]` — 查看巨鲸嫌疑人\n🟢 `/mantle` — Mantle 生态实时数据\n💰 `/price` `<代币或地址>` — 代币价格与24h涨跌\n⚔️ `/compare` `<地址1> <地址2> [链]` — 对比两个钱包，获取 AI 裁决\n👁 `/watch` `/subpoena` `<地址> [标签]` — 发出监控令\n📋 `/watchlist` `/docket` — 查看活跃案件\n❌ `/unwatch` `<地址>` — 撤销案件\n🌐 `/lang en` 或 `/lang zh` — 切换语言",
+        "start_intro": "⚖️ *VERDICT PROTOCOL — Verdict Protocol*\n_链上裁判所。每个钱包都将被审判。_",
+        "start_commands": "*命令列表：*\n⚖️ `/scan` `/judge` `<地址> [链]` — 分析链上钱包\n🐋 `/whale` `/wallet` `[链]` — 查看巨鲸钱包\n🟢 `/mantle` — Mantle 生态实时数据\n💰 `/price` `<代币或地址>` — 代币价格与24h涨跌\n⚔️ `/compare` `<地址1> <地址2> [链]` — 对比两个钱包，获取 AI 裁决\n👁 `/watch` `/subpoena` `<地址> [标签]` — 发出监控令\n📋 `/watchlist` `/docket` — 查看活跃监控\n❌ `/unwatch` `<地址>` — 撤销案件\n🌐 `/lang en` 或 `/lang zh` — 切换语言",
         "supported_chains": "支持的链",
-        "chains_note": "或直接粘贴钱包地址 — 法庭随时开庭",
+        "chains_note": "或直接粘贴钱包地址 — 协议随时运行",
         "lang_set": "✅ 语言已切换为中文",
         "lang_invalid": "请使用 `/lang en` 或 `/lang zh`",
         "scan_usage": "用法：`/judge <地址> [链]`\n示例：`/judge 0x1234...abcd bnb`",
         "scan_invalid": "❌ *异议！* 地址格式无效。",
         "scan_detecting": "自动检测链中...",
-        "scan_session": "⚖️ *法庭开庭中...*\n🔍 正在传唤 {addr} 上庭\n🔗 链：{chain}",
+        "scan_session": "⚖️ *协议运行中...*\n🔍 正在分析 {addr} 上庭\n🔗 链：{chain}",
         "scan_no_tx": "_未找到交易记录_",
         "scan_no_tokens": "_未找到 ERC20 资产_",
-        "watch_usage": "用法：`/subpoena <地址> [标签]`\n示例：`/subpoena 0x1234...abcd 嫌疑人A`",
+        "watch_usage": "用法：`/subpoena <地址> [标签]`\n示例：`/subpoena 0x1234...abcd 钱包A`",
         "watch_invalid": "❌ 地址无效。",
-        "watch_exists": "⚠️ 该嫌疑人已在监控中。",
-        "watch_issued": "📋 *已发出传票*\n━━━━━━━━━━━━━━━━━━━\n👤 *嫌疑人：* {label}\n{emoji} {chain} · {addr}\n\n_法庭监控已激活。发现大额转账将立即通知你。_ 🔨",
-        "watchlist_empty": "📋 *案件台账 — 无活跃案件*\n\n使用 `/subpoena <地址>` 立案。",
-        "watchlist_header": "📋 *案件台账 — 活跃案件*\n━━━━━━━━━━━━━━━━━━━\n",
-        "watchlist_footer": "\n_共 {n} 个案件监控中_",
+        "watch_exists": "⚠️ 该钱包已在监控列表中。",
+        "watch_issued": "📋 *已发出传票*\n━━━━━━━━━━━━━━━━━━━\n👤 *钱包：* {label}\n{emoji} {chain} · {addr}\n\n_协议监控已激活。发现大额转账将立即通知你。_ 🔨",
+        "watchlist_empty": "📋 *监控列表 — 无活跃监控*\n\n使用 `/subpoena <地址>` 添加监控。",
+        "watchlist_header": "📋 *监控列表 — 活跃监控*\n━━━━━━━━━━━━━━━━━━━\n",
+        "watchlist_footer": "\n_共 {n} 个地址监控中_",
         "unwatch_usage": "用法：`/unwatch <地址>`",
-        "unwatch_ok": "✅ *案件已撤销。* 监控令已解除。 🔨",
-        "unwatch_fail": "❌ 台账中未找到该嫌疑人。",
-        "whale_session": "⚖️ *法庭嫌疑人排查*\n🔍 正在扫描 {emoji} {chain} 巨鲸活动...",
-        "whale_empty": "🐋 未检测到巨鲸活动。法庭暂时休庭。",
-        "whale_footer": "\n_所有嫌疑人在定罪前均为无辜_ ⚖️",
+        "unwatch_ok": "✅ *监控已移除。* 监控已移除。 🔨",
+        "unwatch_fail": "❌ 台账中未找到该钱包。",
+        "whale_session": "⚖️ *法庭钱包分析*\n🔍 正在扫描 {emoji} {chain} 巨鲸活动...",
+        "whale_empty": "🐋 未检测到巨鲸活动。协议暂时离线。",
+        "whale_footer": "\n_所有钱包在定罪前均为无辜_ ⚖️",
         "compare_usage": "用法：`/compare <地址1> <地址2> [链]`\n示例：`/compare 0xAAA...aaa 0xBBB...bbb mantle`",
         "compare_invalid": "❌ *地址格式无效。*",
-        "compare_session": "⚖️ *法庭正在比对两个钱包...*\n🔍 正在传唤两位被告上庭\n🔗 链：{emoji} {chain}",
-        "compare_disagree": "⚔️ *对裁决有异议？*\n_发起对决，让链上数据说话！_",
+        "compare_session": "⚖️ *协议正在比对两个钱包...*\n🔍 正在分析两位被告上庭\n🔗 链：{emoji} {chain}",
+        "compare_disagree": "⚔️ *对结果有异议？*\n_发起对决，让数据说话！_",
         "price_usage": "用法：\n`/price MNT` — 按代币名称\n`/price 0x1234...abcd mantle` — 按合约地址",
         "price_fetching": "💰 *正在获取价格数据...*",
         "price_not_found": "❌ *未找到代币：* `{query}`\n\n请尝试使用合约地址：\n`/price 0x... mantle`",
         "mantle_loading": "🟢 *Mantle 生态报告 — 加载中...*\n🔍 正在从 DeFiLlama & Mantle RPC 获取实时数据...",
         "mantle_no_data": "_暂无数据_",
         "mantle_rpc_unavail": "_RPC 不可用_",
-        "subpoena_issued": "📋 *传票已发出。* 嫌疑人已加入案件台账。 🔨",
-        "already_watching": "⚠️ 已在监控中。",
-        "handle_msg": "⚖️ *法庭开庭中。*\n粘贴钱包地址即可传唤上庭，或使用 /help。",
-        "monitor_alert": "🚨 *法庭警报 — {label}*\n━━━━━━━━━━━━━━━━━━━\n{emoji} {chain} · {direction}\n💰 检测到 `{val:.4f} {symbol}`\n[🔍 查看证据]({explorer}/tx/{hash})\n\n_法庭要求你立即关注。_ ⚖️",
+        "subpoena_issued": "📋 *已加入监控。* 钱包已加入监控列表。 🔨",
+        "already_watching": "⚠️ 已在监控列表中。",
+        "handle_msg": "⚖️ *协议运行中。*\n粘贴钱包地址即可分析上庭，或使用 /help。",
+        "monitor_alert": "🚨 *协议警报 — {label}*\n━━━━━━━━━━━━━━━━━━━\n{emoji} {chain} · {direction}\n💰 检测到 `{val:.4f} {symbol}`\n[🔍 查看证据]({explorer}/tx/{hash})\n\n_协议需要你立即关注。_ ⚖️",
         "monitor_outbound": "📤 转出",
         "monitor_inbound": "📥 转入",
     }
@@ -247,13 +247,13 @@ def parse_chain(args: list) -> tuple:
     return address, chain
 
 async def ai_judge(address, chain, transfers, balance):
-    if not DEEPSEEK_KEY: return "The court stenographer is unavailable. Judgment deferred."
+    if not DEEPSEEK_KEY: return "The AI analysis is unavailable. Judgment deferred."
     ci = CHAINS[chain]
     try: nb = f"{float(balance.get('balance','0'))/1e18:.4f} {ci['symbol']}"
     except: nb = f"? {ci['symbol']}"
     txs = [{"from":t.get("from_address","")[:10],"to":t.get("to_address","")[:10],
              "value":t.get("value","0"),"time":t.get("block_timestamp","")} for t in transfers[:5]]
-    prompt = f"""You are the AI Judge of Meme Court — a crypto on-chain tribunal.
+    prompt = f"""You are the AI Judge of Verdict Protocol — a crypto on-chain tribunal.
 Analyze this {ci['name']} wallet and deliver a dramatic court verdict.
 
 Address: {address}
@@ -262,7 +262,7 @@ Recent transactions: {json.dumps(txs)}
 
 Respond in exactly 2 sentences using judge/court language:
 - Sentence 1: Is this wallet a whale, suspicious actor, or ordinary citizen?
-- Sentence 2: Your ruling — guilty/innocent/under surveillance, and why.
+- Sentence 2: Your ruling — guilty/innocent/being watched, and why.
 
 Be dramatic but factual. Use phrases like "The court finds...", "This defendant...", "Hereby sentenced to..."."""
 
@@ -277,13 +277,13 @@ Be dramatic but factual. Use phrases like "The court finds...", "This defendant.
                     d = await r.json()
                     return d["choices"][0]["message"]["content"].strip()
     except: pass
-    return "The court is in recess. Judgment deferred pending further evidence."
+    return "The protocol is offline. Judgment deferred pending further evidence."
 
 def verdict_label(balance_eth: float, tx_count: int) -> tuple:
     if balance_eth > 10000: return ("GUILTY — MEGA WHALE", "🔴")
     if balance_eth > 1000:  return ("GUILTY — WHALE ACTIVITY", "🟠")
     if balance_eth > 100:   return ("PERSON OF INTEREST", "🟡")
-    if tx_count == 0:       return ("CASE DISMISSED — NO EVIDENCE", "⚪")
+    if tx_count == 0:       return ("REPORT DISMISSED — NO EVIDENCE", "⚪")
     return ("INNOCENT — ORDINARY CITIZEN", "🟢")
 
 # ── Commands ──────────────────────────────────────────────
@@ -352,24 +352,24 @@ async def scan_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     vtext, vemoji = verdict_label(nb_raw, len(transfers))
     case_no = case_number(address)
 
-    report = f"""⚖️ *MEME COURT — CASE {case_no}*
+    report = f"""⚖️ *VERDICT PROTOCOL — REPORT {case_no}*
 ━━━━━━━━━━━━━━━━━━━
-👨‍⚖️ *THE HONORABLE AI JUDGE PRESIDING*
+👨‍⚖️ *VERDICT PROTOCOL AI ANALYSIS*
 🪙 *Defendant:* {saddr(address)}
-🔗 *Jurisdiction:* {ci['emoji']} {ci['name']}
+🔗 *Network:* {ci['emoji']} {ci['name']}
 ━━━━━━━━━━━━━━━━━━━
-📋 *EVIDENCE ON RECORD*
+📋 *ON-CHAIN DATA*
 💰 Holdings: `{nb}`
-📊 Transactions reviewed: `{len(transfers)}`
+📊 Transactions analyzed: `{len(transfers)}`
 
 {chr(10).join(tx_lines) if tx_lines else "  " + L["scan_no_tx"]}
 ━━━━━━━━━━━━━━━━━━━
-🪙 *ASSETS SEIZED FOR REVIEW*
+🪙 *TOKEN HOLDINGS*
 {chr(10).join(token_lines) if token_lines else "  " + L["scan_no_tokens"]}
 ━━━━━━━━━━━━━━━━━━━
 🔨 *VERDICT: {vtext}* {vemoji}
 ━━━━━━━━━━━━━━━━━━━
-👨‍⚖️ *Judge's Ruling:*
+👨‍⚖️ *AI Verdict:*
 _{ruling}_
 ━━━━━━━━━━━━━━━━━━━
 [🔍 Block Explorer]({ci['explorer']}/address/{address}) · [⚖️ verdictprotocol.online](https://verdictprotocol.online)"""
@@ -377,7 +377,7 @@ _{ruling}_
     await wait.delete()
     await update.message.reply_text(report, parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup([[
-            InlineKeyboardButton("👁 Issue Subpoena", callback_data=f"watch:{address}:{chain}"),
+            InlineKeyboardButton("👁 Add to Watch", callback_data=f"watch:{address}:{chain}"),
             InlineKeyboardButton("🔍 Block Explorer", url=f"{ci['explorer']}/address/{address}"),
         ]]), disable_web_page_preview=True)
 
@@ -483,12 +483,12 @@ async def whale_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not results:
         await wait.edit_text(L["whale_empty"], parse_mode="Markdown"); return
 
-    lines = [f"⚖️ *MEME COURT — SUSPECT LINEUP*\n{ci['emoji']} *{ci['name']} Whale Watch*\n━━━━━━━━━━━━━━━━━━━"]
+    lines = [f"⚖️ *VERDICT PROTOCOL — WALLET ANALYSIS*\n{ci['emoji']} *{ci['name']} Whale Watch*\n━━━━━━━━━━━━━━━━━━━"]
     for i, r in enumerate(results, 1):
         bal_fmt = f"{r['balance']/1e3:.1f}K" if r['balance']>=1000 else f"{r['balance']:.2f}"
         status = "🔴 ACTIVE" if r['last_time'] and ("s ago" in tago(r['last_time']) or "m ago" in tago(r['last_time'])) else "🟡 RECENT"
         lines.append(
-            f"\n*Suspect #{i}:* {r['label']}\n"
+            f"\n*Wallet #{i}:* {r['label']}\n"
             f"  💰 `{bal_fmt} {ci['symbol']}` · {status}\n"
             f"  {r['direction']} `{r['last_val']:.4f}` · {tago(r['last_time'])}\n"
             f"  {saddr(r['address'])}"
@@ -577,7 +577,7 @@ Respond in exactly 2 dramatic sentences. Declare the winner."""
                     if r.status==200:
                         d = await r.json()
                         ruling = d["choices"][0]["message"]["content"].strip()
-        except: ruling = "The court is unable to reach a verdict at this time."
+        except: ruling = "Protocol analysis unavailable at this time."
     if not ruling:
         ruling = await ai_judge(addr1, chain, txs1, bal1)
 
@@ -585,7 +585,7 @@ Respond in exactly 2 dramatic sentences. Declare the winner."""
     score_bar1 = "█" * (a1['score']//10) + "░" * (10 - a1['score']//10)
     score_bar2 = "█" * (a2['score']//10) + "░" * (10 - a2['score']//10)
 
-    report = f"""⚖️ *VERDICT PROTOCOL — CASE {case_no}*
+    report = f"""⚖️ *VERDICT PROTOCOL — REPORT {case_no}*
 {ci['emoji']} *{ci['name']} Wallet Comparison*
 ━━━━━━━━━━━━━━━━━━━
 *🔴 RED CORNER*
@@ -602,13 +602,13 @@ Respond in exactly 2 dramatic sentences. Declare the winner."""
   💸 Net Flow: `{'+' if a2['net']>=0 else ''}{fmt(a2['net'])} {symbol}`
   🕐 Last Active: `{a2['last_active']}`
 ━━━━━━━━━━━━━━━━━━━
-📊 *COURT SCORING*
+📊 *PROTOCOL SCORING*
   🔴 `{score_bar1}` {a1['score']}/100
   🔵 `{score_bar2}` {a2['score']}/100
 ━━━━━━━━━━━━━━━━━━━
 🏆 *LEADING: {winner} CORNER*
 ━━━━━━━━━━━━━━━━━━━
-👨‍⚖️ *AI Judge Ruling:*
+👨‍⚖️ *AI Verdict:*
 _{ruling}_
 ━━━━━━━━━━━━━━━━━━━
 {L["compare_disagree"]}
@@ -888,11 +888,11 @@ async def monitor_wallets(app):
                     if val < ci["whale_threshold"]/2000: continue
                     direction_en = "📤 OUTBOUND" if tx.get("from_address","").lower()==w["address"].lower() else "📥 INBOUND"
                     await app.bot.send_message(chat_id,
-                        f"🚨 *COURT ALERT — {w['label']}*\n━━━━━━━━━━━━━━━━━━━\n"
+                        f"🚨 *PROTOCOL ALERT — {w['label']}*\n━━━━━━━━━━━━━━━━━━━\n"
                         f"{ci['emoji']} {ci['name']} · {direction_en}\n"
                         f"💰 `{val:.4f} {ci['symbol']}` detected\n"
                         f"[🔍 View Evidence]({ci['explorer']}/tx/{h})\n\n"
-                        f"_The court demands your attention._ ⚖️",
+                        f"_Protocol requires your attention._ ⚖️",
                         parse_mode="Markdown", disable_web_page_preview=True)
                 except Exception as e:
                     print(f"Monitor err: {e}")
@@ -902,7 +902,7 @@ def main():
         print("❌ TELEGRAM_TOKEN not set"); return
     if not MORALIS_KEY:
         print("⚠️  MORALIS_API_KEY not set")
-    print("⚖️  Meme Court Bot v3 starting...")
+    print("⚖️  Verdict Protocol Bot v3 starting...")
     app = Application.builder().token(TELEGRAM_TOKEN).build()
 
     for cmd in ["start","help"]: app.add_handler(CommandHandler(cmd, start))
@@ -910,7 +910,7 @@ def main():
     for cmd in ["scan","judge"]: app.add_handler(CommandHandler(cmd, scan_command))
     for cmd in ["watch","subpoena"]: app.add_handler(CommandHandler(cmd, watch_command))
     for cmd in ["watchlist","docket"]: app.add_handler(CommandHandler(cmd, watchlist_command))
-    for cmd in ["whale","suspect"]: app.add_handler(CommandHandler(cmd, whale_command))
+    for cmd in ["whale","wallet"]: app.add_handler(CommandHandler(cmd, whale_command))
     app.add_handler(CommandHandler("mantle", mantle_command))
     app.add_handler(CommandHandler("price", price_command))
     app.add_handler(CommandHandler("compare", compare_command))
@@ -920,7 +920,7 @@ def main():
 
     async def post_init(a): asyncio.create_task(monitor_wallets(a))
     app.post_init = post_init
-    print("✅ Court is in session. Ctrl+C to adjourn.")
+    print("✅ Protocol is live. Ctrl+C to adjourn.")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == "__main__":
