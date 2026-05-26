@@ -1339,7 +1339,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
           label={!address ? '🔗 连接钱包后参与' : isWrongNetwork ? '⚠️ 切换到 BNB Testnet' : acceptSuccess ? '✓ 已接受!' : acceptConfirming ? '确认中...' : acceptPending ? '等待签名...' : '⚔️ 接受挑战'}
           color={isWrongNetwork ? '#D97706' : '#fff'} bg={isWrongNetwork ? '#FFF7ED' : '#7C3AED'} border={isWrongNetwork ? '#FDE68A' : '#7C3AED'}
           onClick={async () => {
-            const chainDuelId = onChainDuel?.id ?? (duel as any)._onChainId;
+            const chainDuelId = onChainDuel ? ((onChainDuel as any).originalId ?? onChainDuel.id) : (duel as any)._onChainId;
             const wagerBigInt = onChainDuel?.wager ?? (duel as any)._wager;
             if (!chainDuelId) return;
             // 优先用 window.ethereum 直接调用，绕过wagmi状态问题
@@ -2080,7 +2080,9 @@ function AppInner() {
     const isAI = d.vis === 2;
     const isOpen = d.status === DuelStatus.Open;
     const redAmt = parseFloat(fmtEther(d.wager));
-    const token = chainId === 97 ? 'tBNB' : chainId === 5003 ? 'MNT' : 'BNB';
+    // 代币跟对决自己的链走，不跟钱包网络走
+    const duelChainId = (d as any).chainId ?? chainId;
+    const token = (d as any).chainToken ?? (duelChainId === 97 ? 'tBNB' : duelChainId === 5003 ? 'MNT' : 'BNB');
     // 用链上claimHash从localStorage读原文
     const storedClaim = typeof window !== 'undefined' ? localStorage.getItem('claim_' + d.claimHash) : null;
     const storedRule = typeof window !== 'undefined' ? localStorage.getItem('rule_' + d.ruleHash) : null;
@@ -2101,14 +2103,14 @@ function AppInner() {
       supportRed,
       watchers: 0,
       expires: formatDeadline(d.deadline),
-      network: networkName,
+      network: (d as any).chainName ?? networkName,
       token,
       index: Math.min(index, t.duels.length - 1),
       isAIJudge: isAI,
       _claimText: claimText,
       _ruleText: ruleText,
       _audiencePool: audiencePoolAmt,
-      _onChainId: d.id,
+      _onChainId: (d as any).originalId ?? d.id,
       _wager: d.wager,
     } as any;
   }
@@ -2120,6 +2122,23 @@ function AppInner() {
 
   // 统计数据
   const totalPotBigInt = onChainDuels.reduce((acc, d) => acc + d.wager * 2n, 0n);
+  const [usdPrices, setUsdPrices] = React.useState<{MNT?: number, BNB?: number, tBNB?: number}>({});
+  React.useEffect(() => {
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=mantle,binancecoin&vs_currencies=usd')
+      .then(r => r.json())
+      .then(data => setUsdPrices({ MNT: data.mantle?.usd, BNB: data.binancecoin?.usd, tBNB: data.binancecoin?.usd }))
+      .catch(() => {});
+  }, []);
+  // 按链分组计算总奖池USD
+  const totalPotUSD = onChainDuels.reduce((acc, d) => {
+    const duelToken = (d as any).chainToken ?? (chainId === 97 ? 'tBNB' : 'MNT');
+    const price = usdPrices[duelToken as keyof typeof usdPrices] ?? 0;
+    const amt = parseFloat(fmtEther(d.wager * 2n));
+    return acc + amt * price;
+  }, 0);
+  const totalPotStr = totalPotUSD > 0
+    ? '$' + (totalPotUSD < 1 ? totalPotUSD.toFixed(4) : totalPotUSD.toFixed(2))
+    : onChainDuels.length > 0 ? onChainDuels.length + ' duels' : '—';
   const totalPotStr = totalCount > 0 ? `${fmtEther(totalPotBigInt)} BNB` : '—';
 
   return (
