@@ -4,7 +4,7 @@ import { getAddress } from 'viem';
 
 export const CONTRACT_ADDRESSES = {
   bscTestnet: getAddress('0xa0A997cF05F7Baf21becEA4130209fD7C7D1A994'),
-  mantleSepolia: getAddress('0x5f9d91603accd8aa5a3ef73f611e229c463dd702'),
+  mantleSepolia: getAddress('0xE731a80668Ad0439a6B55e57f65C1D7885827566'),
 } as const;
 
 export const NATIVE = '0x0000000000000000000000000000000000000000' as `0x${string}`;
