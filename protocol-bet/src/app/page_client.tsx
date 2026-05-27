@@ -2135,7 +2135,7 @@ function AppInner() {
   }, 0);
   const totalPotStr = totalPotUSD > 0
     ? '$' + (totalPotUSD < 1 ? totalPotUSD.toFixed(4) : totalPotUSD.toFixed(2))
-    : totalCount > 0 ? `${totalCount} duels` : '—';
+    : totalCount > 0 ? '...' : '—';
 
   return (
     <div className="min-h-screen bg-[#F7F5FF] text-[#1A1A2E]">
