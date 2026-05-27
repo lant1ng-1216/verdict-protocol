@@ -1516,7 +1516,19 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
               const originalId = (onChainDuel as any).originalId ?? onChainDuel.id;
               const res = await fetch('/api/judge', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chainId, duelId: originalId}) });
               const data = await res.json();
-              if (data.verdict) setVerdictData(data.verdict);
+              if (data.verdict) {
+                setVerdictData(data.verdict);
+                if (data.verdict.settled && data.verdict.winnerSide !== 0) {
+                  const wager2 = onChainDuel?.wager ?? 0n;
+                  const amt2 = (parseFloat(fmtEther(typeof wager2 === 'bigint' ? wager2 * 2n : BigInt(wager2) * 2n)) * 0.98).toFixed(4);
+                  const winnerLabel = data.verdict.winner === 'Red'
+                    ? (isMyRed ? (t.nav.arena==='广场'?'你（红方）':'You (Red)') : (t.nav.arena==='广场'?'对方（红方）':'Opponent (Red)'))
+                    : (isMyRed ? (t.nav.arena==='广场'?'对方（蓝方）':'Opponent (Blue)') : (t.nav.arena==='广场'?'你（蓝方）':'You (Blue)'));
+                  setSettleResult({ winner: winnerLabel, amount: amt2 + ' ' + token });
+                  setTimeout(() => setSettleResult(null), 5000);
+                  refetch?.();
+                }
+              }
             } catch {}
             setRequestingRuling(false);
           }} disabled={!!verdictData || requestingRuling} />
