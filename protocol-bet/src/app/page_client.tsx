@@ -1252,6 +1252,9 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
   const [evidenceSubmitted, setEvidenceSubmitted] = useState(false);
   const [verdictData, setVerdictData] = useState<any>(null);
   const [requestingRuling, setRequestingRuling] = useState(false);
+  const [agentStep, setAgentStep] = useState(0); // 0=idle, 1-4=steps, 5=done
+  const [agentStepText, setAgentStepText] = useState('');
+  const [showAgentModal, setShowAgentModal] = useState(false);
   const [mutualChoice, setMutualChoice] = useState<'self'|'opponent'|null>(null);
   const [mutualPending, setMutualPending] = useState(false);
   const [mutualSubmitted, setMutualSubmitted] = useState<'self'|'opponent'|null>(null);
@@ -1502,7 +1505,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
             <div style={{background:bgColor,border:`1px solid ${borderColor}`,borderRadius:'12px',padding:'12px 14px',marginBottom:'8px'}}>
               <div style={{fontSize:'11px',fontWeight:700,color:'#7C3AED',marginBottom:'4px'}}>⚖️ AI {t.nav.arena==='广场'?'裁定结果':'Judge Ruling'}</div>
               <div style={{fontSize:'14px',fontWeight:700,color:textColor,marginBottom:'4px'}}>{resultText}</div>
-              <div style={{fontSize:'11px',color:'#374151',lineHeight:1.5,fontStyle:'italic',marginBottom:'6px'}}>"{reasoning}"</div>
+              <div style={{fontSize:'11px',color:'#374151',lineHeight:1.5,fontStyle:'italic',marginBottom:'6px'}}>"{t.nav.arena==='广场' ? (verdictData.reasoningZh || verdictData.reasoning) : (verdictData.reasoning || verdictData.reasoningZh)}"</div>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                 <div style={{fontSize:'10px',color:'#9CA3AF'}}>{t.nav.arena==='广场'?'置信度':'Confidence'}: {verdictData.confidence}%</div>
                 <button onClick={() => window.open(`/verdict/${chainId}/${originalId}`, '_blank')}
@@ -1529,25 +1532,40 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
           <Btn label={requestingRuling ? (t.nav.arena==='广场'?'裁定中...':'Judging...') : verdictData ? (t.nav.arena==='广场'?'✅ 已裁定':'✅ Judged') : (t.nav.arena==='广场'?'申请裁定':'Request Ruling')} color={verdictData?'#059669':'#D97706'} bg={verdictData?'#ECFDF5':'#FFFBEB'} border={verdictData?'#A7F3D0':'#FDE68A'} onClick={verdictData || requestingRuling ? undefined : async () => {
             if (!onChainDuel) return;
             setRequestingRuling(true);
+            setShowAgentModal(true);
+            setAgentStep(1);
+            const chainId = targetChainId;
+            const originalId = (onChainDuel as any).originalId ?? onChainDuel.id;
+            const isZh = t.nav.arena === '广场';
+            // Simulate step progress while API runs
+            const stepTexts = isZh
+              ? ['正在解析案件类型和可验证条件...','正在抓取证据链接内容并评估可信度...','正在逐条对照裁定标准分析双方证据...','正在综合评分并生成裁定报告...']
+              : ['Parsing case type and verifiable conditions...','Fetching evidence links and evaluating credibility...','Analyzing evidence against ruling conditions...','Calculating scores and generating ruling report...'];
+            setAgentStepText(stepTexts[0]);
+            const stepTimers = [
+              setTimeout(() => { setAgentStep(2); setAgentStepText(stepTexts[1]); }, 3500),
+              setTimeout(() => { setAgentStep(3); setAgentStepText(stepTexts[2]); }, 7000),
+              setTimeout(() => { setAgentStep(4); setAgentStepText(stepTexts[3]); }, 10500),
+            ];
             try {
-              const chainId = targetChainId;
-              const originalId = (onChainDuel as any).originalId ?? onChainDuel.id;
               const res = await fetch('/api/judge', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chainId, duelId: originalId}) });
               const data = await res.json();
+              stepTimers.forEach(clearTimeout);
+              setAgentStep(5);
               if (data.verdict) {
                 setVerdictData(data.verdict);
                 if (data.verdict.settled && data.verdict.winnerSide !== 0) {
                   const wager2 = onChainDuel?.wager ?? 0n;
                   const amt2 = (parseFloat(fmtEther(typeof wager2 === 'bigint' ? wager2 * 2n : BigInt(wager2) * 2n)) * 0.98).toFixed(4);
                   const winnerLabel = data.verdict.winner === 'Red'
-                    ? (isMyRed ? (t.nav.arena==='广场'?'你（红方）':'You (Red)') : (t.nav.arena==='广场'?'对方（红方）':'Opponent (Red)'))
-                    : (isMyRed ? (t.nav.arena==='广场'?'对方（蓝方）':'Opponent (Blue)') : (t.nav.arena==='广场'?'你（蓝方）':'You (Blue)'));
+                    ? (isMyRed ? (isZh?'你（红方）':'You (Red)') : (isZh?'对方（红方）':'Opponent (Red)'))
+                    : (isMyRed ? (isZh?'对方（蓝方）':'Opponent (Blue)') : (isZh?'你（蓝方）':'You (Blue)'));
                   setSettleResult({ winner: winnerLabel, amount: amt2 + ' ' + token });
                   setTimeout(() => setSettleResult(null), 5000);
                   refetch?.();
                 }
               }
-            } catch {}
+            } catch { stepTimers.forEach(clearTimeout); setAgentStep(5); }
             setRequestingRuling(false);
           }} disabled={!!verdictData || requestingRuling} />
         </div>
@@ -1760,6 +1778,87 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
             </div>
           </div>
         </div>
+      </div>
+    )}
+    {showAgentModal && agentStep > 0 && (
+      <div style={{position:'fixed',inset:0,background:'rgba(20,10,40,0.7)',zIndex:70,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px',backdropFilter:'blur(4px)'}}>
+        <div style={{background:'#1A0E2E',border:'1px solid rgba(124,58,237,0.4)',borderRadius:'24px',width:'100%',maxWidth:'360px',overflow:'hidden',boxShadow:'0 20px 60px rgba(124,58,237,0.3)'}}>
+          {/* Header */}
+          <div style={{padding:'20px 20px 0',textAlign:'center'}}>
+            <div style={{fontSize:'32px',marginBottom:'8px',animation:'pulse 2s infinite'}}>⚖️</div>
+            <div style={{fontSize:'16px',fontWeight:700,color:'#E9D5FF',marginBottom:'4px'}}>
+              {agentStep < 5 ? (t.nav.arena==='广场'?'AI 法官分析中...':'AI Judge Analyzing...') : (t.nav.arena==='广场'?'裁定完成':'Analysis Complete')}
+            </div>
+            <div style={{fontSize:'11px',color:'rgba(196,181,253,0.6)',marginBottom:'16px'}}>
+              {agentStep < 5 ? (t.nav.arena==='广场'?'请稍候，AI 正在审查所有证据':'Please wait while AI reviews all evidence') : ''}
+            </div>
+          </div>
+          {/* Steps */}
+          <div style={{padding:'0 20px 16px'}}>
+            {[
+              {n:1, en:'Case Analysis', zh:'案件解析', en2:'Parsing dispute type & conditions', zh2:'解析争议类型和裁定条件'},
+              {n:2, en:'Evidence Review', zh:'证据审查', en2:'Evaluating credibility & fetching links', zh2:'评估证据可信度和链接内容'},
+              {n:3, en:'Condition Analysis', zh:'条件分析', en2:'Cross-referencing ruling standard', zh2:'对照裁定标准逐条分析'},
+              {n:4, en:'Final Ruling', zh:'综合裁定', en2:'Calculating scores & generating report', zh2:'综合评分生成裁定报告'},
+            ].map(step => {
+              const isDone = agentStep > step.n;
+              const isActive = agentStep === step.n;
+              const isPending = agentStep < step.n;
+              return (
+                <div key={step.n} style={{display:'flex',gap:'12px',alignItems:'flex-start',marginBottom:'12px',opacity:isPending ? 0.35 : 1,transition:'opacity 0.5s'}}>
+                  {/* Icon */}
+                  <div style={{width:'28px',height:'28px',borderRadius:'50%',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'13px',
+                    background: isDone ? 'rgba(5,150,105,0.2)' : isActive ? 'rgba(124,58,237,0.3)' : 'rgba(255,255,255,0.05)',
+                    border: isDone ? '1px solid rgba(5,150,105,0.5)' : isActive ? '1px solid rgba(124,58,237,0.6)' : '1px solid rgba(255,255,255,0.1)',
+                    boxShadow: isActive ? '0 0 12px rgba(124,58,237,0.4)' : 'none',
+                  }}>
+                    {isDone ? '✓' : isActive ? '◈' : String(step.n)}
+                  </div>
+                  {/* Content */}
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:'12px',fontWeight:600,color: isDone ? '#6EE7B7' : isActive ? '#C4B5FD' : '#6B7280'}}>
+                      {t.nav.arena==='广场' ? step.zh : step.en}
+                    </div>
+                    <div style={{fontSize:'10px',color:'rgba(156,163,175,0.7)',marginTop:'1px'}}>
+                      {t.nav.arena==='广场' ? step.zh2 : step.en2}
+                    </div>
+                    {/* Progress bar for active step */}
+                    {isActive && agentStep < 5 && (
+                      <div style={{marginTop:'6px',height:'3px',borderRadius:'2px',background:'rgba(255,255,255,0.1)',overflow:'hidden'}}>
+                        <div style={{height:'100%',background:'linear-gradient(90deg,#7C3AED,#C4B5FD)',borderRadius:'2px',
+                          animation:'progress-indeterminate 1.5s ease-in-out infinite',
+                          backgroundSize:'200% 100%'}} />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {/* Bottom */}
+          <div style={{padding:'12px 20px 20px',borderTop:'1px solid rgba(124,58,237,0.2)',textAlign:'center'}}>
+            {agentStep < 5 ? (
+              <div style={{fontSize:'11px',color:'rgba(196,181,253,0.5)',animation:'pulse 2s infinite'}}>
+                {agentStepText}
+              </div>
+            ) : (
+              <button onClick={() => setShowAgentModal(false)}
+                style={{width:'100%',padding:'12px',borderRadius:'14px',fontSize:'13px',fontWeight:600,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#7C3AED,#5B21B6)',color:'#fff',boxShadow:'0 4px 20px rgba(124,58,237,0.4)'}}>
+                {t.nav.arena==='广场'?'✓ 查看裁定结果':'✓ View Result'}
+              </button>
+            )}
+          </div>
+        </div>
+        <style>{`
+          @keyframes progress-indeterminate {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
+        `}</style>
       </div>
     )}
     {showMutualModal && (
