@@ -1250,7 +1250,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
   const [evidenceLinks, setEvidenceLinks] = useState(['', '', '']);
   const [evidencePending, setEvidencePending] = useState(false);
   const [evidenceSubmitted, setEvidenceSubmitted] = useState(false);
-  const [verdictData, setVerdictData] = useState<{winner:string,winnerSide:number,confidence:number,reasoning:string} | null>(null);
+  const [verdictData, setVerdictData] = useState<any>(null);
   const [requestingRuling, setRequestingRuling] = useState(false);
   const [mutualChoice, setMutualChoice] = useState<'self'|'opponent'|null>(null);
   const [mutualPending, setMutualPending] = useState(false);
@@ -1485,16 +1485,34 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
       </div>}
       <div style={S.divider} />
       <div style={{padding:'0 14px 14px',display:'flex',flexDirection:'column',gap:'6px'}}>
-        {verdictData && (
-          <div style={{background: verdictData.winnerSide === (isMyRed ? 1 : 2) ? '#ECFDF5' : '#FFF1F2', border:`1px solid ${verdictData.winnerSide === (isMyRed ? 1 : 2) ? '#A7F3D0' : '#FFE4E6'}`, borderRadius:'12px', padding:'12px 14px', marginBottom:'8px'}}>
-            <div style={{fontSize:'11px',fontWeight:700,color:'#7C3AED',marginBottom:'4px'}}>⚖️ AI {t.nav.arena === '广场' ? '裁定结果' : 'Judge Ruling'}</div>
-            <div style={{fontSize:'14px',fontWeight:700,color: verdictData.winnerSide === (isMyRed ? 1 : 2) ? '#059669' : '#F43F5E',marginBottom:'4px'}}>
-              {verdictData.winner === 'Red' ? (isMyRed ? (t.nav.arena==='广场'?'🏆 你赢了':'🏆 You Win') : (t.nav.arena==='广场'?'💀 对方赢了':'💀 Opponent Wins')) : (isMyRed ? (t.nav.arena==='广场'?'💀 对方赢了':'💀 Opponent Wins') : (t.nav.arena==='广场'?'🏆 你赢了':'🏆 You Win'))}
+        {verdictData && (() => {
+          const isInsufficient = verdictData.winner === 'Insufficient' || verdictData.winnerSide === 0;
+          const iWin = !isInsufficient && verdictData.winnerSide === (isMyRed ? 1 : 2);
+          const bgColor = isInsufficient ? '#FFFBEB' : iWin ? '#ECFDF5' : '#FFF1F2';
+          const borderColor = isInsufficient ? '#FDE68A' : iWin ? '#A7F3D0' : '#FFE4E6';
+          const textColor = isInsufficient ? '#D97706' : iWin ? '#059669' : '#F43F5E';
+          const resultText = isInsufficient
+            ? (t.nav.arena==='广场'?'⚠️ 证据不足，无法裁定':'⚠️ Insufficient Evidence')
+            : iWin ? (t.nav.arena==='广场'?'🏆 你赢了':'🏆 You Win')
+            : (t.nav.arena==='广场'?'💀 对方赢了':'💀 Opponent Wins');
+          const reasoning = verdictData.reasoningZh || verdictData.reasoning || '';
+          const chainId = targetChainId;
+          const originalId = (onChainDuel as any)?.originalId ?? onChainDuel?.id;
+          return (
+            <div style={{background:bgColor,border:`1px solid ${borderColor}`,borderRadius:'12px',padding:'12px 14px',marginBottom:'8px'}}>
+              <div style={{fontSize:'11px',fontWeight:700,color:'#7C3AED',marginBottom:'4px'}}>⚖️ AI {t.nav.arena==='广场'?'裁定结果':'Judge Ruling'}</div>
+              <div style={{fontSize:'14px',fontWeight:700,color:textColor,marginBottom:'4px'}}>{resultText}</div>
+              <div style={{fontSize:'11px',color:'#374151',lineHeight:1.5,fontStyle:'italic',marginBottom:'6px'}}>"{reasoning}"</div>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                <div style={{fontSize:'10px',color:'#9CA3AF'}}>{t.nav.arena==='广场'?'置信度':'Confidence'}: {verdictData.confidence}%</div>
+                <button onClick={() => window.open(`/verdict/${chainId}/${originalId}`, '_blank')}
+                  style={{fontSize:'11px',fontWeight:600,color:'#7C3AED',background:'#F5F3FF',border:'1px solid #DDD6FE',borderRadius:'8px',padding:'4px 10px',cursor:'pointer'}}>
+                  {t.nav.arena==='广场'?'🔍 查看裁定详情':'🔍 View Ruling'}
+                </button>
+              </div>
             </div>
-            <div style={{fontSize:'11px',color:'#374151',lineHeight:1.5,fontStyle:'italic'}}>"{verdictData.reasoning}"</div>
-            <div style={{fontSize:'10px',color:'#9CA3AF',marginTop:'4px'}}>{t.nav.arena==='广场'?'置信度':'Confidence'}: {verdictData.confidence}%</div>
-          </div>
-        )}
+          );
+        })()}
         {opponentClaim > 0 && !mutualSubmitted && (
           <div style={{background:'#FFF7ED',border:'1px solid #FDE68A',borderRadius:'12px',padding:'10px 13px',marginBottom:'8px',fontSize:'12px',color:'#D97706'}}>
             ⚠️ {t.nav.arena === '广场' ? `对方已声明 ${opponentClaim === 1 ? '红方' : '蓝方'} 胜出，请确认你的结果` : `Opponent claimed ${opponentClaim === 1 ? 'Red' : 'Blue'} wins. Please confirm your result`}
