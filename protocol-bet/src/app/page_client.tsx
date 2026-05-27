@@ -1931,7 +1931,7 @@ function MyDuelCard({ record, t, onClaim, claimingId, fullWidth = false, onViewD
             <button onClick={()=>onClaim(record.id)} className={`flex-1 py-2.5 rounded-2xl text-[11px] font-semibold transition-all ${isClaiming ? 'bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]' : 'text-white hover:opacity-90'}`} style={isClaiming ? {} : {background:'#D97706'}}>{isClaiming ? '✓ 已领取!' : m.actions.claim}</button>
             <button className="px-3 py-2.5 rounded-2xl text-[11px] font-semibold text-[#F43F5E] border border-[#FFE4E6] bg-[#FFF1F2] hover:bg-[#FFE4E6] transition-colors flex-shrink-0">{m.actions.dispute}</button>
           </div>
-        ) : (record as any).isExpired && record.side === 'red' && !record.result ? (
+        ) : (record as any).isExpired && record.side === 'red' && !record.result && !(record as any).hasDefender ? (
           <div className="flex gap-2">
             <button onClick={onViewDuel} className="flex-1 py-2.5 rounded-2xl text-[11px] font-semibold text-[#D97706] border border-[#FDE68A] bg-[#FFFBEB] hover:bg-[#FEF3C7] transition-colors">
               {t.nav.arena === '广场' ? '↩️ 申请退款' : '↩️ Request Refund'}
@@ -2127,6 +2127,7 @@ function MyDuelsPage({ t, onGoToArena, onChainDuels, chainId, onViewDuel }: { t:
                 prize: isClaimable && d.winner !== 0 ? (d.winner === (isRed ? 1 : 2) ? parseFloat(fmtEther(d.wager * 196n / 100n)).toFixed(4) : '0') : undefined,
                 expires: isExpired ? (t.nav.arena === '广场' ? '⏰ 已过期' : '⏰ Expired') : formatDeadline(d.deadline),
                 isExpired,
+                hasDefender: d.blue !== '0x0000000000000000000000000000000000000000',
                 network: (d as any).chainName ?? (chainId === 97 ? 'BNB Testnet' : chainId === 5003 ? 'Mantle Sepolia' : 'Unknown'),
                 onChainId: d.id,
               };
