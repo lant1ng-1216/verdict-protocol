@@ -1248,6 +1248,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
   const [mutualChoice, setMutualChoice] = useState<'self'|'opponent'|null>(null);
   const [mutualPending, setMutualPending] = useState(false);
   const [mutualSubmitted, setMutualSubmitted] = useState<'self'|'opponent'|null>(null);
+  const [settleSuccess, setSettleSuccess] = useState<{winner: string, amount: string} | null>(null);
   const [opponentClaim, setOpponentClaim] = useState<number>(0); // 0=none, 1=Red, 2=Blue
 
   // Read opponent's on-chain mutualClaim
@@ -1420,7 +1421,11 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
       </div>
       <div style={S.divider} />
       <div style={S.foot}>
-        <Btn label={cancelPending ? (t.nav.arena === '广场' ? '等待签名...' : 'Signing...') : cancelSuccess ? (t.nav.arena === '广场' ? '✓ 已取消' : '✓ Cancelled') : (t.nav.arena === '广场' ? '取消对决' : 'Cancel Duel')} color="rgba(255,107,107,0.6)" bg="rgba(255,107,107,0.06)" border="rgba(255,107,107,0.2)" onClick={() => onChainDuel && cancel(oid, undefined)} disabled={cancelPending} />
+        {BigInt(Math.floor(Date.now()/1000)) > onChainDuel!.deadline && onChainDuel!.status === DuelStatus.Open ? (
+          <Btn label={cancelPending ? (t.nav.arena==='广场'?'退款中...':'Refunding...') : cancelSuccess ? (t.nav.arena==='广场'?'✓ 已退款':'✓ Refunded') : (t.nav.arena==='广场'?'↩️ 申请退款':'↩️ Request Refund')} color="#D97706" bg="#FFFBEB" border="#FDE68A" onClick={() => onChainDuel && cancel(oid, undefined)} disabled={cancelPending} />
+        ) : (
+          <Btn label={cancelPending ? (t.nav.arena === '广场' ? '等待签名...' : 'Signing...') : cancelSuccess ? (t.nav.arena === '广场' ? '✓ 已取消' : '✓ Cancelled') : (t.nav.arena === '广场' ? '取消对决' : 'Cancel Duel')} color="rgba(255,107,107,0.6)" bg="rgba(255,107,107,0.06)" border="rgba(255,107,107,0.2)" onClick={() => onChainDuel && cancel(oid, undefined)} disabled={cancelPending} />
+        )}
         <Btn label={t.nav.arena === '广场' ? '复制分享链接' : 'Copy Share Link'} color="#9CA3AF" bg="transparent" border="#E5E7EB"
           onClick={() => {
             const url = `${window.location.origin}${window.location.pathname}?duel=${onChainDuel?.id}`;
@@ -1585,6 +1590,26 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
 
   return (
     <>
+    {settleSuccess && (
+      <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',zIndex:100,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'}}
+        onClick={() => setSettleSuccess(null)}>
+        <div style={{background:'#fff',borderRadius:'24px',padding:'32px 24px',textAlign:'center',maxWidth:'320px',width:'100%',boxShadow:'0 20px 60px rgba(0,0,0,0.2)'}}>
+          <div style={{fontSize:'56px',marginBottom:'12px'}}>🎉</div>
+          <div style={{fontSize:'20px',fontWeight:700,color:'#059669',marginBottom:'8px'}}>
+            {t.nav.arena === '广场' ? '结算成功！' : 'Settled!'}
+          </div>
+          <div style={{fontSize:'14px',color:'#374151',marginBottom:'4px'}}>
+            {t.nav.arena === '广场' ? '胜方：' : 'Winner: '}<strong>{settleSuccess.winner}</strong>
+          </div>
+          <div style={{fontSize:'18px',fontWeight:700,color:'#7C3AED',marginTop:'12px'}}>
+            +{settleSuccess.amount}
+          </div>
+          <div style={{fontSize:'11px',color:'#9CA3AF',marginTop:'8px'}}>
+            {t.nav.arena === '广场' ? '点击任意处关闭' : 'Tap anywhere to close'}
+          </div>
+        </div>
+      </div>
+    )}
     {showMutualModal && (
       <div style={{position:'fixed',inset:0,background:'rgba(100,80,160,0.25)',zIndex:60,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'}}
         onClick={() => setShowMutualModal(false)}>
@@ -1661,7 +1686,27 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
                       setShowMutualModal(false);
                       setMutualChoice(null);
                       refetch?.();
-                      setTimeout(() => refetch?.(), 3000);
+                      setTimeout(() => refetch?.(), 2000);
+                      // check if both claimed same side → show settlement success
+                      const rpc = targetChainId === 5003 ? 'https://rpc.sepolia.mantle.xyz' : 'https://data-seed-prebsc-1-s1.bnbchain.org:8545';
+                      const contract = targetChainId === 5003 ? '0xE731a80668Ad0439a6B55e57f65C1D7885827566' : '0xa0A997cF05F7Baf21becEA4130209fD7C7D1A994';
+                      setTimeout(async () => {
+                        try {
+                          const idHex2 = (oid ?? 1).toString(16).padStart(64,'0');
+                          const res2 = await fetch(rpc, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method:'eth_call',params:[{to:contract,data:'0x565e614f'+idHex2},'latest'],id:1})});
+                          const json2 = await res2.json();
+                          const r2 = json2.result.slice(2);
+                          const status2 = parseInt(r2.slice(9*64,10*64),16);
+                          const winner2 = parseInt(r2.slice(10*64,11*64),16);
+                          if (status2 === 2) {
+                            const wager2 = BigInt('0x'+r2.slice(3*64,4*64));
+                            const amt2 = (parseFloat(fmtEther(wager2 * 2n)) * 0.98).toFixed(4);
+                            const winnerLabel = winner2 === 1 ? (isMyRed ? (t.nav.arena==='广场'?'你（红方）':'You (Red)') : (t.nav.arena==='广场'?'对方（红方）':'Opponent (Red)')) : (isMyRed ? (t.nav.arena==='广场'?'对方（蓝方）':'Opponent (Blue)') : (t.nav.arena==='广场'?'你（蓝方）':'You (Blue)'));
+                            setSettleSuccess({winner: winnerLabel, amount: amt2 + ' ' + token});
+                            setTimeout(() => setSettleSuccess(null), 5000);
+                          }
+                        } catch {}
+                      }, 2500);
                     } else {
                       alert(t.nav.arena === '广场' ? '交易失败，请重试' : 'Transaction failed, please retry');
                     }
@@ -1700,6 +1745,78 @@ function DuelModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Duel; t: 
   return <DuelDetailModal duel={duel} t={t} onClose={onClose} onChainDuel={onChainDuel} refetch={refetch} />;
 }
 
+
+
+// ─── HISTORY ROW (流水账单样式) ─────────────────────────────────────────────────
+function HistoryRow({ d, t, address, token, onViewDuel }: {
+  d: OnChainDuel; t: typeof LANG['en']; address?: string; token: string; onViewDuel: () => void;
+}) {
+  const isZh = t.nav.arena === '广场';
+  const myAddr = (address || '').toLowerCase();
+  const isRed = !!(myAddr && d.red.toLowerCase() === myAddr);
+  const claimText = typeof window !== 'undefined'
+    ? localStorage.getItem('claim_' + d.claimHash) || `#${(d as any).originalId ?? d.id} — on-chain duel`
+    : `#${(d as any).originalId ?? d.id}`;
+  const chainToken = (d as any).chainToken ?? token;
+  const chainName = (d as any).chainName ?? 'Unknown';
+  const originalId = (d as any).originalId ?? d.id;
+  const wager = parseFloat(fmtEther(d.wager));
+  const totalPot = wager * 2;
+  const isWon = d.status === DuelStatus.Settled && d.winner === (isRed ? 1 : 2);
+  const isLost = d.status === DuelStatus.Settled && d.winner !== (isRed ? 1 : 2) && d.winner !== 0;
+  const isCancelled = d.status === DuelStatus.Cancelled;
+
+  const resultColor = isWon ? '#059669' : isLost ? '#F43F5E' : '#9CA3AF';
+  const resultBg = isWon ? '#ECFDF5' : isLost ? '#FFF1F2' : '#F9F8FF';
+  const resultText = isWon
+    ? (isZh ? '🏆 胜出' : '🏆 Won')
+    : isLost ? (isZh ? '💀 败北' : '💀 Lost')
+    : isCancelled ? (isZh ? '↩️ 已退款' : '↩️ Refunded')
+    : (isZh ? '已结算' : 'Settled');
+  const amtText = isWon
+    ? `+${(totalPot * 0.98).toFixed(4)}`
+    : isCancelled ? `+${wager.toFixed(4)}`
+    : `-${wager.toFixed(4)}`;
+  const amtColor = isWon || isCancelled ? '#059669' : '#F43F5E';
+
+  const settledDate = d.settledAt && d.settledAt !== '0'
+    ? new Date(parseInt(d.settledAt) * 1000).toLocaleDateString()
+    : '—';
+
+  return (
+    <div
+      onClick={onViewDuel}
+      style={{display:'flex',alignItems:'center',gap:'10px',padding:'10px 14px',borderBottom:'1px solid #F3F0FB',cursor:'pointer',transition:'background 0.1s'}}
+      onMouseEnter={e=>(e.currentTarget.style.background='#F9F8FF')}
+      onMouseLeave={e=>(e.currentTarget.style.background='transparent')}
+    >
+      {/* Result badge */}
+      <div style={{flexShrink:0,minWidth:'68px',padding:'3px 8px',borderRadius:'8px',background:resultBg,textAlign:'center'}}>
+        <span style={{fontSize:'11px',fontWeight:600,color:resultColor}}>{resultText}</span>
+      </div>
+      {/* Claim text */}
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{fontSize:'12px',fontWeight:500,color:'#1A1A2E',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+          {claimText}
+        </div>
+        <div style={{fontSize:'10px',color:'#9CA3AF',marginTop:'2px',display:'flex',gap:'6px',alignItems:'center'}}>
+          <span style={{fontFamily:'monospace'}}>#{String(originalId).padStart(4,'0')}</span>
+          <span>·</span>
+          <span>{chainName}</span>
+          <span>·</span>
+          <span>{settledDate}</span>
+        </div>
+      </div>
+      {/* Amount */}
+      <div style={{flexShrink:0,textAlign:'right'}}>
+        <div style={{fontSize:'13px',fontWeight:700,color:amtColor}}>{amtText}</div>
+        <div style={{fontSize:'10px',color:'#C4B5FD'}}>{chainToken}</div>
+      </div>
+      {/* Arrow */}
+      <div style={{flexShrink:0,color:'#C4B5FD',fontSize:'12px'}}>›</div>
+    </div>
+  );
+}
 
 // ─── MY DUELS PAGE ────────────────────────────────────────────────────────────
 // ─── MY DUEL CARD (grid版) ────────────────────────────────────────────────────
@@ -1950,8 +2067,28 @@ function MyDuelsPage({ t, onGoToArena, onChainDuels, chainId, onViewDuel }: { t:
               </button>
             )}
           </div>
+        ) : activeTab === 'history' ? (
+          /* HISTORY — 流水账单样式 */
+          <div style={{background:'#fff',borderRadius:'16px',border:'1px solid #EEE9FC',overflow:'hidden'}}>
+            {currentDuels.length === 0 ? (
+              <div style={{padding:'32px',textAlign:'center',color:'#9CA3AF',fontSize:'13px'}}>
+                {t.myDuels.empty.history}
+              </div>
+            ) : (
+              currentDuels.map(d => (
+                <HistoryRow
+                  key={d.id}
+                  d={d}
+                  t={t}
+                  address={address}
+                  token={token}
+                  onViewDuel={() => onViewDuel(d)}
+                />
+              ))
+            )}
+          </div>
         ) : (
-          /* CARD GRID */
+          /* CARD GRID — active / claimable */
           <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
             {currentDuels.map(d => {
               const myAddr2 = ((address || (typeof window !== 'undefined' ? (window as any).ethereum?.selectedAddress : '') || '')).toLowerCase();
@@ -1975,7 +2112,7 @@ function MyDuelsPage({ t, onGoToArena, onChainDuels, chainId, onViewDuel }: { t:
                 result: isClaimable ? (d.winner === (isRed ? 1 : 2) ? 'win' as const : 'loss' as const) : undefined,
                 prize: isClaimable && d.winner === (isRed ? 1 : 2) ? parseFloat(fmtEther(d.wager * 2n)).toFixed(3) : undefined,
                 expires: formatDeadline(d.deadline),
-                network: chainId === 97 ? 'BNB Testnet' : chainId === 5003 ? 'Mantle Sepolia' : 'Unknown',
+                network: (d as any).chainName ?? (chainId === 97 ? 'BNB Testnet' : chainId === 5003 ? 'Mantle Sepolia' : 'Unknown'),
                 onChainId: d.id,
               };
               return (
