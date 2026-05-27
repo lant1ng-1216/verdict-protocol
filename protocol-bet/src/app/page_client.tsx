@@ -2139,7 +2139,6 @@ function AppInner() {
   const totalPotStr = totalPotUSD > 0
     ? '$' + (totalPotUSD < 1 ? totalPotUSD.toFixed(4) : totalPotUSD.toFixed(2))
     : onChainDuels.length > 0 ? onChainDuels.length + ' duels' : '—';
-  const totalPotStr = totalCount > 0 ? `${fmtEther(totalPotBigInt)} BNB` : '—';
 
   return (
     <div className="min-h-screen bg-[#F7F5FF] text-[#1A1A2E]">
