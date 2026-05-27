@@ -2121,7 +2121,21 @@ function AppInner() {
 
   // 统计数据
   const totalPotBigInt = onChainDuels.reduce((acc, d) => acc + d.wager * 2n, 0n);
-  const totalPotStr = totalCount > 0 ? `${fmtEther(totalPotBigInt)} BNB` : '—';
+  const [usdPrices, setUsdPrices] = useState<{MNT?: number, BNB?: number, tBNB?: number}>({});
+  useEffect(() => {
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=mantle,binancecoin&vs_currencies=usd')
+      .then(r => r.json())
+      .then(d => setUsdPrices({ MNT: d.mantle?.usd, BNB: d.binancecoin?.usd, tBNB: d.binancecoin?.usd }))
+      .catch(() => {});
+  }, []);
+  const totalPotUSD = onChainDuels.reduce((acc, d) => {
+    const tk = (d as any).chainToken ?? 'BNB';
+    const price = usdPrices[tk as keyof typeof usdPrices] ?? 0;
+    return acc + parseFloat(fmtEther(d.wager * 2n)) * price;
+  }, 0);
+  const totalPotStr = totalPotUSD > 0
+    ? '$' + (totalPotUSD < 1 ? totalPotUSD.toFixed(4) : totalPotUSD.toFixed(2))
+    : totalCount > 0 ? `${totalCount} duels` : '—';
 
   return (
     <div className="min-h-screen bg-[#F7F5FF] text-[#1A1A2E]">
