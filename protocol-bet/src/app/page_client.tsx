@@ -1213,6 +1213,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
   const token = duel.token;
   const wager = onChainDuel ? fmtEther(onChainDuel.wager) : String(duel.challenger.amount);
   const isMock = onChainDuel?.id === 42;
+  const oid = (onChainDuel as any)?.originalId ?? onChainDuel?.id; // original chain id for contract calls
 
   const { openConnectModal } = useConnectModal();
   const { switchChain } = useSwitchChain();
@@ -1372,8 +1373,11 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
           label={!address ? (t.nav.arena === '广场' ? '🔗 连接钱包后参与' : '🔗 Connect Wallet') : isWrongNetwork ? (t.nav.arena === '广场' ? '⚠️ 切换网络' : '⚠️ Switch Network') : acceptSuccess ? (t.nav.arena === '广场' ? '✓ 已接受!' : '✓ Accepted!') : acceptConfirming ? (t.nav.arena === '广场' ? '确认中...' : 'Confirming...') : acceptPending ? (t.nav.arena === '广场' ? '等待签名...' : 'Signing...') : (t.nav.arena === '广场' ? '⚔️ 接受挑战' : '⚔️ Accept Challenge')}
           color={isWrongNetwork ? '#D97706' : '#fff'} bg={isWrongNetwork ? '#FFF7ED' : '#7C3AED'} border={isWrongNetwork ? '#FDE68A' : '#7C3AED'}
           onClick={async () => {
-            const chainDuelId = onChainDuel?.id ?? (duel as any)._onChainId;
+            const chainDuelId = (onChainDuel as any)?.originalId ?? onChainDuel?.id ?? (duel as any)._onChainId;
             const wagerBigInt = onChainDuel?.wager ?? (duel as any)._wager;
+            const contractAddr = targetChainId === 5003
+              ? '0xE731a80668Ad0439a6B55e57f65C1D7885827566'
+              : '0xa0A997cF05F7Baf21becEA4130209fD7C7D1A994';
             if (!chainDuelId) return;
             // 优先用 window.ethereum 直接调用，绕过wagmi状态问题
             if ((window as any).ethereum) {
@@ -1389,11 +1393,11 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
                 const wagerHex = '0x' + (wagerBigInt ?? BigInt(Math.round(parseFloat(wager) * 1e18))).toString(16);
                 await (window as any).ethereum.request({
                   method: 'eth_sendTransaction',
-                  params: [{ from: accounts[0], to: '0xE731a80668Ad0439a6B55e57f65C1D7885827566', value: wagerHex, data }]
+                  params: [{ from: accounts[0], to: contractAddr, value: wagerHex, data }]
                 });
               } catch(e: any) { console.error('accept error:', e); }
             } else if (onChainDuel) {
-              accept(onChainDuel.id, wager);
+              accept(oid, wager);
             } else {
               openConnectModal?.();
             }
@@ -1416,7 +1420,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
       </div>
       <div style={S.divider} />
       <div style={S.foot}>
-        <Btn label={cancelPending ? (t.nav.arena === '广场' ? '等待签名...' : 'Signing...') : cancelSuccess ? (t.nav.arena === '广场' ? '✓ 已取消' : '✓ Cancelled') : (t.nav.arena === '广场' ? '取消对决' : 'Cancel Duel')} color="rgba(255,107,107,0.6)" bg="rgba(255,107,107,0.06)" border="rgba(255,107,107,0.2)" onClick={() => onChainDuel && cancel(onChainDuel.id)} disabled={cancelPending} />
+        <Btn label={cancelPending ? (t.nav.arena === '广场' ? '等待签名...' : 'Signing...') : cancelSuccess ? (t.nav.arena === '广场' ? '✓ 已取消' : '✓ Cancelled') : (t.nav.arena === '广场' ? '取消对决' : 'Cancel Duel')} color="rgba(255,107,107,0.6)" bg="rgba(255,107,107,0.06)" border="rgba(255,107,107,0.2)" onClick={() => onChainDuel && cancel(oid, undefined)} disabled={cancelPending} />
         <Btn label={t.nav.arena === '广场' ? '复制分享链接' : 'Copy Share Link'} color="#9CA3AF" bg="transparent" border="#E5E7EB"
           onClick={() => {
             const url = `${window.location.origin}${window.location.pathname}?duel=${onChainDuel?.id}`;
@@ -1443,8 +1447,8 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
         <div style={{fontSize:'10px',color:'#374151',lineHeight:1.5}}>{t.nav.arena === '广场' ? '到期后可提交证据申请裁定，或与对方达成共识直接结算。' : 'After expiry, submit evidence to request ruling, or reach consensus.'}</div>
       </div>
       {isJudge && <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px'}}>
-        <Btn label={settlePending ? t.nav.arena === '广场' ? '裁定中...' : 'Ruling...' : t.nav.arena === '广场' ? '⚖️ 裁红方胜' : '⚖️ Rule Red Wins'} color="rgba(255,107,107,0.9)" bg="rgba(255,107,107,0.06)" border="rgba(255,107,107,0.3)" onClick={() => onChainDuel && settle(onChainDuel.id, 1)} disabled={settlePending} />
-        <Btn label={settlePending ? t.nav.arena === '广场' ? '裁定中...' : 'Ruling...' : t.nav.arena === '广场' ? '⚖️ 裁蓝方胜' : '⚖️ Rule Blue Wins'} color="rgba(107,159,255,0.9)" bg="rgba(107,159,255,0.06)" border="rgba(107,159,255,0.3)" onClick={() => onChainDuel && settle(onChainDuel.id, 2)} disabled={settlePending} />
+        <Btn label={settlePending ? t.nav.arena === '广场' ? '裁定中...' : 'Ruling...' : t.nav.arena === '广场' ? '⚖️ 裁红方胜' : '⚖️ Rule Red Wins'} color="rgba(255,107,107,0.9)" bg="rgba(255,107,107,0.06)" border="rgba(255,107,107,0.3)" onClick={() => onChainDuel && settle(oid, 1)} disabled={settlePending} />
+        <Btn label={settlePending ? t.nav.arena === '广场' ? '裁定中...' : 'Ruling...' : t.nav.arena === '广场' ? '⚖️ 裁蓝方胜' : '⚖️ Rule Blue Wins'} color="rgba(107,159,255,0.9)" bg="rgba(107,159,255,0.06)" border="rgba(107,159,255,0.3)" onClick={() => onChainDuel && settle(oid, 2)} disabled={settlePending} />
       </div>}
       <div style={S.divider} />
       <div style={{padding:'0 14px 14px',display:'flex',flexDirection:'column',gap:'6px'}}>
@@ -1517,7 +1521,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
         <Btn
           label={!address && !isMock ? '🔗 连接钱包后参与' : isWrongNetwork && !isMock ? (t.nav.arena === '广场' ? '⚠️ 切换网络' : '⚠️ Switch Network') : isMock ? '🎮 演示模式' : betSuccess ? '✓ 押注成功!' : betConfirming ? '确认中...' : betPending ? '等待签名...' : '🔒 确认押注'}
           color={isWrongNetwork && !isMock ? 'rgba(250,199,117,0.9)' : '#6b9fff'} bg={isWrongNetwork && !isMock ? 'rgba(250,199,117,0.06)' : 'rgba(107,159,255,0.1)'} border={isWrongNetwork && !isMock ? 'rgba(250,199,117,0.4)' : 'rgba(107,159,255,0.4)'}
-          onClick={() => { if(!address && !isMock){ openConnectModal?.(); return; } if(isWrongNetwork && !isMock){ switchChain({ chainId: targetChainId }); return; } if(!isMock && selectedSide && betStakeNum && onChainDuel) placeBet(onChainDuel.id, selectedSide, betStake); }}
+          onClick={() => { if(!address && !isMock){ openConnectModal?.(); return; } if(isWrongNetwork && !isMock){ switchChain({ chainId: targetChainId }); return; } if(!isMock && selectedSide && betStakeNum && onChainDuel) placeBet(oid, selectedSide, betStake); }}
           disabled={isMock || betPending || betConfirming || (!!address && !isWrongNetwork && (!selectedSide || !betStakeNum))}
         />
       </div>
@@ -1545,17 +1549,17 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
       </div>
       <div style={S.disputeNote}>⚠️ 质疑窗口期内（48h），任何人可对裁定结果提起质疑，需支付 5% 保证金。</div>
       {isJudge && <div style={{padding:'0 0 8px',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px'}}>
-        <Btn label={settlePending ? t.nav.arena === '广场' ? '裁定中...' : 'Ruling...' : t.nav.arena === '广场' ? '⚖️ 裁红方胜' : '⚖️ Rule Red Wins'} color="rgba(255,107,107,0.9)" bg="rgba(255,107,107,0.06)" border="rgba(255,107,107,0.3)" onClick={() => onChainDuel && settle(onChainDuel.id, 1)} disabled={settlePending} />
-        <Btn label={settlePending ? t.nav.arena === '广场' ? '裁定中...' : 'Ruling...' : t.nav.arena === '广场' ? '⚖️ 裁蓝方胜' : '⚖️ Rule Blue Wins'} color="rgba(107,159,255,0.9)" bg="rgba(107,159,255,0.06)" border="rgba(107,159,255,0.3)" onClick={() => onChainDuel && settle(onChainDuel.id, 2)} disabled={settlePending} />
+        <Btn label={settlePending ? t.nav.arena === '广场' ? '裁定中...' : 'Ruling...' : t.nav.arena === '广场' ? '⚖️ 裁红方胜' : '⚖️ Rule Red Wins'} color="rgba(255,107,107,0.9)" bg="rgba(255,107,107,0.06)" border="rgba(255,107,107,0.3)" onClick={() => onChainDuel && settle(oid, 1)} disabled={settlePending} />
+        <Btn label={settlePending ? t.nav.arena === '广场' ? '裁定中...' : 'Ruling...' : t.nav.arena === '广场' ? '⚖️ 裁蓝方胜' : '⚖️ Rule Blue Wins'} color="rgba(107,159,255,0.9)" bg="rgba(107,159,255,0.06)" border="rgba(107,159,255,0.3)" onClick={() => onChainDuel && settle(oid, 2)} disabled={settlePending} />
       </div>}
       <div style={S.foot}>
         <Btn label={disputePending ? '等待签名...' : disputeSuccess ? '✓ 质疑已提交' : '🚨 提起质疑'} color="rgba(250,199,117,0.9)" bg="rgba(250,199,117,0.06)" border="rgba(250,199,117,0.3)"
-          onClick={() => onChainDuel && dispute(onChainDuel.id, fmtEther(onChainDuel.wager * 5n / 100n))}
+          onClick={() => onChainDuel && dispute(oid, fmtEther(onChainDuel.wager * 5n / 100n))}
           disabled={disputePending || !isParticipant} />
         <Btn
           label={claimSuccess ? '✓ 已领取!' : claimConfirming ? '确认中...' : claimPending ? '等待签名...' : '💰 领取奖励'}
           color="#4ade80" bg="rgba(74,222,128,0.08)" border="rgba(74,222,128,0.3)"
-          onClick={() => onChainDuel && claim(onChainDuel.id)}
+          onClick={() => onChainDuel && claim(oid)}
           disabled={!iWon || claimPending || claimConfirming}
         />
       </div>
