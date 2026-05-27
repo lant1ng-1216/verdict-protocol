@@ -1582,13 +1582,50 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel }: { duel: Duel; t: typ
               </button>
               <button disabled={!mutualChoice || mutualPending}
                 onClick={async () => {
-                  if (!mutualChoice) return;
+                  if (!mutualChoice || !onChainDuel) return;
                   setMutualPending(true);
-                  await new Promise(r => setTimeout(r, 800));
-                  setMutualSubmitted(mutualChoice);
-                  setMutualPending(false);
-                  setShowMutualModal(false);
-                  setMutualChoice(null);
+                  try {
+                    const accounts = await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
+                    const currentChain = await (window as any).ethereum.request({ method: 'eth_chainId' });
+                    // switch network if needed
+                    if (parseInt(currentChain, 16) !== targetChainId) {
+                      await (window as any).ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x' + targetChainId.toString(16) }] });
+                    }
+                    const contractAddr = targetChainId === 5003
+                      ? '0xE731a80668Ad0439a6B55e57f65C1D7885827566'
+                      : '0xa0A997cF05F7Baf21becEA4130209fD7C7D1A994';
+                    const originalId = (onChainDuel as any).originalId ?? onChainDuel.id;
+                    // Side: Red=1, Blue=2. If I chose 'self' and I'm red → Red wins, if I'm blue → Blue wins
+                    const sideNum = mutualChoice === 'self'
+                      ? (isMyRed ? 1 : 2)
+                      : (isMyRed ? 2 : 1);
+                    // encode mutualSettle(uint256,uint8) = 0x8f5bb485
+                    const idHex = originalId.toString(16).padStart(64, '0');
+                    const sideHex = sideNum.toString(16).padStart(64, '0');
+                    const data = '0x8f5bb485' + idHex + sideHex;
+                    const txHash = await (window as any).ethereum.request({
+                      method: 'eth_sendTransaction',
+                      params: [{ from: accounts[0], to: contractAddr, data }]
+                    });
+                    // wait for confirmation
+                    let receipt = null;
+                    for (let i = 0; i < 30; i++) {
+                      await new Promise(r => setTimeout(r, 2000));
+                      receipt = await (window as any).ethereum.request({ method: 'eth_getTransactionReceipt', params: [txHash] });
+                      if (receipt) break;
+                    }
+                    if (receipt?.status === '0x1') {
+                      setMutualSubmitted(mutualChoice);
+                      setShowMutualModal(false);
+                      setMutualChoice(null);
+                    } else {
+                      alert(t.nav.arena === '广场' ? '交易失败，请重试' : 'Transaction failed, please retry');
+                    }
+                  } catch (e: any) {
+                    if (e.code !== 4001) alert(e.message || 'Error');
+                  } finally {
+                    setMutualPending(false);
+                  }
                 }}
                 style={{padding:'11px',borderRadius:'12px',fontSize:'13px',fontWeight:600,border:'none',cursor:mutualChoice?'pointer':'not-allowed',background:mutualChoice?'#7C3AED':'#E5E7EB',color:mutualChoice?'#fff':'#9CA3AF',transition:'all 0.15s'}}>
                 {mutualPending ? t.nav.arena === '广场' ? '提交中...' : 'Submitting...' : t.nav.arena === '广场' ? '确认提交' : 'Confirm'}
