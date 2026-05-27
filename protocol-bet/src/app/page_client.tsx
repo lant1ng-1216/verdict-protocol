@@ -1245,11 +1245,39 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
   const [selectedSide, setSelectedSide] = useState<1|2|null>(null);
   const [betStake, setBetStake] = useState('');
   const [showMutualModal, setShowMutualModal] = useState(false);
+  const [showEvidenceModal, setShowEvidenceModal] = useState(false);
+  const [evidenceDesc, setEvidenceDesc] = useState('');
+  const [evidenceLinks, setEvidenceLinks] = useState(['', '', '']);
+  const [evidencePending, setEvidencePending] = useState(false);
+  const [evidenceSubmitted, setEvidenceSubmitted] = useState(false);
+  const [verdictData, setVerdictData] = useState<{winner:string,winnerSide:number,confidence:number,reasoning:string} | null>(null);
+  const [requestingRuling, setRequestingRuling] = useState(false);
   const [mutualChoice, setMutualChoice] = useState<'self'|'opponent'|null>(null);
   const [mutualPending, setMutualPending] = useState(false);
   const [mutualSubmitted, setMutualSubmitted] = useState<'self'|'opponent'|null>(null);
   const [settleResult, setSettleResult] = useState<{winner: string, amount: string} | null>(null);
   const [opponentClaim, setOpponentClaim] = useState<number>(0); // 0=none, 1=Red, 2=Blue
+
+  // Load existing verdict and evidence status
+  useEffect(() => {
+    if (!onChainDuel) return;
+    const chainId = targetChainId;
+    const originalId = (onChainDuel as any).originalId ?? onChainDuel.id;
+    fetch(`/api/judge?chainId=${chainId}&duelId=${originalId}`)
+      .then(r => r.json())
+      .then(d => { if (d.verdict) setVerdictData(d.verdict); })
+      .catch(() => {});
+    // check if I already submitted evidence
+    const myAddr = address?.toLowerCase() || '';
+    const side = isMyRed ? 'red' : 'blue';
+    fetch(`/api/evidence?chainId=${chainId}&duelId=${originalId}`)
+      .then(r => r.json())
+      .then(d => {
+        const myEvidence = side === 'red' ? d.redEvidence : d.blueEvidence;
+        if (myEvidence?.address?.toLowerCase() === myAddr) setEvidenceSubmitted(true);
+      })
+      .catch(() => {});
+  }, [onChainDuel?.id, address]);
 
   // Read opponent's on-chain mutualClaim
   useEffect(() => {
@@ -1457,6 +1485,16 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
       </div>}
       <div style={S.divider} />
       <div style={{padding:'0 14px 14px',display:'flex',flexDirection:'column',gap:'6px'}}>
+        {verdictData && (
+          <div style={{background: verdictData.winnerSide === (isMyRed ? 1 : 2) ? '#ECFDF5' : '#FFF1F2', border:`1px solid ${verdictData.winnerSide === (isMyRed ? 1 : 2) ? '#A7F3D0' : '#FFE4E6'}`, borderRadius:'12px', padding:'12px 14px', marginBottom:'8px'}}>
+            <div style={{fontSize:'11px',fontWeight:700,color:'#7C3AED',marginBottom:'4px'}}>⚖️ AI {t.nav.arena === '广场' ? '裁定结果' : 'Judge Ruling'}</div>
+            <div style={{fontSize:'14px',fontWeight:700,color: verdictData.winnerSide === (isMyRed ? 1 : 2) ? '#059669' : '#F43F5E',marginBottom:'4px'}}>
+              {verdictData.winner === 'Red' ? (isMyRed ? (t.nav.arena==='广场'?'🏆 你赢了':'🏆 You Win') : (t.nav.arena==='广场'?'💀 对方赢了':'💀 Opponent Wins')) : (isMyRed ? (t.nav.arena==='广场'?'💀 对方赢了':'💀 Opponent Wins') : (t.nav.arena==='广场'?'🏆 你赢了':'🏆 You Win'))}
+            </div>
+            <div style={{fontSize:'11px',color:'#374151',lineHeight:1.5,fontStyle:'italic'}}>"{verdictData.reasoning}"</div>
+            <div style={{fontSize:'10px',color:'#9CA3AF',marginTop:'4px'}}>{t.nav.arena==='广场'?'置信度':'Confidence'}: {verdictData.confidence}%</div>
+          </div>
+        )}
         {opponentClaim > 0 && !mutualSubmitted && (
           <div style={{background:'#FFF7ED',border:'1px solid #FDE68A',borderRadius:'12px',padding:'10px 13px',marginBottom:'8px',fontSize:'12px',color:'#D97706'}}>
             ⚠️ {t.nav.arena === '广场' ? `对方已声明 ${opponentClaim === 1 ? '红方' : '蓝方'} 胜出，请确认你的结果` : `Opponent claimed ${opponentClaim === 1 ? 'Red' : 'Blue'} wins. Please confirm your result`}
@@ -1469,8 +1507,19 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
         )}
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'6px'}}>
           <Btn label={mutualSubmitted ? t.nav.arena === '广场' ? '✅ 已提交' : '✅ Submitted' : t.nav.arena === '广场' ? '共识结算' : 'Mutual Settle'} color={mutualSubmitted ? '#059669' : '#7C3AED'} bg={mutualSubmitted ? '#ECFDF5' : '#F5F3FF'} border={mutualSubmitted ? '#A7F3D0' : '#DDD6FE'} onClick={mutualSubmitted ? undefined : () => setShowMutualModal(true)} disabled={!!mutualSubmitted} />
-          <Btn label={t.nav.arena === '广场' ? '提交证据' : 'Submit Evidence'} color="#3B82F6" bg="#EFF6FF" border="#DBEAFE" disabled={true} />
-          <Btn label={t.nav.arena === '广场' ? '申请裁定' : 'Request Ruling'} color="#D97706" bg="#FFFBEB" border="#FDE68A" disabled={true} />
+          <Btn label={evidenceSubmitted ? (t.nav.arena==='广场'?'✅ 证据已提交':'✅ Evidence Submitted') : (t.nav.arena==='广场'?'提交证据':'Submit Evidence')} color={evidenceSubmitted?'#059669':'#3B82F6'} bg={evidenceSubmitted?'#ECFDF5':'#EFF6FF'} border={evidenceSubmitted?'#A7F3D0':'#DBEAFE'} onClick={evidenceSubmitted ? undefined : () => setShowEvidenceModal(true)} disabled={evidenceSubmitted} />
+          <Btn label={requestingRuling ? (t.nav.arena==='广场'?'裁定中...':'Judging...') : verdictData ? (t.nav.arena==='广场'?'✅ 已裁定':'✅ Judged') : (t.nav.arena==='广场'?'申请裁定':'Request Ruling')} color={verdictData?'#059669':'#D97706'} bg={verdictData?'#ECFDF5':'#FFFBEB'} border={verdictData?'#A7F3D0':'#FDE68A'} onClick={verdictData || requestingRuling ? undefined : async () => {
+            if (!onChainDuel) return;
+            setRequestingRuling(true);
+            try {
+              const chainId = targetChainId;
+              const originalId = (onChainDuel as any).originalId ?? onChainDuel.id;
+              const res = await fetch('/api/judge', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chainId, duelId: originalId}) });
+              const data = await res.json();
+              if (data.verdict) setVerdictData(data.verdict);
+            } catch {}
+            setRequestingRuling(false);
+          }} disabled={!!verdictData || requestingRuling} />
         </div>
         <Btn label={t.nav.arena === '广场' ? '复制分享链接' : 'Copy Share Link'} color="#9CA3AF" bg="transparent" border="#E5E7EB"
           onClick={() => {
@@ -1606,6 +1655,79 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
           </div>
           <div style={{fontSize:'11px',color:'#9CA3AF',marginTop:'8px'}}>
             {t.nav.arena === '广场' ? '点击任意处关闭' : 'Tap anywhere to close'}
+          </div>
+        </div>
+      </div>
+    )}
+    {showEvidenceModal && (
+      <div style={{position:'fixed',inset:0,background:'rgba(100,80,160,0.25)',zIndex:60,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'}}
+        onClick={() => setShowEvidenceModal(false)}>
+        <div style={{background:'#fff',border:'1.5px solid #EEE9FC',borderRadius:'20px',width:'100%',maxWidth:'420px',overflow:'hidden',boxShadow:'0 8px 40px rgba(124,58,237,0.12)'}}
+          onClick={e => e.stopPropagation()}>
+          <div style={{background:'#F7F5FF',borderBottom:'1px solid #EEE9FC',padding:'14px 18px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+            <div style={{fontSize:'14px',fontWeight:600,color:'#1A1A2E'}}>📋 {t.nav.arena === '广场' ? '提交证据' : 'Submit Evidence'}</div>
+            <button onClick={() => setShowEvidenceModal(false)} style={{color:'#9CA3AF',fontSize:'20px',background:'none',border:'none',cursor:'pointer',lineHeight:1}}>×</button>
+          </div>
+          <div style={{padding:'18px'}}>
+            <div style={{fontSize:'12px',color:'#374151',marginBottom:'12px',lineHeight:1.6,background:'#F9F8FF',borderRadius:'10px',padding:'10px 12px',border:'1px solid #EEE9FC'}}>
+              📋 {t.nav.arena === '广场' ? '声明：' : 'Claim: '}<strong>{typeof window !== 'undefined' ? localStorage.getItem('claim_' + onChainDuel?.claimHash) || '' : ''}</strong>
+            </div>
+            <div style={{marginBottom:'14px'}}>
+              <div style={{fontSize:'11px',fontWeight:600,color:'#374151',marginBottom:'6px'}}>
+                {t.nav.arena === '广场' ? '证据描述 *' : 'Evidence Description *'}
+                <span style={{fontSize:'10px',fontWeight:400,color:'#9CA3AF',marginLeft:'6px'}}>{evidenceDesc.length}/500</span>
+              </div>
+              <textarea
+                value={evidenceDesc}
+                onChange={e => setEvidenceDesc(e.target.value.slice(0,500))}
+                placeholder={t.nav.arena === '广场' ? '描述你的证据，说明为什么你应该赢得这场对决...' : 'Describe your evidence and why you should win this duel...'}
+                style={{width:'100%',minHeight:'100px',padding:'10px 12px',borderRadius:'12px',border:'1px solid #DDD6FE',fontSize:'12px',resize:'vertical',outline:'none',fontFamily:'inherit',boxSizing:'border-box',lineHeight:1.5}}
+              />
+            </div>
+            <div style={{marginBottom:'16px'}}>
+              <div style={{fontSize:'11px',fontWeight:600,color:'#374151',marginBottom:'6px'}}>{t.nav.arena === '广场' ? '证据链接（可选，最多3条）' : 'Evidence Links (optional, max 3)'}</div>
+              {evidenceLinks.map((link, i) => (
+                <input key={i} type="url" value={link}
+                  onChange={e => { const nl = [...evidenceLinks]; nl[i] = e.target.value; setEvidenceLinks(nl); }}
+                  placeholder={`URL ${i+1} (https://...)`}
+                  style={{width:'100%',padding:'8px 12px',borderRadius:'10px',border:'1px solid #EEE9FC',fontSize:'12px',marginBottom:'6px',outline:'none',fontFamily:'inherit',boxSizing:'border-box'}}
+                />
+              ))}
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'}}>
+              <button onClick={() => setShowEvidenceModal(false)}
+                style={{padding:'11px',borderRadius:'12px',fontSize:'13px',fontWeight:500,color:'#9CA3AF',border:'1px solid #E5E7EB',background:'transparent',cursor:'pointer'}}>
+                {t.nav.arena === '广场' ? '取消' : 'Cancel'}
+              </button>
+              <button
+                disabled={!evidenceDesc.trim() || evidencePending}
+                onClick={async () => {
+                  if (!evidenceDesc.trim() || !onChainDuel || !address) return;
+                  setEvidencePending(true);
+                  try {
+                    const chainId = targetChainId;
+                    const originalId = (onChainDuel as any).originalId ?? onChainDuel.id;
+                    const side = isMyRed ? 'red' : 'blue';
+                    const res = await fetch('/api/evidence', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        chainId, duelId: originalId, side, address,
+                        description: evidenceDesc,
+                        links: evidenceLinks.filter(l => l.trim()),
+                      })
+                    });
+                    if (res.ok) {
+                      setEvidenceSubmitted(true);
+                      setShowEvidenceModal(false);
+                    }
+                  } catch {}
+                  setEvidencePending(false);
+                }}
+                style={{padding:'11px',borderRadius:'12px',fontSize:'13px',fontWeight:600,border:'none',cursor:evidenceDesc.trim()?'pointer':'not-allowed',background:evidenceDesc.trim()?'#7C3AED':'#E5E7EB',color:evidenceDesc.trim()?'#fff':'#9CA3AF'}}>
+                {evidencePending ? (t.nav.arena === '广场' ? '提交中...' : 'Submitting...') : (t.nav.arena === '广场' ? '提交证据' : 'Submit Evidence')}
+              </button>
+            </div>
           </div>
         </div>
       </div>
