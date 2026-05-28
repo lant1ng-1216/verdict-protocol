@@ -1,3 +1,0 @@
-# IP Arbitration
-
-Coming soon.
