@@ -1,5 +1,5 @@
 {
-  "name": "@verdict-protocol/sdk",
+  "name": "@lant1ng/verdict-protocol-sdk",
   "version": "0.1.0",
   "description": "SDK for integrating Verdict Protocol on-chain wager protocol into your dApp",
   "main": "dist/index.js",
