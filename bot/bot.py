@@ -1,6 +1,6 @@
 """
-Verdict Protocol — Verdict Protocol Telegram Bot v3
-⚖️ Full EVM Support + Verdict Protocol Theme + Bilingual (EN/ZH)
+Verdict Protocol — Meme Court Telegram Bot v3
+⚖️ Full EVM Support + Meme Court Theme + Bilingual (EN/ZH)
 """
 
 import os, re, json, asyncio, aiohttp
@@ -31,7 +31,7 @@ CHAIN_ALIASES = {
     "op":"optimism","mnt":"mantle","avax":"avalanche","avl":"avalanche",
 }
 
-AUTO_DETECT_ORDER = ["eth","bnb","mantle","base","arbitrum","polygon","optimism","avalanche"]
+AUTO_DETECT_ORDER = ["bnb","eth","base","arbitrum","polygon","mantle","optimism","avalanche"]
 EVM_RE = re.compile(r"0x[a-fA-F0-9]{40}")
 KV_URL   = os.getenv("KV_REST_API_URL", "")
 KV_TOKEN = os.getenv("KV_REST_API_TOKEN", "")
@@ -63,88 +63,88 @@ async def kv_get(key: str) -> str:
 # ── Language system ───────────────────────────────────────
 T = {
     "en": {
-        "start_intro": "⚖️ *VERDICT PROTOCOL — Verdict Protocol*\n_The On-Chain Tribunal. Every wallet gets judged._",
-        "start_commands": "*Commands:*\n⚖️ `/scan` `/judge` `<address> [chain]` — Analyze wallet on-chain\n🐋 `/whale` `/wallet` `[chain]` — View whale wallets\n🟢 `/mantle` — Mantle ecosystem live data\n💰 `/price` `<token or address>` — Token price & 24h change\n⚔️ `/compare` `<addr1> <addr2> [chain]` — Compare two wallets, get AI ruling\n👁 `/watch` `/subpoena` `<address> [label]` — Issue surveillance order\n📋 `/watchlist` `/docket` — View active cases\n❌ `/unwatch` `<address>` — Dismiss case\n🚨 `/alert on/off/status` — Mantle ecosystem alerts\n🌐 `/lang en` or `/lang zh` — Switch language",
+        "start_intro": "⚖️ *MEME COURT — Verdict Protocol*\n_The On-Chain Tribunal. Every wallet gets judged._",
+        "start_commands": "*Commands:*\n⚖️ `/scan` `/judge` `<address> [chain]` — Summon wallet to court\n🐋 `/whale` `/suspect` `[chain]` — View whale suspects\n🟢 `/mantle` — Mantle ecosystem live data\n💰 `/price` `<token or address>` — Token price & 24h change\n⚔️ `/compare` `<addr1> <addr2> [chain]` — Compare two wallets, get AI ruling\n👁 `/watch` `/subpoena` `<address> [label]` — Issue surveillance order\n📋 `/watchlist` `/docket` — View active cases\n❌ `/unwatch` `<address>` — Dismiss case\n🌐 `/lang en` or `/lang zh` — Switch language",
         "supported_chains": "Supported Chains",
-        "chains_note": "Or paste any wallet address directly — protocol is always live",
+        "chains_note": "Or paste any wallet address directly — court is always in session",
         "lang_set": "✅ Language set to English",
         "lang_invalid": "Please use `/lang en` or `/lang zh`",
         "scan_usage": "Usage: `/judge <address> [chain]`\nExample: `/judge 0x1234...abcd bnb`",
         "scan_invalid": "❌ *Objection!* Invalid address format.",
         "scan_detecting": "detecting chain...",
-        "scan_session": "⚖️ *Protocol is now live...*\n🔍 Analyzeing {addr} for analysis\n🔗 Chain: {chain}",
+        "scan_session": "⚖️ *Court is now in session...*\n🔍 Summoning {addr} to the stand\n🔗 Chain: {chain}",
         "scan_no_tx": "_No transaction history found_",
         "scan_no_tokens": "_No ERC20 assets found_",
-        "watch_usage": "Usage: `/subpoena <address> [label]`\nExample: `/subpoena 0x1234...abcd WalletA`",
+        "watch_usage": "Usage: `/subpoena <address> [label]`\nExample: `/subpoena 0x1234...abcd SuspectA`",
         "watch_invalid": "❌ Invalid address.",
-        "watch_exists": "⚠️ This wallet is already being watched.",
-        "watch_issued": "📋 *Watch Added*\n━━━━━━━━━━━━━━━━━━━\n👤 *Wallet:* {label}\n{emoji} {chain} · {addr}\n\n_Protocol watch activated. You will be notified of large movements._ 🔨",
-        "watchlist_empty": "📋 *Watch List — No Active Watches*\n\nUse `/subpoena <address>` to add a watch.",
-        "watchlist_header": "📋 *Watch List — Active Watches*\n━━━━━━━━━━━━━━━━━━━\n",
-        "watchlist_footer": "\n_Total: {n} case(s) being watched_",
+        "watch_exists": "⚠️ This suspect is already under surveillance.",
+        "watch_issued": "📋 *Subpoena Issued*\n━━━━━━━━━━━━━━━━━━━\n👤 *Suspect:* {label}\n{emoji} {chain} · {addr}\n\n_Court surveillance activated. You will be notified of large movements._ 🔨",
+        "watchlist_empty": "📋 *Court Docket — No Active Cases*\n\nUse `/subpoena <address>` to open a case.",
+        "watchlist_header": "📋 *Court Docket — Active Cases*\n━━━━━━━━━━━━━━━━━━━\n",
+        "watchlist_footer": "\n_Total: {n} case(s) under surveillance_",
         "unwatch_usage": "Usage: `/unwatch <address>`",
-        "unwatch_ok": "✅ *Report dismissed.* Watch removed. 🔨",
-        "unwatch_fail": "❌ Wallet not found in docket.",
-        "whale_session": "⚖️ *Verdict Protocol — Wallet Analysis*\n🔍 Scanning {emoji} {chain} for whale activity...",
+        "unwatch_ok": "✅ *Case dismissed.* Surveillance order lifted. 🔨",
+        "unwatch_fail": "❌ Suspect not found in docket.",
+        "whale_session": "⚖️ *Meme Court — Suspect Lineup*\n🔍 Scanning {emoji} {chain} for whale activity...",
         "whale_empty": "🐋 No whale activity detected. Court is in recess.",
-        "whale_footer": "\n_All wallets are innocent until proven otherwise_ ⚖️",
+        "whale_footer": "\n_All suspects are innocent until proven otherwise_ ⚖️",
         "compare_usage": "Usage: `/compare <address1> <address2> [chain]`\nExample: `/compare 0xAAA...aaa 0xBBB...bbb mantle`",
         "compare_invalid": "❌ *Invalid address format.*",
-        "compare_session": "⚖️ *Protocol is comparing two wallets...*\n🔍 Analyzeing both defendants for analysis\n🔗 Chain: {emoji} {chain}",
-        "compare_disagree": "⚔️ *Challenge the result?*\n_Issue a duel and let on-chain data decide!_",
+        "compare_session": "⚖️ *Court is comparing two wallets...*\n🔍 Summoning both defendants to the stand\n🔗 Chain: {emoji} {chain}",
+        "compare_disagree": "⚔️ *Disagree with the verdict?*\n_Issue a duel and let the chain decide!_",
         "price_usage": "Usage:\n`/price MNT` — by token name\n`/price 0x1234...abcd mantle` — by contract address",
         "price_fetching": "💰 *Fetching price data...*",
         "price_not_found": "❌ *Token not found:* `{query}`\n\nTry using the contract address:\n`/price 0x... mantle`",
         "mantle_loading": "🟢 *Mantle Ecosystem — Loading...*\n🔍 Fetching live data from DeFiLlama & Mantle RPC...",
         "mantle_no_data": "_No data available_",
         "mantle_rpc_unavail": "_RPC unavailable_",
-        "subpoena_issued": "📋 *Watch added.* Wallet added to watch list. 🔨",
-        "already_watching": "⚠️ Already being watched.",
-        "handle_msg": "⚖️ *Protocol is live.*\nPaste a wallet address to analyze it before the judge, or use /help.",
-        "monitor_alert": "🚨 *PROTOCOL ALERT — {label}*\n━━━━━━━━━━━━━━━━━━━\n{emoji} {chain} · {direction}\n💰 `{val:.4f} {symbol}` detected\n[🔍 View Evidence]({explorer}/tx/{hash})\n\n_Protocol requires your attention._ ⚖️",
+        "subpoena_issued": "📋 *Subpoena issued.* Suspect added to court docket. 🔨",
+        "already_watching": "⚠️ Already under surveillance.",
+        "handle_msg": "⚖️ *Court is in session.*\nPaste a wallet address to summon it before the judge, or use /help.",
+        "monitor_alert": "🚨 *COURT ALERT — {label}*\n━━━━━━━━━━━━━━━━━━━\n{emoji} {chain} · {direction}\n💰 `{val:.4f} {symbol}` detected\n[🔍 View Evidence]({explorer}/tx/{hash})\n\n_The court demands your attention._ ⚖️",
         "monitor_outbound": "📤 OUTBOUND",
         "monitor_inbound": "📥 INBOUND",
     },
     "zh": {
-        "start_intro": "⚖️ *VERDICT PROTOCOL — Verdict Protocol*\n_链上裁判所。每个钱包都将被审判。_",
-        "start_commands": "*命令列表：*\n⚖️ `/scan` `/judge` `<地址> [链]` — 分析链上钱包\n🐋 `/whale` `/wallet` `[链]` — 查看巨鲸钱包\n🟢 `/mantle` — Mantle 生态实时数据\n💰 `/price` `<代币或地址>` — 代币价格与24h涨跌\n⚔️ `/compare` `<地址1> <地址2> [链]` — 对比两个钱包，获取 AI 裁决\n👁 `/watch` `/subpoena` `<地址> [标签]` — 发出监控令\n📋 `/watchlist` `/docket` — 查看活跃监控\n❌ `/unwatch` `<地址>` — 撤销案件\n🚨 `/alert on/off/status` — Mantle 生态异动推送\n🌐 `/lang en` 或 `/lang zh` — 切换语言",
+        "start_intro": "⚖️ *MEME COURT — Verdict Protocol*\n_链上裁判所。每个钱包都将被审判。_",
+        "start_commands": "*命令列表：*\n⚖️ `/scan` `/judge` `<地址> [链]` — 传唤钱包上庭\n🐋 `/whale` `/suspect` `[链]` — 查看巨鲸嫌疑人\n🟢 `/mantle` — Mantle 生态实时数据\n💰 `/price` `<代币或地址>` — 代币价格与24h涨跌\n⚔️ `/compare` `<地址1> <地址2> [链]` — 对比两个钱包，获取 AI 裁决\n👁 `/watch` `/subpoena` `<地址> [标签]` — 发出监控令\n📋 `/watchlist` `/docket` — 查看活跃案件\n❌ `/unwatch` `<地址>` — 撤销案件\n🌐 `/lang en` 或 `/lang zh` — 切换语言",
         "supported_chains": "支持的链",
-        "chains_note": "或直接粘贴钱包地址 — 协议随时运行",
+        "chains_note": "或直接粘贴钱包地址 — 法庭随时开庭",
         "lang_set": "✅ 语言已切换为中文",
         "lang_invalid": "请使用 `/lang en` 或 `/lang zh`",
         "scan_usage": "用法：`/judge <地址> [链]`\n示例：`/judge 0x1234...abcd bnb`",
         "scan_invalid": "❌ *异议！* 地址格式无效。",
         "scan_detecting": "自动检测链中...",
-        "scan_session": "⚖️ *协议运行中...*\n🔍 正在分析 {addr} 上庭\n🔗 链：{chain}",
+        "scan_session": "⚖️ *法庭开庭中...*\n🔍 正在传唤 {addr} 上庭\n🔗 链：{chain}",
         "scan_no_tx": "_未找到交易记录_",
         "scan_no_tokens": "_未找到 ERC20 资产_",
-        "watch_usage": "用法：`/subpoena <地址> [标签]`\n示例：`/subpoena 0x1234...abcd 钱包A`",
+        "watch_usage": "用法：`/subpoena <地址> [标签]`\n示例：`/subpoena 0x1234...abcd 嫌疑人A`",
         "watch_invalid": "❌ 地址无效。",
-        "watch_exists": "⚠️ 该钱包已在监控列表中。",
-        "watch_issued": "📋 *已发出传票*\n━━━━━━━━━━━━━━━━━━━\n👤 *钱包：* {label}\n{emoji} {chain} · {addr}\n\n_协议监控已激活。发现大额转账将立即通知你。_ 🔨",
-        "watchlist_empty": "📋 *监控列表 — 无活跃监控*\n\n使用 `/subpoena <地址>` 添加监控。",
-        "watchlist_header": "📋 *监控列表 — 活跃监控*\n━━━━━━━━━━━━━━━━━━━\n",
-        "watchlist_footer": "\n_共 {n} 个地址监控中_",
+        "watch_exists": "⚠️ 该嫌疑人已在监控中。",
+        "watch_issued": "📋 *已发出传票*\n━━━━━━━━━━━━━━━━━━━\n👤 *嫌疑人：* {label}\n{emoji} {chain} · {addr}\n\n_法庭监控已激活。发现大额转账将立即通知你。_ 🔨",
+        "watchlist_empty": "📋 *案件台账 — 无活跃案件*\n\n使用 `/subpoena <地址>` 立案。",
+        "watchlist_header": "📋 *案件台账 — 活跃案件*\n━━━━━━━━━━━━━━━━━━━\n",
+        "watchlist_footer": "\n_共 {n} 个案件监控中_",
         "unwatch_usage": "用法：`/unwatch <地址>`",
-        "unwatch_ok": "✅ *监控已移除。* 监控已移除。 🔨",
-        "unwatch_fail": "❌ 台账中未找到该钱包。",
-        "whale_session": "⚖️ *法庭钱包分析*\n🔍 正在扫描 {emoji} {chain} 巨鲸活动...",
-        "whale_empty": "🐋 未检测到巨鲸活动。协议暂时离线。",
-        "whale_footer": "\n_所有钱包在定罪前均为无辜_ ⚖️",
+        "unwatch_ok": "✅ *案件已撤销。* 监控令已解除。 🔨",
+        "unwatch_fail": "❌ 台账中未找到该嫌疑人。",
+        "whale_session": "⚖️ *法庭嫌疑人排查*\n🔍 正在扫描 {emoji} {chain} 巨鲸活动...",
+        "whale_empty": "🐋 未检测到巨鲸活动。法庭暂时休庭。",
+        "whale_footer": "\n_所有嫌疑人在定罪前均为无辜_ ⚖️",
         "compare_usage": "用法：`/compare <地址1> <地址2> [链]`\n示例：`/compare 0xAAA...aaa 0xBBB...bbb mantle`",
         "compare_invalid": "❌ *地址格式无效。*",
-        "compare_session": "⚖️ *协议正在比对两个钱包...*\n🔍 正在分析两位被告上庭\n🔗 链：{emoji} {chain}",
-        "compare_disagree": "⚔️ *对结果有异议？*\n_发起对决，让数据说话！_",
+        "compare_session": "⚖️ *法庭正在比对两个钱包...*\n🔍 正在传唤两位被告上庭\n🔗 链：{emoji} {chain}",
+        "compare_disagree": "⚔️ *对裁决有异议？*\n_发起对决，让链上数据说话！_",
         "price_usage": "用法：\n`/price MNT` — 按代币名称\n`/price 0x1234...abcd mantle` — 按合约地址",
         "price_fetching": "💰 *正在获取价格数据...*",
         "price_not_found": "❌ *未找到代币：* `{query}`\n\n请尝试使用合约地址：\n`/price 0x... mantle`",
         "mantle_loading": "🟢 *Mantle 生态报告 — 加载中...*\n🔍 正在从 DeFiLlama & Mantle RPC 获取实时数据...",
         "mantle_no_data": "_暂无数据_",
         "mantle_rpc_unavail": "_RPC 不可用_",
-        "subpoena_issued": "📋 *已加入监控。* 钱包已加入监控列表。 🔨",
-        "already_watching": "⚠️ 已在监控列表中。",
-        "handle_msg": "⚖️ *协议运行中。*\n粘贴钱包地址即可分析上庭，或使用 /help。",
-        "monitor_alert": "🚨 *协议警报 — {label}*\n━━━━━━━━━━━━━━━━━━━\n{emoji} {chain} · {direction}\n💰 检测到 `{val:.4f} {symbol}`\n[🔍 查看证据]({explorer}/tx/{hash})\n\n_协议需要你立即关注。_ ⚖️",
+        "subpoena_issued": "📋 *传票已发出。* 嫌疑人已加入案件台账。 🔨",
+        "already_watching": "⚠️ 已在监控中。",
+        "handle_msg": "⚖️ *法庭开庭中。*\n粘贴钱包地址即可传唤上庭，或使用 /help。",
+        "monitor_alert": "🚨 *法庭警报 — {label}*\n━━━━━━━━━━━━━━━━━━━\n{emoji} {chain} · {direction}\n💰 检测到 `{val:.4f} {symbol}`\n[🔍 查看证据]({explorer}/tx/{hash})\n\n_法庭要求你立即关注。_ ⚖️",
         "monitor_outbound": "📤 转出",
         "monitor_inbound": "📥 转入",
     }
@@ -247,13 +247,13 @@ def parse_chain(args: list) -> tuple:
     return address, chain
 
 async def ai_judge(address, chain, transfers, balance):
-    if not DEEPSEEK_KEY: return "The AI analysis is unavailable. Judgment deferred."
+    if not DEEPSEEK_KEY: return "The court stenographer is unavailable. Judgment deferred."
     ci = CHAINS[chain]
     try: nb = f"{float(balance.get('balance','0'))/1e18:.4f} {ci['symbol']}"
     except: nb = f"? {ci['symbol']}"
     txs = [{"from":t.get("from_address","")[:10],"to":t.get("to_address","")[:10],
              "value":t.get("value","0"),"time":t.get("block_timestamp","")} for t in transfers[:5]]
-    prompt = f"""You are the AI Judge of Verdict Protocol — a crypto on-chain tribunal.
+    prompt = f"""You are the AI Judge of Meme Court — a crypto on-chain tribunal.
 Analyze this {ci['name']} wallet and deliver a dramatic court verdict.
 
 Address: {address}
@@ -262,7 +262,7 @@ Recent transactions: {json.dumps(txs)}
 
 Respond in exactly 2 sentences using judge/court language:
 - Sentence 1: Is this wallet a whale, suspicious actor, or ordinary citizen?
-- Sentence 2: Your ruling — guilty/innocent/being watched, and why.
+- Sentence 2: Your ruling — guilty/innocent/under surveillance, and why.
 
 Be dramatic but factual. Use phrases like "The court finds...", "This defendant...", "Hereby sentenced to..."."""
 
@@ -277,117 +277,14 @@ Be dramatic but factual. Use phrases like "The court finds...", "This defendant.
                     d = await r.json()
                     return d["choices"][0]["message"]["content"].strip()
     except: pass
-    return "The protocol is offline. Judgment deferred pending further evidence."
+    return "The court is in recess. Judgment deferred pending further evidence."
 
 def verdict_label(balance_eth: float, tx_count: int) -> tuple:
-    # Legacy function kept for compatibility
     if balance_eth > 10000: return ("GUILTY — MEGA WHALE", "🔴")
     if balance_eth > 1000:  return ("GUILTY — WHALE ACTIVITY", "🟠")
     if balance_eth > 100:   return ("PERSON OF INTEREST", "🟡")
-    if tx_count == 0:       return ("REPORT DISMISSED — NO EVIDENCE", "⚪")
+    if tx_count == 0:       return ("CASE DISMISSED — NO EVIDENCE", "⚪")
     return ("INNOCENT — ORDINARY CITIZEN", "🟢")
-
-def risk_score(address: str, transfers: list, balance: dict, tokens: list, total_usd: float = 0) -> dict:
-    """Calculate structured risk score for a wallet (0-100, higher = riskier)."""
-    score = 0
-    flags = []
-
-    try: native_eth = float(balance.get("balance", "0")) / 1e18
-    except: native_eth = 0.0
-
-    tx_count = len(transfers)
-    out_txs = [t for t in transfers if t.get("from_address", "").lower() == address.lower()]
-    in_txs  = [t for t in transfers if t.get("to_address",   "").lower() == address.lower()]
-
-    # ── Low balance ──
-    if total_usd < 1.0 and tx_count > 0:
-        score += 15
-        flags.append("Minimal holdings — dust wallet or recently drained")
-
-    # ── One-way flow: all IN, no OUT ──
-    if tx_count >= 3 and len(out_txs) == 0:
-        score += 15
-        flags.append("All inbound — no outgoing transactions detected")
-
-    # ── Sudden large outflow ──
-    if out_txs:
-        try:
-            max_out = max(float(t.get("value", "0")) / 1e18 for t in out_txs)
-            if max_out > 10 and max_out > native_eth * 5:
-                score += 20
-                flags.append(f"Large outflow detected ({max_out:.2f} native tokens)")
-        except: pass
-
-    # ── Single token concentration ──
-    if len(tokens) <= 1 and total_usd > 100:
-        score += 10
-        flags.append("High concentration — single asset dominates portfolio")
-
-    # ── Dormant wallet ──
-    if transfers:
-        try:
-            from datetime import datetime, timezone
-            last_ts = transfers[0].get("block_timestamp", "")
-            if last_ts:
-                dt = datetime.fromisoformat(last_ts.replace("Z", "+00:00"))
-                days_inactive = (datetime.now(timezone.utc) - dt).days
-                if days_inactive > 180:
-                    score += 10
-                    flags.append(f"Dormant — last activity {days_inactive}d ago")
-        except: pass
-
-    # ── Positive signals (reduce score) ──
-    if total_usd > 1_000_000:
-        score = max(0, score - 15)
-        flags.append("Large institutional balance — risk reduced")
-    if tx_count > 50:
-        score = max(0, score - 10)
-
-    # ── No activity at all ──
-    if tx_count == 0:
-        score = 5
-        flags = ["No on-chain activity found"]
-
-    score = max(0, min(100, score))
-
-    if score <= 30:
-        level = "ACQUITTED"
-        emoji = "⚖️"
-        desc  = "No evidence of wrongdoing"
-    elif score <= 60:
-        level = "UNDER REVIEW"
-        emoji = "🔍"
-        desc  = "Patterns worth monitoring"
-    elif score <= 80:
-        level = "SUSPICIOUS"
-        emoji = "⚠️"
-        desc  = "Multiple red flags detected"
-    else:
-        level = "CONDEMNED"
-        emoji = "🔨"
-        desc  = "Extreme risk signals"
-
-    return {
-        "score": score,
-        "level": level,
-        "emoji": emoji,
-        "desc": desc,
-        "flags": flags,
-    }
-
-def format_risk_block(risk: dict) -> str:
-    """Format risk score into a Telegram-ready string."""
-    bar_filled = "█" * (risk["score"] // 10)
-    bar_empty  = "░" * (10 - risk["score"] // 10)
-    lines = [
-        f"{risk['emoji']} *{risk['level']}* — {risk['score']}/100",
-        f"`{bar_filled}{bar_empty}`  {risk['desc']}",
-    ]
-    if risk["flags"]:
-        lines.append("")
-        for f in risk["flags"]:
-            lines.append(f"  • {f}")
-    return "\n".join(lines)
 
 # ── Commands ──────────────────────────────────────────────
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -412,131 +309,6 @@ f"""{L["start_intro"]}
             InlineKeyboardButton("⚖️ verdictprotocol.online", url="https://verdictprotocol.online")
         ]]),
         disable_web_page_preview=True)
-
-LLAMA_CHAIN_MAP = {
-    "bsc": "bsc", "eth": "ethereum", "polygon": "polygon",
-    "arbitrum": "arbitrum", "optimism": "optimism", "base": "base",
-    "mantle": "mantle", "avalanche": "avax"
-}
-
-NATIVE_COIN_IDS = {
-    "eth": "coingecko:ethereum",
-    "bnb": "coingecko:binancecoin",
-    "mantle": "coingecko:mantle",
-    "polygon": "coingecko:matic-network",
-    "arbitrum": "coingecko:ethereum",
-    "optimism": "coingecko:ethereum",
-    "base": "coingecko:ethereum",
-    "avalanche": "coingecko:avalanche-2",
-}
-
-async def fetch_usd_price(symbol_or_id: str) -> float:
-    """Fetch USD price for a token symbol via DeFiLlama."""
-    common = {
-        "eth": "coingecko:ethereum", "bnb": "coingecko:binancecoin",
-        "mnt": "coingecko:mantle", "btc": "coingecko:bitcoin",
-        "usdt": "coingecko:tether", "usdc": "coingecko:usd-coin",
-        "matic": "coingecko:matic-network", "avax": "coingecko:avalanche-2",
-        "dai": "coingecko:dai", "weth": "coingecko:ethereum",
-    }
-    coin_id = common.get(symbol_or_id.lower(), f"coingecko:{symbol_or_id.lower()}")
-    try:
-        async with aiohttp.ClientSession(trust_env=False) as s:
-            async with s.get(
-                f"https://coins.llama.fi/prices/current/{coin_id}",
-                timeout=aiohttp.ClientTimeout(total=8)
-            ) as r:
-                if r.status == 200:
-                    d = await r.json()
-                    coins = d.get("coins", {})
-                    if coins:
-                        return list(coins.values())[0].get("price", 0.0)
-    except Exception as e:
-        print(f"fetch_usd_price error: {e}")
-    return 0.0
-
-async def fetch_token_usd_price(contract: str, chain: str) -> float:
-    """Fetch USD price for a token by contract address via DeFiLlama."""
-    llama_chain = LLAMA_CHAIN_MAP.get(CHAINS.get(chain, {}).get("moralis_chain", chain), "ethereum")
-    url = f"https://coins.llama.fi/prices/current/{llama_chain}:{contract}"
-    try:
-        async with aiohttp.ClientSession(trust_env=False) as s:
-            async with s.get(url, timeout=aiohttp.ClientTimeout(total=8)) as r:
-                if r.status == 200:
-                    d = await r.json()
-                    coins = d.get("coins", {})
-                    if coins:
-                        return list(coins.values())[0].get("price", 0.0)
-    except Exception as e:
-        print(f"fetch_token_usd_price error: {e}")
-    return 0.0
-
-def bar(pct: float, width: int = 8) -> str:
-    """Generate a simple text progress bar."""
-    filled = round(pct / 100 * width)
-    return "█" * filled + "░" * (width - filled)
-
-async def build_holdings_display(address: str, chain: str, balance: dict, tokens: list) -> str:
-    """Build USD holdings display with token breakdown bar chart."""
-    ci = CHAINS[chain]
-    symbol = ci["symbol"]
-
-    # Native token USD value
-    native_price = await fetch_usd_price(symbol)
-    try:
-        native_amount = float(balance.get("balance", "0")) / 1e18
-    except:
-        native_amount = 0.0
-    native_usd = native_amount * native_price
-
-    # ERC20 tokens USD values (parallel fetch)
-    token_items = []
-    async def get_token_val(t):
-        try:
-            amt = float(t.get("balance", "0")) / (10 ** int(t.get("decimals", 18)))
-        except:
-            amt = 0.0
-        if amt <= 0:
-            return
-        sym = t.get("symbol", "?")
-        addr = t.get("token_address", "")
-        price = await fetch_token_usd_price(addr, chain) if addr else await fetch_usd_price(sym)
-        usd_val = amt * price
-        if usd_val > 0.01:
-            token_items.append({"symbol": sym, "amount": amt, "usd": usd_val})
-
-    await asyncio.gather(*[get_token_val(t) for t in tokens[:6]])
-    token_items.sort(key=lambda x: x["usd"], reverse=True)
-
-    # Total USD
-    total_usd = native_usd + sum(t["usd"] for t in token_items)
-
-    lines = []
-    if total_usd > 0:
-        lines.append(f"💵 *Total: ${total_usd:,.2f} USD*")
-        lines.append("")
-
-        # Native token row
-        if native_usd > 0.01:
-            pct = native_usd / total_usd * 100
-            lines.append(f"  `{bar(pct)}` {symbol} {pct:.1f}%  ${native_usd:,.2f}")
-
-        # ERC20 rows (top 3)
-        for t in token_items[:3]:
-            pct = t["usd"] / total_usd * 100
-            lines.append(f"  `{bar(pct)}` {t['symbol']} {pct:.1f}%  ${t['usd']:,.2f}")
-
-        # Others
-        others = token_items[3:]
-        if others:
-            other_usd = sum(o["usd"] for o in others)
-            pct = other_usd / total_usd * 100
-            lines.append(f"  `{bar(pct)}` Other {pct:.1f}%  ${other_usd:,.2f}")
-    else:
-        lines.append(f"💰 Holdings: `{native_amount:.4f} {symbol}` _(value unavailable)_")
-
-    return "\n".join(lines)
-
 
 async def scan_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
@@ -569,42 +341,35 @@ async def scan_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     try: nb_raw = float(balance.get("balance","0"))/1e18
     except: nb_raw = 0
+    nb = f"{nb_raw:,.4f} {ci['symbol']}"
 
     tx_lines = []
     for tx in transfers[:5]:
         d = "📤 OUT" if tx.get("from_address","").lower()==address.lower() else "📥 IN"
         tx_lines.append(f"  {d} `{fval(tx.get('value','0'))}` · {tago(tx.get('block_timestamp',''))}")
+    token_lines = [f"  • {t.get('symbol','?')}: `{fval(t.get('balance','0'),int(t.get('decimals',18)))}`" for t in tokens[:3]]
 
-    holdings_display = await build_holdings_display(address, chain, balance, tokens)
-
-    # Extract total_usd from holdings for risk scoring
-    try:
-        native_price = await fetch_usd_price(ci["symbol"])
-        total_usd_val = nb_raw * native_price
-    except:
-        total_usd_val = 0.0
-
-    risk = risk_score(address, transfers, balance, tokens, total_usd_val)
-    risk_block = format_risk_block(risk)
+    vtext, vemoji = verdict_label(nb_raw, len(transfers))
     case_no = case_number(address)
 
-    report = f"""⚖️ *VERDICT PROTOCOL — REPORT {case_no}*
+    report = f"""⚖️ *MEME COURT — CASE {case_no}*
 ━━━━━━━━━━━━━━━━━━━
-👨‍⚖️ *VERDICT PROTOCOL AI ANALYSIS*
+👨‍⚖️ *THE HONORABLE AI JUDGE PRESIDING*
 🪙 *Defendant:* {saddr(address)}
-🔗 *Network:* {ci['emoji']} {ci['name']}
+🔗 *Jurisdiction:* {ci['emoji']} {ci['name']}
 ━━━━━━━━━━━━━━━━━━━
-📋 *HOLDINGS*
-{holdings_display}
-━━━━━━━━━━━━━━━━━━━
-📊 *TRANSACTIONS*
-Analyzed: `{len(transfers)}`
+📋 *EVIDENCE ON RECORD*
+💰 Holdings: `{nb}`
+📊 Transactions reviewed: `{len(transfers)}`
+
 {chr(10).join(tx_lines) if tx_lines else "  " + L["scan_no_tx"]}
 ━━━━━━━━━━━━━━━━━━━
-🔎 *RISK ASSESSMENT*
-{risk_block}
+🪙 *ASSETS SEIZED FOR REVIEW*
+{chr(10).join(token_lines) if token_lines else "  " + L["scan_no_tokens"]}
 ━━━━━━━━━━━━━━━━━━━
-👨‍⚖️ *AI Verdict:*
+🔨 *VERDICT: {vtext}* {vemoji}
+━━━━━━━━━━━━━━━━━━━
+👨‍⚖️ *Judge's Ruling:*
 _{ruling}_
 ━━━━━━━━━━━━━━━━━━━
 [🔍 Block Explorer]({ci['explorer']}/address/{address}) · [⚖️ verdictprotocol.online](https://verdictprotocol.online)"""
@@ -612,7 +377,7 @@ _{ruling}_
     await wait.delete()
     await update.message.reply_text(report, parse_mode="Markdown",
         reply_markup=InlineKeyboardMarkup([[
-            InlineKeyboardButton("👁 Add to Watch", callback_data=f"watch:{address}:{chain}"),
+            InlineKeyboardButton("👁 Issue Subpoena", callback_data=f"watch:{address}:{chain}"),
             InlineKeyboardButton("🔍 Block Explorer", url=f"{ci['explorer']}/address/{address}"),
         ]]), disable_web_page_preview=True)
 
@@ -628,14 +393,10 @@ async def watch_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not EVM_RE.match(address):
         await update.message.reply_text(L["watch_invalid"]); return
     label = args[1] if len(args)>1 else address[:8]+"..."
-    chain = None
+    chain = "bnb"
     if len(args)>2:
         raw = args[2].lower()
-        resolved = CHAIN_ALIASES.get(raw, raw)
-        if resolved in CHAINS:
-            chain = resolved
-    if not chain:
-        chain = await auto_detect_chain(address)
+        chain = CHAIN_ALIASES.get(raw, raw) if raw in CHAIN_ALIASES or raw in CHAINS else "bnb"
     ci = CHAINS[chain]
     chat_id = update.effective_chat.id
     if chat_id not in watchlist: watchlist[chat_id] = []
@@ -722,12 +483,12 @@ async def whale_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not results:
         await wait.edit_text(L["whale_empty"], parse_mode="Markdown"); return
 
-    lines = [f"⚖️ *VERDICT PROTOCOL — WALLET ANALYSIS*\n{ci['emoji']} *{ci['name']} Whale Watch*\n━━━━━━━━━━━━━━━━━━━"]
+    lines = [f"⚖️ *MEME COURT — SUSPECT LINEUP*\n{ci['emoji']} *{ci['name']} Whale Watch*\n━━━━━━━━━━━━━━━━━━━"]
     for i, r in enumerate(results, 1):
         bal_fmt = f"{r['balance']/1e3:.1f}K" if r['balance']>=1000 else f"{r['balance']:.2f}"
         status = "🔴 ACTIVE" if r['last_time'] and ("s ago" in tago(r['last_time']) or "m ago" in tago(r['last_time'])) else "🟡 RECENT"
         lines.append(
-            f"\n*Wallet #{i}:* {r['label']}\n"
+            f"\n*Suspect #{i}:* {r['label']}\n"
             f"  💰 `{bal_fmt} {ci['symbol']}` · {status}\n"
             f"  {r['direction']} `{r['last_val']:.4f}` · {tago(r['last_time'])}\n"
             f"  {saddr(r['address'])}"
@@ -754,24 +515,17 @@ async def compare_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(L["compare_invalid"], parse_mode="Markdown")
         return
 
-    chain = None
+    chain = "bnb"
     if len(args) > 2:
         raw = args[2].lower()
-        resolved = CHAIN_ALIASES.get(raw, raw)
-        if resolved in CHAINS:
-            chain = resolved
+        chain = CHAIN_ALIASES.get(raw, raw) if raw in CHAIN_ALIASES or raw in CHAINS else "bnb"
 
-    ci_name = CHAINS.get(chain, {}).get("name", L["scan_detecting"]) if chain else L["scan_detecting"]
+    ci = CHAINS[chain]
     case_no = case_number(addr1 + addr2)
 
     wait = await update.message.reply_text(
-        L["compare_session"].format(emoji=CHAINS.get(chain, CHAINS["eth"])["emoji"] if chain else "🔍", chain=ci_name),
+        L["compare_session"].format(emoji=ci["emoji"], chain=ci["name"]),
         parse_mode="Markdown")
-
-    if not chain:
-        chain = await auto_detect_chain(addr1)
-
-    ci = CHAINS[chain]
 
     txs1, bal1, tok1, txs2, bal2, tok2 = await asyncio.gather(
         get_transfers(addr1, chain, 20), get_balance(addr1, chain), get_tokens(addr1, chain),
@@ -823,7 +577,7 @@ Respond in exactly 2 dramatic sentences. Declare the winner."""
                     if r.status==200:
                         d = await r.json()
                         ruling = d["choices"][0]["message"]["content"].strip()
-        except: ruling = "Protocol analysis unavailable at this time."
+        except: ruling = "The court is unable to reach a verdict at this time."
     if not ruling:
         ruling = await ai_judge(addr1, chain, txs1, bal1)
 
@@ -831,33 +585,30 @@ Respond in exactly 2 dramatic sentences. Declare the winner."""
     score_bar1 = "█" * (a1['score']//10) + "░" * (10 - a1['score']//10)
     score_bar2 = "█" * (a2['score']//10) + "░" * (10 - a2['score']//10)
 
-    h1_display = await build_holdings_display(addr1, chain, bal1, tok1)
-    h2_display = await build_holdings_display(addr2, chain, bal2, tok2)
-
-    report = f"""⚖️ *VERDICT PROTOCOL — REPORT {case_no}*
+    report = f"""⚖️ *VERDICT PROTOCOL — CASE {case_no}*
 {ci['emoji']} *{ci['name']} Wallet Comparison*
 ━━━━━━━━━━━━━━━━━━━
 *🔴 RED CORNER*
   👤 `{addr1[:6]}...{addr1[-4:]}`
-{h1_display}
+  💰 Balance: `{fmt(a1['balance'])} {symbol}`
   📊 Transactions: `{a1['tx_count']}`
   💸 Net Flow: `{'+' if a1['net']>=0 else ''}{fmt(a1['net'])} {symbol}`
   🕐 Last Active: `{a1['last_active']}`
 
 *🔵 BLUE CORNER*
   👤 `{addr2[:6]}...{addr2[-4:]}`
-{h2_display}
+  💰 Balance: `{fmt(a2['balance'])} {symbol}`
   📊 Transactions: `{a2['tx_count']}`
   💸 Net Flow: `{'+' if a2['net']>=0 else ''}{fmt(a2['net'])} {symbol}`
   🕐 Last Active: `{a2['last_active']}`
 ━━━━━━━━━━━━━━━━━━━
-📊 *PROTOCOL SCORING*
+📊 *COURT SCORING*
   🔴 `{score_bar1}` {a1['score']}/100
   🔵 `{score_bar2}` {a2['score']}/100
 ━━━━━━━━━━━━━━━━━━━
 🏆 *LEADING: {winner} CORNER*
 ━━━━━━━━━━━━━━━━━━━
-👨‍⚖️ *AI Verdict:*
+👨‍⚖️ *AI Judge Ruling:*
 _{ruling}_
 ━━━━━━━━━━━━━━━━━━━
 {L["compare_disagree"]}
@@ -1137,172 +888,21 @@ async def monitor_wallets(app):
                     if val < ci["whale_threshold"]/2000: continue
                     direction_en = "📤 OUTBOUND" if tx.get("from_address","").lower()==w["address"].lower() else "📥 INBOUND"
                     await app.bot.send_message(chat_id,
-                        f"🚨 *PROTOCOL ALERT — {w['label']}*\n━━━━━━━━━━━━━━━━━━━\n"
+                        f"🚨 *COURT ALERT — {w['label']}*\n━━━━━━━━━━━━━━━━━━━\n"
                         f"{ci['emoji']} {ci['name']} · {direction_en}\n"
                         f"💰 `{val:.4f} {ci['symbol']}` detected\n"
                         f"[🔍 View Evidence]({ci['explorer']}/tx/{h})\n\n"
-                        f"_Protocol requires your attention._ ⚖️",
+                        f"_The court demands your attention._ ⚖️",
                         parse_mode="Markdown", disable_web_page_preview=True)
                 except Exception as e:
                     print(f"Monitor err: {e}")
-
-# ── Mantle Alert System ───────────────────────────────────
-alert_subscribers: dict = {}  # chat_id -> {"tvl": float, "price": float, "active": bool}
-
-ALERT_TVL_THRESHOLD   = 5.0   # % change
-ALERT_PRICE_THRESHOLD = 8.0   # % change
-ALERT_INTERVAL        = 1800  # 30 minutes
-
-async def get_mantle_snapshot() -> dict:
-    """Fetch current Mantle TVL and MNT price for comparison."""
-    tvl = 0.0
-    price = 0.0
-    try:
-        async with aiohttp.ClientSession(trust_env=False) as s:
-            async with s.get("https://api.llama.fi/v2/chains",
-                             timeout=aiohttp.ClientTimeout(total=10)) as r:
-                if r.status == 200:
-                    chains = await r.json()
-                    for c in chains:
-                        if c.get("name", "").lower() == "mantle":
-                            tvl = float(c.get("tvl", 0))
-                            break
-    except Exception as e:
-        print(f"[Alert] TVL fetch error: {e}")
-    try:
-        price = await fetch_usd_price("mnt")
-    except Exception as e:
-        print(f"[Alert] Price fetch error: {e}")
-    return {"tvl": tvl, "price": price}
-
-async def mantle_alert_loop(app):
-    """Background task: check Mantle metrics every 30 min and push alerts."""
-    await asyncio.sleep(60)  # initial delay
-    baseline = await get_mantle_snapshot()
-    print(f"[Alert] Baseline — TVL: ${baseline['tvl']:,.0f} | MNT: ${baseline['price']:.4f}")
-
-    while True:
-        await asyncio.sleep(ALERT_INTERVAL)
-        if not alert_subscribers:
-            continue
-        try:
-            current = await get_mantle_snapshot()
-            alerts = []
-
-            # TVL change check
-            if baseline["tvl"] > 0:
-                tvl_change = (current["tvl"] - baseline["tvl"]) / baseline["tvl"] * 100
-                if abs(tvl_change) >= ALERT_TVL_THRESHOLD:
-                    direction = "📈 surged" if tvl_change > 0 else "📉 dropped"
-                    alerts.append(
-                        f"🏦 *Mantle TVL {direction} {abs(tvl_change):.1f}%*\n"
-                        f"  Previous: ${baseline['tvl']/1e6:.2f}M\n"
-                        f"  Current:  ${current['tvl']/1e6:.2f}M"
-                    )
-
-            # MNT price change check
-            if baseline["price"] > 0:
-                price_change = (current["price"] - baseline["price"]) / baseline["price"] * 100
-                if abs(price_change) >= ALERT_PRICE_THRESHOLD:
-                    direction = "📈 pumped" if price_change > 0 else "📉 dumped"
-                    alerts.append(
-                        f"💰 *MNT {direction} {abs(price_change):.1f}%*\n"
-                        f"  Previous: ${baseline['price']:.4f}\n"
-                        f"  Current:  ${current['price']:.4f}"
-                    )
-
-            if alerts:
-                msg = (
-                    "🚨 *MANTLE ECOSYSTEM ALERT*\n"
-                    "━━━━━━━━━━━━━━━━━━━\n" +
-                    "\n\n".join(alerts) +
-                    "\n━━━━━━━━━━━━━━━━━━━\n"
-                    "_Verdict Protocol — Protocol is always live_ ⚖️"
-                )
-                dead = []
-                for chat_id, sub in alert_subscribers.items():
-                    if not sub.get("active", True):
-                        continue
-                    try:
-                        await app.bot.send_message(
-                            chat_id=chat_id,
-                            text=msg,
-                            parse_mode="Markdown",
-                            disable_web_page_preview=True
-                        )
-                    except Exception as e:
-                        print(f"[Alert] Send failed for {chat_id}: {e}")
-                        dead.append(chat_id)
-                for d in dead:
-                    alert_subscribers.pop(d, None)
-                # Update baseline after alert
-                baseline = current
-            else:
-                # Gradually update baseline even without alerts
-                baseline = current
-
-        except Exception as e:
-            print(f"[Alert] Loop error: {e}")
-
-async def alert_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user = update.effective_user
-    lang = await get_user_lang(user.username if user else None)
-    chat_id = update.effective_chat.id
-    args = context.args or []
-    sub_key = args[0].lower() if args else ""
-
-    if sub_key == "on":
-        alert_subscribers[chat_id] = {"active": True}
-        await update.message.reply_text(
-            "🔔 *Mantle Alert Activated*\n"
-            "━━━━━━━━━━━━━━━━━━━\n"
-            "You will be notified when:\n"
-            "  • Mantle TVL changes ≥ 5%\n"
-            "  • MNT price changes ≥ 8% in 30 min\n\n"
-            "Use `/alert off` to unsubscribe.\n"
-            "_Protocol is watching. ⚖️_",
-            parse_mode="Markdown"
-        )
-    elif sub_key == "off":
-        if chat_id in alert_subscribers:
-            alert_subscribers[chat_id]["active"] = False
-        await update.message.reply_text(
-            "🔕 *Mantle Alert Deactivated*\n"
-            "You will no longer receive Mantle alerts.\n"
-            "Use `/alert on` to reactivate.",
-            parse_mode="Markdown"
-        )
-    elif sub_key == "status":
-        sub = alert_subscribers.get(chat_id)
-        if sub and sub.get("active"):
-            status = "🔔 *Active* — alerts are enabled"
-        else:
-            status = "🔕 *Inactive* — alerts are disabled"
-        await update.message.reply_text(
-            f"📋 *Alert Status*\n━━━━━━━━━━━━━━━━━━━\n{status}\n\n"
-            f"Thresholds:\n"
-            f"  • TVL change ≥ {ALERT_TVL_THRESHOLD}%\n"
-            f"  • MNT price change ≥ {ALERT_PRICE_THRESHOLD}%\n"
-            f"  • Check interval: every 30 min",
-            parse_mode="Markdown"
-        )
-    else:
-        await update.message.reply_text(
-            "⚖️ *Mantle Alert*\n"
-            "━━━━━━━━━━━━━━━━━━━\n"
-            "`/alert on`     — Subscribe to Mantle alerts\n"
-            "`/alert off`    — Unsubscribe\n"
-            "`/alert status` — Check current status",
-            parse_mode="Markdown"
-        )
-
 
 def main():
     if not TELEGRAM_TOKEN:
         print("❌ TELEGRAM_TOKEN not set"); return
     if not MORALIS_KEY:
         print("⚠️  MORALIS_API_KEY not set")
-    print("⚖️  Verdict Protocol Bot v3 starting...")
+    print("⚖️  Meme Court Bot v3 starting...")
     app = Application.builder().token(TELEGRAM_TOKEN).build()
 
     for cmd in ["start","help"]: app.add_handler(CommandHandler(cmd, start))
@@ -1310,7 +910,7 @@ def main():
     for cmd in ["scan","judge"]: app.add_handler(CommandHandler(cmd, scan_command))
     for cmd in ["watch","subpoena"]: app.add_handler(CommandHandler(cmd, watch_command))
     for cmd in ["watchlist","docket"]: app.add_handler(CommandHandler(cmd, watchlist_command))
-    for cmd in ["whale","wallet"]: app.add_handler(CommandHandler(cmd, whale_command))
+    for cmd in ["whale","suspect"]: app.add_handler(CommandHandler(cmd, whale_command))
     app.add_handler(CommandHandler("mantle", mantle_command))
     app.add_handler(CommandHandler("price", price_command))
     app.add_handler(CommandHandler("compare", compare_command))
@@ -1318,13 +918,9 @@ def main():
     app.add_handler(CallbackQueryHandler(button_callback))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    app.add_handler(CommandHandler("alert", alert_command))
-
-    async def post_init(a):
-        asyncio.create_task(monitor_wallets(a))
-        asyncio.create_task(mantle_alert_loop(a))
+    async def post_init(a): asyncio.create_task(monitor_wallets(a))
     app.post_init = post_init
-    print("✅ Protocol is live. Ctrl+C to adjourn.")
+    print("✅ Court is in session. Ctrl+C to adjourn.")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == "__main__":
