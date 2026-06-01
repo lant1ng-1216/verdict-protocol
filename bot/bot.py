@@ -432,8 +432,7 @@ async def build_holdings_display(address: str, chain: str, balance: dict, tokens
     else:
         lines.append(f"💰 Holdings: `{native_amount:.4f} {symbol}` _(value unavailable)_")
 
-    return "
-".join(lines)
+    return "\n".join(lines)
 
 
 async def scan_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
