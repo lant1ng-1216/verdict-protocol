@@ -100,7 +100,7 @@ function StampCard({ duel, id }: { duel: Duel; id: string }) {
               ...(i===0?{top:'7px',left:'10px'}:i===1?{top:'7px',right:'10px'}:i===2?{bottom:'7px',left:'10px'}:{bottom:'7px',right:'10px'})
             }}>{t}</span>
           ))}
-          <img src="/verdict_logo.png" alt="" style={{width:'52px',height:'52px',objectFit:'contain',marginBottom:'6px',filter:'drop-shadow(0 2px 6px rgba(0,0,0,0.25))'}} />
+          <img src="/verdict_logo.svg" alt="" style={{width:'52px',height:'52px',objectFit:'contain',marginBottom:'6px',filter:'drop-shadow(0 2px 6px rgba(0,0,0,0.25))'}} />
           <div style={{fontSize:'11px',fontWeight:700,color:'#fff',letterSpacing:'0.5px',textTransform:'uppercase'}}>Verdict Protocol</div>
           <div style={{fontSize:'8px',color:'rgba(255,255,255,0.55)',letterSpacing:'0.8px',textTransform:'uppercase',marginTop:'2px'}}>
             On-Chain Duel · {statusEn}
@@ -108,80 +108,80 @@ function StampCard({ duel, id }: { duel: Duel; id: string }) {
         </div>
         {/* VALUE BAR */}
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',
-          padding:'5px 10px',borderBottom:'1px solid #EEE9FC',background:'#fafafa'}}>
-          <span style={{fontSize:'8px',fontWeight:700,color:'#9CA3AF',letterSpacing:'0.5px',textTransform:'uppercase'}}>{duel.network}</span>
+          padding:'5px 10px',borderBottom:'1px solid #F0F0F0',background:'#fafafa'}}>
+          <span style={{fontSize:'8px',fontWeight:700,color:'#999999',letterSpacing:'0.5px',textTransform:'uppercase'}}>{duel.network}</span>
           <span style={{fontSize:'12px',fontWeight:700,color:'#5B21B6'}}>{totalPot} {duel.token}</span>
           <span style={{fontSize:'8px',fontWeight:600,padding:'2px 7px',borderRadius:'10px',
-            background: isOpen?'#EFF6FF':isLive?'#FFF1F2':'#ECFDF5',
+            background: isOpen?'#F5F9FF':isLive?'#FFF5F5':'#ECFDF5',
             color: isOpen?'#1D4ED8':isLive?'#BE123C':'#065F46'
           }}>{statusLabel}</span>
         </div>
         {/* INFO */}
         <div style={{padding:'10px'}}>
-          <div style={{background:'#F9F8FF',borderRadius:'8px',padding:'7px 9px',marginBottom:'8px',
+          <div style={{background:'#FFFFFF',borderRadius:'6px',padding:'7px 9px',marginBottom:'8px',
             borderLeft:'2px solid #7C3AED'}}>
-            <div style={{fontSize:'11px',fontWeight:600,color:'#1A1A2E',lineHeight:1.4,
+            <div style={{fontSize:'11px',fontWeight:600,color:'#0A0A0A',lineHeight:1.4,
               display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>
               {claimText}
             </div>
           </div>
           {/* PLAYERS */}
           <div style={{display:'grid',gridTemplateColumns:'1fr 20px 1fr',gap:'4px',alignItems:'center',marginBottom:'7px'}}>
-            <div style={{background:'#FFF1F2',borderRadius:'7px',padding:'6px 7px',textAlign:'center'}}>
-              <div style={{fontSize:'7px',color:'#9CA3AF',marginBottom:'2px',textTransform:'uppercase'}}>Challenger</div>
-              <div style={{fontSize:'8px',color:'#6B7280',fontFamily:'monospace',marginBottom:'2px'}}>{duel.challenger.addr}</div>
+            <div style={{background:'#FFF5F5',borderRadius:'7px',padding:'6px 7px',textAlign:'center'}}>
+              <div style={{fontSize:'7px',color:'#999999',marginBottom:'2px',textTransform:'uppercase'}}>Challenger</div>
+              <div style={{fontSize:'8px',color:'#666666',fontFamily:'monospace',marginBottom:'2px'}}>{duel.challenger.addr}</div>
               <div><span style={{fontSize:'15px',fontWeight:700,color:'#F43F5E'}}>{duel.challenger.amount}</span>
               <span style={{fontSize:'8px',fontWeight:600,padding:'1px 4px',borderRadius:'4px',
-                background:'#FFE4E6',color:'#F43F5E',marginLeft:'2px'}}>{duel.token}</span></div>
+                background:'#FFE0E0',color:'#F43F5E',marginLeft:'2px'}}>{duel.token}</span></div>
             </div>
             <div style={{display:'flex',justifyContent:'center'}}>
-              <span style={{fontSize:'8px',fontWeight:700,color:'#7C3AED',background:'#F5F3FF',
+              <span style={{fontSize:'8px',fontWeight:700,color:'#7C3AED',background:'#F5F5F5',
                 padding:'2px 3px',borderRadius:'4px'}}>VS</span>
             </div>
             {duel.defender ? (
-              <div style={{background:'#EFF6FF',borderRadius:'7px',padding:'6px 7px',textAlign:'center'}}>
-                <div style={{fontSize:'7px',color:'#9CA3AF',marginBottom:'2px',textTransform:'uppercase'}}>Defender</div>
-                <div style={{fontSize:'8px',color:'#6B7280',fontFamily:'monospace',marginBottom:'2px'}}>{duel.defender.addr}</div>
+              <div style={{background:'#F5F9FF',borderRadius:'7px',padding:'6px 7px',textAlign:'center'}}>
+                <div style={{fontSize:'7px',color:'#999999',marginBottom:'2px',textTransform:'uppercase'}}>Defender</div>
+                <div style={{fontSize:'8px',color:'#666666',fontFamily:'monospace',marginBottom:'2px'}}>{duel.defender.addr}</div>
                 <div><span style={{fontSize:'15px',fontWeight:700,color:'#3B82F6'}}>{duel.defender.amount}</span>
                 <span style={{fontSize:'8px',fontWeight:600,padding:'1px 4px',borderRadius:'4px',
-                  background:'#DBEAFE',color:'#3B82F6',marginLeft:'2px'}}>{duel.token}</span></div>
+                  background:'#E0EEFF',color:'#3B82F6',marginLeft:'2px'}}>{duel.token}</span></div>
               </div>
             ) : (
-              <div style={{background:'#F9F8FF',border:'1px dashed #C4B5FD',borderRadius:'7px',
+              <div style={{background:'#FFFFFF',border:'1px dashed #E0E0E0',borderRadius:'7px',
                 padding:'6px 7px',textAlign:'center',minHeight:'54px',display:'flex',
                 flexDirection:'column',alignItems:'center',justifyContent:'center',gap:'2px'}}>
-                <span style={{fontSize:'16px',color:'#C4B5FD'}}>?</span>
-                <span style={{fontSize:'7px',color:'#C4B5FD'}}>Waiting</span>
+                <span style={{fontSize:'16px',color:'#E0E0E0'}}>?</span>
+                <span style={{fontSize:'7px',color:'#E0E0E0'}}>Waiting</span>
               </div>
             )}
           </div>
           {/* SUPPORT BAR */}
           {duel.defender && (
             <div style={{marginBottom:'7px'}}>
-              <div style={{height:'4px',borderRadius:'4px',background:'#F3F0FB',overflow:'hidden',
+              <div style={{height:'4px',borderRadius:'4px',background:'#F5F5F5',overflow:'hidden',
                 display:'flex',marginBottom:'2px'}}>
                 <div style={{background:'#F43F5E',borderRadius:'4px 0 0 4px',width:`${duel.supportRed}%`}}/>
                 <div style={{background:'#3B82F6',borderRadius:'0 4px 4px 0',flex:1}}/>
               </div>
               <div style={{display:'flex',justifyContent:'space-between',fontSize:'8px',fontWeight:600}}>
                 <span style={{color:'#F43F5E'}}>{duel.supportRed}%</span>
-                <span style={{color:'#C4B5FD',fontSize:'7px'}}>Community Vote</span>
+                <span style={{color:'#E0E0E0',fontSize:'7px'}}>Community Vote</span>
                 <span style={{color:'#3B82F6'}}>{100-duel.supportRed}%</span>
               </div>
             </div>
           )}
           <div style={{display:'flex',gap:'3px',flexWrap:'wrap'}}>
             <span style={{fontSize:'8px',fontWeight:500,padding:'2px 6px',borderRadius:'7px',
-              background:'#F9F8FF',border:'1px solid #EEE9FC',color:'#374151'}}>⏰ {duel.expires}</span>
+              background:'#FFFFFF',border:'1px solid #F0F0F0',color:'#444444'}}>⏰ {duel.expires}</span>
             <span style={{fontSize:'8px',fontWeight:500,padding:'2px 6px',borderRadius:'7px',
-              background:'#F9F8FF',border:'1px solid #EEE9FC',color:'#374151'}}>💰 {totalPot} {duel.token}</span>
+              background:'#FFFFFF',border:'1px solid #F0F0F0',color:'#444444'}}>💰 {totalPot} {duel.token}</span>
           </div>
         </div>
         {/* FOOTER */}
-        <div style={{borderTop:'1px dashed #EEE9FC',padding:'5px 10px',
+        <div style={{borderTop:'1px dashed #F0F0F0',padding:'5px 10px',
           display:'flex',justifyContent:'space-between',alignItems:'center',background:'#fafafa'}}>
-          <span style={{fontSize:'7px',color:'#C4B5FD',letterSpacing:'0.3px'}}>verdictprotocol.online</span>
-          <span style={{fontSize:'8px',fontWeight:700,color:'#9CA3AF',fontFamily:'monospace'}}>#{duelId}</span>
+          <span style={{fontSize:'7px',color:'#E0E0E0',letterSpacing:'0.3px'}}>verdictprotocol.online</span>
+          <span style={{fontSize:'8px',fontWeight:700,color:'#999999',fontFamily:'monospace'}}>#{duelId}</span>
         </div>
       </div>
       {/* POSTMARK */}
@@ -206,7 +206,7 @@ async function generateStampImage(duel: Duel) {
   const statusLabel = isOpen ? '招募中' : isLive ? '进行中' : '已裁定';
   const statusEn = isOpen ? 'Open' : isLive ? 'Live' : 'Settled';
   const artBg = isOpen ? '#5B21B6' : isLive ? '#4C1D95' : '#065F46';
-  const stBg = isOpen ? '#EFF6FF' : isLive ? '#FFF1F2' : '#ECFDF5';
+  const stBg = isOpen ? '#F5F9FF' : isLive ? '#FFF5F5' : '#ECFDF5';
   const stColor = isOpen ? '#1D4ED8' : isLive ? '#BE123C' : '#065F46';
   const valColor = isOpen || isLive ? '#5B21B6' : '#059669';
   const date = new Date().toISOString().slice(0,10).replace(/-/g,'·');
@@ -239,71 +239,71 @@ async function generateStampImage(duel: Duel) {
       <span style="position:absolute;top:7px;right:10px;font-size:9px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.6);font-family:monospace;">2026</span>
       <span style="position:absolute;bottom:7px;left:10px;font-size:9px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.6);font-family:monospace;">BNB</span>
       <span style="position:absolute;bottom:7px;right:10px;font-size:9px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.6);font-family:monospace;">#${duelId}</span>
-      <img src="/verdict_logo.png" style="width:155px;height:155px;object-fit:contain;margin-bottom:2px;filter:drop-shadow(0 4px 20px rgba(0,0,0,0.35));" crossorigin="anonymous" onerror="this.style.display='none'"/>
+      <img src="/verdict_logo.svg" style="width:155px;height:155px;object-fit:contain;margin-bottom:2px;filter:drop-shadow(0 4px 20px rgba(0,0,0,0.35));" crossorigin="anonymous" onerror="this.style.display='none'"/>
       <div style="font-size:13px;font-weight:700;color:#fff;letter-spacing:0.5px;text-transform:uppercase;text-shadow:0 1px 4px rgba(0,0,0,0.2);line-height:1;">VERDICT PROTOCOL</div>
       <div style="font-size:9px;color:rgba(255,255,255,0.6);letter-spacing:1px;text-transform:uppercase;margin-top:2px;">ON-CHAIN DUEL · ${statusEn.toUpperCase()}</div>
     </div>
 
     <!-- VALUE BAR -->
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;border-bottom:1px solid #EEE9FC;background:#fafafa;">
-      <span style="font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:0.5px;font-family:monospace;">BNB TESTNET</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;border-bottom:1px solid #F0F0F0;background:#fafafa;">
+      <span style="font-size:9px;font-weight:700;color:#999999;letter-spacing:0.5px;font-family:monospace;">BNB TESTNET</span>
       <span style="font-size:14px;font-weight:700;color:${valColor};">${totalPot} ${duel.token}</span>
       <span style="font-size:9px;font-weight:600;padding:3px 9px;border-radius:10px;background:${stBg};color:${stColor};">${statusLabel}</span>
     </div>
 
     <!-- INFO -->
     <div style="padding:10px;">
-      <div style="background:#F9F8FF;border-radius:8px;padding:8px 10px;margin-bottom:8px;border-left:2px solid #7C3AED;">
-        <div style="font-size:12px;font-weight:600;color:#1A1A2E;line-height:1.5;word-break:break-word;">${claimText}</div>
+      <div style="background:#FFFFFF;border-radius:8px;padding:8px 10px;margin-bottom:8px;border-left:2px solid #7C3AED;">
+        <div style="font-size:12px;font-weight:600;color:#0A0A0A;line-height:1.5;word-break:break-word;">${claimText}</div>
       </div>
 
       <!-- PLAYERS -->
       <div style="display:grid;grid-template-columns:1fr 20px 1fr;gap:4px;align-items:center;margin-bottom:7px;">
-        <div style="background:#FFF1F2;border-radius:7px;padding:6px 7px;text-align:center;">
-          <div style="font-size:8px;color:#9CA3AF;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.3px;font-weight:600;">Challenger</div>
-          <div style="font-size:9px;color:#6B7280;font-family:monospace;margin-bottom:3px;">${duel.challenger.addr}</div>
-          <div style="font-size:16px;font-weight:700;color:#F43F5E;margin-top:2px;">${duel.challenger.amount} <span style="font-size:9px;font-weight:600;padding:2px 5px;border-radius:4px;background:#FFE4E6;color:#F43F5E;">${duel.token}</span></div>
+        <div style="background:#FFF5F5;border-radius:7px;padding:6px 7px;text-align:center;">
+          <div style="font-size:8px;color:#999999;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.3px;font-weight:600;">Challenger</div>
+          <div style="font-size:9px;color:#666666;font-family:monospace;margin-bottom:3px;">${duel.challenger.addr}</div>
+          <div style="font-size:16px;font-weight:700;color:#F43F5E;margin-top:2px;">${duel.challenger.amount} <span style="font-size:9px;font-weight:600;padding:2px 5px;border-radius:4px;background:#FFE0E0;color:#F43F5E;">${duel.token}</span></div>
         </div>
         <div style="text-align:center;">
-          <span style="font-size:8px;font-weight:700;color:#7C3AED;background:#F5F3FF;padding:2px 3px;border-radius:4px;">VS</span>
+          <span style="font-size:8px;font-weight:700;color:#7C3AED;background:#F5F5F5;padding:2px 3px;border-radius:4px;">VS</span>
         </div>
         ${duel.defender ? `
-        <div style="background:#EFF6FF;border-radius:7px;padding:6px 7px;text-align:center;">
-          <div style="font-size:8px;color:#9CA3AF;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.3px;font-weight:600;">Defender</div>
-          <div style="font-size:8px;color:#6B7280;font-family:monospace;margin-bottom:2px;">${duel.defender.addr}</div>
-          <div style="font-size:16px;font-weight:700;color:#3B82F6;margin-top:2px;">${duel.defender.amount} <span style="font-size:9px;font-weight:600;padding:2px 5px;border-radius:4px;background:#DBEAFE;color:#3B82F6;">${duel.token}</span></div>
+        <div style="background:#F5F9FF;border-radius:7px;padding:6px 7px;text-align:center;">
+          <div style="font-size:8px;color:#999999;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.3px;font-weight:600;">Defender</div>
+          <div style="font-size:8px;color:#666666;font-family:monospace;margin-bottom:2px;">${duel.defender.addr}</div>
+          <div style="font-size:16px;font-weight:700;color:#3B82F6;margin-top:2px;">${duel.defender.amount} <span style="font-size:9px;font-weight:600;padding:2px 5px;border-radius:4px;background:#E0EEFF;color:#3B82F6;">${duel.token}</span></div>
         </div>` : `
-        <div style="background:#F9F8FF;border:1px dashed #C4B5FD;border-radius:7px;padding:6px 7px;text-align:center;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">
-          <span style="font-size:16px;color:#C4B5FD;">?</span>
-          <span style="font-size:7px;color:#C4B5FD;">Waiting</span>
+        <div style="background:#FFFFFF;border:1px dashed #E0E0E0;border-radius:7px;padding:6px 7px;text-align:center;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">
+          <span style="font-size:16px;color:#E0E0E0;">?</span>
+          <span style="font-size:7px;color:#E0E0E0;">Waiting</span>
         </div>`}
       </div>
 
       ${duel.defender ? `
       <!-- BAR -->
       <div style="margin-bottom:7px;">
-        <div style="height:4px;border-radius:4px;background:#F3F0FB;overflow:hidden;display:flex;margin-bottom:2px;">
+        <div style="height:4px;border-radius:4px;background:#F5F5F5;overflow:hidden;display:flex;margin-bottom:2px;">
           <div style="background:#F43F5E;width:${duel.supportRed}%;border-radius:4px 0 0 4px;"></div>
           <div style="background:#3B82F6;flex:1;border-radius:0 4px 4px 0;"></div>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:8px;font-weight:600;">
           <span style="color:#F43F5E;font-size:10px;font-weight:700;">${duel.supportRed}%</span>
-          <span style="color:#C4B5FD;font-size:9px;font-weight:500;">Community Vote</span>
+          <span style="color:#E0E0E0;font-size:9px;font-weight:500;">Community Vote</span>
           <span style="color:#3B82F6;font-size:10px;font-weight:700;">${100-duel.supportRed}%</span>
         </div>
       </div>` : ''}
 
       <!-- CHIPS -->
       <div style="display:flex;gap:3px;flex-wrap:wrap;">
-        <span style="font-size:9px;font-weight:500;padding:3px 8px;border-radius:8px;background:#F9F8FF;border:1px solid #EEE9FC;color:#374151;">⏰ ${duel.expires}</span>
-        <span style="font-size:9px;font-weight:500;padding:3px 8px;border-radius:8px;background:#F9F8FF;border:1px solid #EEE9FC;color:#374151;">💰 ${totalPot} ${duel.token}</span>
+        <span style="font-size:9px;font-weight:500;padding:3px 8px;border-radius:8px;background:#FFFFFF;border:1px solid #F0F0F0;color:#444444;">⏰ ${duel.expires}</span>
+        <span style="font-size:9px;font-weight:500;padding:3px 8px;border-radius:8px;background:#FFFFFF;border:1px solid #F0F0F0;color:#444444;">💰 ${totalPot} ${duel.token}</span>
       </div>
     </div>
 
     <!-- FOOT -->
-    <div style="border-top:1px dashed #EEE9FC;padding:5px 10px;display:flex;justify-content:space-between;align-items:center;background:#fafafa;">
-      <span style="font-size:9px;color:#C4B5FD;letter-spacing:0.3px;">verdictprotocol.online</span>
-      <span style="font-size:9px;font-weight:700;color:#9CA3AF;font-family:monospace;">#${duelId}</span>
+    <div style="border-top:1px dashed #F0F0F0;padding:5px 10px;display:flex;justify-content:space-between;align-items:center;background:#fafafa;">
+      <span style="font-size:9px;color:#E0E0E0;letter-spacing:0.3px;">verdictprotocol.online</span>
+      <span style="font-size:9px;font-weight:700;color:#999999;font-family:monospace;">#${duelId}</span>
     </div>
   </div>
 
@@ -354,7 +354,7 @@ async function generateStampImage(duel: Duel) {
 
 function showToast(msg: string) {
   const t = document.createElement('div');
-  t.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#7C3AED;color:#fff;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;z-index:9999;font-family:DM Sans,sans-serif;box-shadow:0 4px 20px rgba(124,58,237,0.3);';
+  t.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#0A0A0A;color:#fff;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;z-index:9999;font-family:DM Sans,sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.12);';
   t.textContent = msg;
   document.body.appendChild(t);
   setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>t.remove(),300); }, 1800);
@@ -614,13 +614,13 @@ function Ticker({ t, lang }: { t: typeof LANG['en']; lang: Lang }) {
     return () => cancelAnimationFrame(id);
   }, [lang]);
   return (
-    <div className="bg-[#F3F0FB] border-b border-[#EEE9FC] px-4 py-1.5 flex items-center gap-3 overflow-hidden">
-      <div className="flex items-center gap-1.5 text-[9px] tracking-widest uppercase text-[#7C3AED] whitespace-nowrap flex-shrink-0">
-        <div className="w-1.5 h-1.5 rounded-full bg-[#7C3AED] animate-pulse" />{t.live}
+    <div className="bg-[#F5F5F5] border-b border-[#F0F0F0] px-4 py-1.5 flex items-center gap-3 overflow-hidden">
+      <div className="flex items-center gap-1.5 text-[9px] tracking-widest uppercase text-[#444444] whitespace-nowrap flex-shrink-0">
+        <div className="w-1.5 h-1.5 rounded-full bg-[#444444] animate-pulse" />{t.live}
       </div>
       <div className="overflow-hidden flex-1">
         <div ref={ref} className="flex gap-12 whitespace-nowrap" style={{ width: 'max-content' }}>
-          {[...t.ticker, ...t.ticker].map((item, i) => <span key={i} className="text-[10px] text-[#9CA3AF]">{item}</span>)}
+          {[...t.ticker, ...t.ticker].map((item, i) => <span key={i} className="text-[10px] text-[#999999]">{item}</span>)}
         </div>
       </div>
     </div>
@@ -637,18 +637,18 @@ function ChainSelector({ selectedChain, onSelect, placeholder }: { selectedChain
   }, []);
   return (
     <div className="relative" ref={ref}>
-      <button onClick={() => setOpen(o => !o)} className={`w-full bg-[#F9F8FF] border rounded-xl px-3 py-2.5 flex items-center gap-2 text-sm outline-none transition-colors ${open ? 'border-[#7C3AED] rounded-b-none' : 'border-[#EEE9FC] hover:border-[#C4B5FD]'}`}>
-        {selectedChain ? (<><img src={selectedChain.logo} alt={selectedChain.name} className="w-5 h-5 rounded-full flex-shrink-0" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} /><span className="text-[#1A1A2E] flex-1 text-left">{selectedChain.name}</span><span className="text-[#9CA3AF] text-xs">{selectedChain.token}</span></>) : <span className="text-[#9CA3AF] flex-1 text-left">{placeholder}</span>}
-        <span className={`text-[#9CA3AF] text-xs transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
+      <button onClick={() => setOpen(o => !o)} className={`w-full bg-[#FFFFFF] border rounded-lg px-3 py-2.5 flex items-center gap-2 text-sm outline-none transition-colors ${open ? 'border-[#0A0A0A] rounded-b-none' : 'border-[#F0F0F0] hover:border-[#E0E0E0]'}`}>
+        {selectedChain ? (<><img src={selectedChain.logo} alt={selectedChain.name} className="w-5 h-5 rounded-full flex-shrink-0" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} /><span className="text-[#0A0A0A] flex-1 text-left">{selectedChain.name}</span><span className="text-[#999999] text-xs">{selectedChain.token}</span></>) : <span className="text-[#999999] flex-1 text-left">{placeholder}</span>}
+        <span className={`text-[#999999] text-xs transition-transform ${open ? 'rotate-180' : ''}`}>▼</span>
       </button>
       {open && (
-        <div className="absolute top-full left-0 right-0 bg-white border border-[#7C3AED] border-t-0 rounded-b-xl overflow-hidden z-20 max-h-48 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 bg-white border border-[#0A0A0A] border-t-0 rounded-b-xl overflow-hidden z-20 max-h-48 overflow-y-auto">
           {CHAINS.map(c => (
             <button key={c.key} onClick={() => { onSelect(c); setOpen(false); }} className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 ${selectedChain?.key === c.key ? 'bg-red-400/8' : ''}`}>
               <img src={c.logo} alt={c.name} className="w-5 h-5 rounded-full flex-shrink-0" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-              <span className="text-[#1A1A2E] flex-1 text-left">{c.name}</span>
-              <span className="text-[#9CA3AF] text-xs">{c.token}</span>
-              {selectedChain?.key === c.key && <span className="text-[#7C3AED] text-xs">✓</span>}
+              <span className="text-[#0A0A0A] flex-1 text-left">{c.name}</span>
+              <span className="text-[#999999] text-xs">{c.token}</span>
+              {selectedChain?.key === c.key && <span className="text-[#0A0A0A] text-xs">✓</span>}
             </button>
           ))}
         </div>
@@ -659,22 +659,25 @@ function ChainSelector({ selectedChain, onSelect, placeholder }: { selectedChain
 
 function IssueModal({ t, onClose, chainId = 97 }: { t: typeof LANG['en']; onClose: () => void; chainId?: number }) {
   const m = t.modal;
+  const isZh = t.nav.arena === '广场';
+
+  // Form state
   const [claim, setClaim] = useState('');
   const [rule, setRule] = useState('');
   const [stake, setStake] = useState('');
-  const [duration, setDuration] = useState('7');
-  const [durationUnit, setDurationUnit] = useState(0); // 0=天 1=周 2=月
-  const [visibility, setVisibility] = useState<'public' | 'private' | 'ai'>('public');
-  const [audienceRatio, setAudienceRatio] = useState(0);
-  const [submitted, setSubmitted] = useState(false);
+  const [duration, setDuration] = useState('30');
+  const [durationUnit, setDurationUnit] = useState(0);
+  const [visibility, setVisibility] = useState<'public' | 'private'>('public');
+  const [audienceRatio] = useState(0);
   const [tgUsername, setTgUsername] = useState('');
+
+  // Step: 'form' | 'scanning' | 'report' | 'signing'
+  const [step, setStep] = useState<'form' | 'scanning' | 'report' | 'signing'>('form');
+  const [auditResult, setAuditResult] = useState<any>(null);
 
   const currentToken = chainId === 97 ? 'tBNB' : chainId === 5003 ? 'MNT' : chainId === 56 ? 'BNB' : 'ETH';
   const currentNetwork = chainId === 97 ? 'BNB Testnet' : chainId === 5003 ? 'Mantle Sepolia' : chainId === 56 ? 'BNB Chain' : 'Ethereum';
-  const winnerPct = 100 - audienceRatio;
   const presetDays = [7, 14, 30, 90];
-  const unitLabels = m.durationUnits;
-  const presetLabels = m.durationPresets;
 
   const { create, isPending, isConfirming, isSuccess, error } = useCreate();
 
@@ -682,16 +685,37 @@ function IssueModal({ t, onClose, chainId = 97 }: { t: typeof LANG['en']; onClos
     if (isSuccess) { setTimeout(onClose, 1500); }
   }, [isSuccess, onClose]);
 
-  const canSubmit = claim.trim() && rule.trim() && parseFloat(stake) > 0 && !isPending && !isConfirming;
+  const canReview = claim.trim() && rule.trim() && parseFloat(stake) > 0;
 
-  const handleSubmit = () => {
-    if (!canSubmit) return;
+  // Call /api/audit then show report
+  const handleReview = async () => {
+    if (!canReview) return;
+    setStep('scanning');
+    try {
+      const res = await fetch('/api/audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          claimText: claim.trim(),
+          ruleText: rule.trim(),
+          lang: isZh ? 'zh' : 'en',
+        }),
+      });
+      const data = await res.json();
+      setAuditResult(data.error ? null : data);
+    } catch {
+      setAuditResult(null);
+    }
+    setStep('report');
+  };
+
+  // Proceed to sign after reviewing
+  const handleProceed = () => {
     const multipliers = [1, 7, 30];
     const durationSecs = parseInt(duration) * multipliers[durationUnit] * 86400;
-    const visNum = visibility === 'public' ? 0 : visibility === 'private' ? 1 : 2;
+    const visNum = visibility === 'public' ? 0 : 1;
     const claimTrimmed = claim.trim();
     const ruleTrimmed = rule.trim();
-    // 存到localStorage（本地快速读取）+ API（跨设备读取）
     if (typeof window !== 'undefined') {
       try {
         const { keccak256, toBytes } = require('viem');
@@ -699,189 +723,393 @@ function IssueModal({ t, onClose, chainId = 97 }: { t: typeof LANG['en']; onClos
         const rHash = keccak256(toBytes(ruleTrimmed));
         localStorage.setItem('claim_' + cHash, claimTrimmed);
         localStorage.setItem('rule_' + rHash, ruleTrimmed);
-        // 存到服务端（声明文字 + TG 用户名一次提交）
         const tgClean = tgUsername.trim() ? tgUsername.trim().replace(/^@/, '').toLowerCase() : undefined;
         fetch('/api/claim', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ claimHash: cHash, ruleHash: rHash, claimText: claimTrimmed, ruleText: ruleTrimmed, tgUsername: tgClean }),
         }).catch(() => {});
+        // Cache audit result
+        if (auditResult) {
+          fetch('/api/audit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ claimText: claimTrimmed, ruleText: ruleTrimmed, lang: isZh ? 'zh' : 'en', claimHash: cHash }),
+          }).catch(() => {});
+        }
       } catch (e) {}
     }
     create({ claim: claimTrimmed, rule: ruleTrimmed, durationSecs, wagerEth: stake, audioBps: audienceRatio * 100, vis: visNum });
+    setStep('signing');
   };
 
-  const btnLabel = isSuccess ? '✓ 发起成功!' : isConfirming ? '链上确认中...' : isPending ? '等待签名...' : visibility === 'ai' ? m.submitAI : m.submit;
+  const RISK_COLOR: Record<string, string> = { high: '#E24B4A', mid: '#EF9F27', low: '#639922' };
+  const RISK_BG: Record<string, string> = { high: '#FCEBEB', mid: '#FAEEDA', low: '#EAF3DE' };
+  const RISK_TEXT: Record<string, string> = { high: '#A32D2D', mid: '#854F0B', low: '#3B6D11' };
+  const RISK_LABEL_EN: Record<string, string> = { high: 'High', mid: 'Medium', low: 'Low' };
+  const RISK_LABEL_ZH: Record<string, string> = { high: '高风险', mid: '中风险', low: '低风险' };
 
-  return (
-    <div style={{position:'fixed',inset:0,background:'rgba(100,80,160,0.25)',zIndex:50,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'}} onClick={onClose}>
-      <div style={{background:'#fff',border:'1.5px solid #EEE9FC',borderRadius:'20px',width:'100%',maxWidth:'448px',overflow:'hidden',boxShadow:'0 8px 40px rgba(124,58,237,0.10)'}} onClick={e => e.stopPropagation()}>
-        {/* HEADER */}
-        <div style={{background:'#F7F5FF',borderBottom:'1px solid #EEE9FC',padding:'14px 20px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-          <span style={{fontSize:'14px',fontWeight:600,color:'#1A1A2E'}}>{m.title}</span>
-          <button onClick={onClose} style={{color:'#9CA3AF',fontSize:'20px',lineHeight:1,background:'none',border:'none',cursor:'pointer'}}>×</button>
+  const btnLabel = isSuccess ? (isZh ? '✓ 发起成功!' : '✓ Created!') :
+    isConfirming ? (isZh ? '链上确认中...' : 'Confirming...') :
+    isPending ? (isZh ? '等待签名...' : 'Signing...') :
+    (isZh ? '签名并上链 →' : 'Sign & submit →');
+
+  const caseNo = `#${Math.floor(Math.random() * 90000 + 10000)}`;
+
+  // ── Shared styles ──
+  const S = {
+    wrap: { position: 'fixed' as const, inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' },
+    modal: { background: '#fff', border: '0.5px solid #F0F0F0', borderRadius: '16px', width: '100%', maxWidth: '480px', overflow: 'hidden', boxShadow: '0 8px 40px rgba(0,0,0,0.12)' },
+    header: { padding: '18px 24px 14px', borderBottom: '0.5px solid #F0F0F0', textAlign: 'center' as const },
+    body: { padding: '20px 24px', display: 'flex', flexDirection: 'column' as const, gap: '16px', maxHeight: '65vh', overflowY: 'auto' as const },
+    footer: { padding: '14px 24px', borderTop: '0.5px solid #F0F0F0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' },
+    clause: { display: 'flex', gap: '10px', alignItems: 'flex-start' as const },
+    clauseNum: { fontSize: '10px', fontWeight: 500, color: '#999999', fontFamily: 'monospace', minWidth: '24px', paddingTop: '10px', letterSpacing: '0.04em' },
+    clauseContent: { flex: 1 },
+    label: { fontSize: '10px', fontWeight: 500, color: '#666666', textTransform: 'uppercase' as const, letterSpacing: '0.07em', marginBottom: '6px' },
+    input: { width: '100%', background: '#FFFFFF', border: '0.5px solid #E0E0E0', borderRadius: '10px', padding: '9px 12px', fontSize: '13px', color: '#0A0A0A', outline: 'none', boxSizing: 'border-box' as const },
+    textarea: { width: '100%', background: '#FFFFFF', border: '0.5px solid #E0E0E0', borderRadius: '10px', padding: '9px 12px', fontSize: '13px', color: '#0A0A0A', outline: 'none', resize: 'none' as const, boxSizing: 'border-box' as const, lineHeight: '1.6' },
+    btnCancel: { padding: '10px', borderRadius: '10px', fontSize: '13px', color: '#666666', border: '0.5px solid #E0E0E0', background: 'transparent', cursor: 'pointer' },
+    btnPrimary: { padding: '10px', borderRadius: '10px', fontSize: '13px', fontWeight: 600, color: '#fff', border: 'none', background: '#0A0A0A', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' },
+  };
+
+  // ── STEP: FORM ──
+  if (step === 'form') return (
+    <div style={S.wrap} onClick={onClose}>
+      <div style={S.modal} onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div style={S.header}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '0.5px solid #F0F0F0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px', fontSize: '18px' }}>⚖️</div>
+          <div style={{ fontSize: '13px', fontWeight: 600, color: '#0A0A0A', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '2px' }}>
+            {isZh ? '链上对赌协议' : 'On-Chain Wager Agreement'}
+          </div>
+          <div style={{ fontSize: '11px', color: '#999999' }}>Verdict Protocol · {currentNetwork}</div>
+          <div style={{ fontSize: '10px', color: '#E0E0E0', marginTop: '4px', fontFamily: 'monospace' }}>CASE #—————  |  Draft</div>
         </div>
 
-        {/* BODY */}
-        <div style={{padding:'20px',display:'flex',flexDirection:'column',gap:'16px',maxHeight:'70vh',overflowY:'auto'}}>
-
-          {/* 你的声明 */}
-          <div>
-            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#374151',marginBottom:'6px'}}>{m.claimLabel}</div>
-            <textarea
-              value={claim}
-              onChange={e => setClaim(e.target.value)}
-              rows={3}
-              placeholder={m.claimPlaceholder}
-              style={{width:'100%',background:'#F9F8FF',border:'1.5px solid #DDD6FE',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'#1A1A2E',outline:'none',resize:'none',boxSizing:'border-box'}}
-            />
-          </div>
-
-          {/* 裁定标准 */}
-          <div>
-            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#374151',marginBottom:'6px'}}>{m.rulingLabel}</div>
-            <textarea
-              value={rule}
-              onChange={e => setRule(e.target.value)}
-              rows={2}
-              placeholder={m.rulingPlaceholder}
-              style={{width:'100%',background:'#F9F8FF',border:'1.5px solid #DDD6FE',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'#1A1A2E',outline:'none',resize:'none',boxSizing:'border-box'}}
-            />
-          </div>
-
-          {/* Telegram 通知 */}
-          <div>
-            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#374151',marginBottom:'6px'}}>{m.tgLabel}</div>
-            <input
-              type="text"
-              value={tgUsername}
-              onChange={e => setTgUsername(e.target.value)}
-              placeholder={m.tgPlaceholder}
-              style={{width:'100%',background:'#F9F8FF',border:'1.5px solid #DDD6FE',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'#1A1A2E',outline:'none',boxSizing:'border-box'}}
-            />
-            <div style={{fontSize:'9px',color:'#6B7280',marginTop:'4px'}}>先给 @MemeCourt_Bot 发 /start 才能收到通知</div>
-          </div>
-
-          {/* 网络 */}
-          <div>
-            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#374151',marginBottom:'6px'}}>{m.networkLabel}</div>
-            <div style={{background:'#F9F8FF',border:'1px solid #EEE9FC',borderRadius:'12px',padding:'10px 12px',display:'flex',alignItems:'center',gap:'8px'}}>
-              <div style={{width:'8px',height:'8px',borderRadius:'50%',background:'#4ade80',flexShrink:0}} />
-              <span style={{color:'#1A1A2E',flex:1,fontSize:'14px',fontWeight:500}}>{currentNetwork}</span>
-              <span style={{color:'#9CA3AF',fontSize:'12px'}}>{currentToken}</span>
+        {/* Body */}
+        <div style={S.body}>
+          {/* §1 Claim */}
+          <div style={S.clause}>
+            <div style={S.clauseNum}>§ 1</div>
+            <div style={S.clauseContent}>
+              <div style={S.label}>{isZh ? '声明 — 发起方主张' : 'Claim — The claimant asserts that'}</div>
+              <textarea style={S.textarea} rows={3} value={claim} onChange={e => setClaim(e.target.value)}
+                placeholder={isZh ? '例：BTC 将在 2026 年 12 月 31 日前突破 15 万美元（以 CoinGecko 收盘价为准）' : 'e.g. BTC will exceed $150,000 by Dec 31, 2026, as measured by CoinGecko closing price.'} />
             </div>
           </div>
 
-          {/* 押注金额 */}
-          <div>
-            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#374151',marginBottom:'6px'}}>{m.stakeLabel}</div>
-            <div style={{display:'flex',gap:'8px'}}>
-              <input
-                type="number" min="0" step="0.001"
-                value={stake}
-                onChange={e => setStake(e.target.value)}
-                placeholder={m.stakePlaceholder}
-                style={{flex:1,background:'#F9F8FF',border:'1.5px solid #DDD6FE',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'#1A1A2E',outline:'none'}}
-              />
-              <div style={{background:'#F5F3FF',border:'1px solid #DDD6FE',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',fontWeight:600,color:'#7C3AED',minWidth:'60px',textAlign:'center'}}>{currentToken}</div>
+          {/* §2 Ruling standard */}
+          <div style={S.clause}>
+            <div style={S.clauseNum}>§ 2</div>
+            <div style={S.clauseContent}>
+              <div style={S.label}>{isZh ? '裁定标准 — 结果以此为准' : 'Ruling standard — The verdict shall be determined by'}</div>
+              <textarea style={S.textarea} rows={2} value={rule} onChange={e => setRule(e.target.value)}
+                placeholder={isZh ? '例：以截止日 CoinGecko 日收盘价为准，链上数据优先。' : 'e.g. CoinGecko daily closing price on deadline. On-chain data takes precedence.'} />
             </div>
           </div>
 
-          {/* 分配比例 */}
-          <div style={{background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'12px',padding:'16px'}}>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'12px'}}>
-              <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#D97706'}}>对决池分配比例</div>
-              <div style={{fontSize:'16px',fontWeight:'bold',color:'#D97706'}}>{audienceRatio}%</div>
-            </div>
-            <input type="range" min="0" max="100" step="5" value={audienceRatio} onChange={e => setAudienceRatio(Number(e.target.value))} style={{width:'100%',marginBottom:'12px',accentColor:'#7C3AED'}} />
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px',marginBottom:'12px'}}>
-              <div style={{background:'#FFF1F2',border:'1px solid #FFE4E6',borderRadius:'8px',padding:'10px',textAlign:'center'}}>
-                <div style={{fontSize:'7px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#F43F5E',marginBottom:'4px'}}>赢家获得</div>
-                <div style={{fontSize:'16px',fontWeight:'bold',color:'#F43F5E'}}>{100-audienceRatio}%</div>
-                <div style={{fontSize:'8px',color:'#F43F5E'}}>对决池</div>
-              </div>
-              <div style={{background:'#EFF6FF',border:'1px solid #DBEAFE',borderRadius:'8px',padding:'10px',textAlign:'center'}}>
-                <div style={{fontSize:'7px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#3B82F6',marginBottom:'4px'}}>观众瓜分</div>
-                <div style={{fontSize:'16px',fontWeight:'bold',color:'#3B82F6'}}>{audienceRatio}%</div>
-                <div style={{fontSize:'8px',color:'#3B82F6'}}>对决池</div>
+          {/* §3 Stakes */}
+          <div style={S.clause}>
+            <div style={S.clauseNum}>§ 3</div>
+            <div style={S.clauseContent}>
+              <div style={S.label}>{isZh ? '押注金额' : 'Stakes'}</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '8px' }}>
+                <input style={S.input} type="number" min="0" step="0.001" value={stake} onChange={e => setStake(e.target.value)} placeholder="0.00" />
+                <div style={{ background: '#F5F5F5', border: '0.5px solid #F0F0F0', borderRadius: '10px', padding: '9px 14px', fontSize: '13px', fontWeight: 600, color: '#444444' }}>{currentToken}</div>
               </div>
             </div>
-            <div style={{fontSize:'10px',color:'#9CA3AF',lineHeight:1.5,color:'#6B7280'}}>
-              {audienceRatio === 0 ? '赢家独得 100% 对决池，观众押注收益来自独立的观众池。' : audienceRatio === 100 ? '赢家放弃全部收益，100% 对决池归押对的观众瓜分。' : `赢家获得对决池的 ${100-audienceRatio}%，押对的观众瓜分 ${audienceRatio}%。`}
+          </div>
+
+          {/* §4 Duration */}
+          <div style={S.clause}>
+            <div style={S.clauseNum}>§ 4</div>
+            <div style={S.clauseContent}>
+              <div style={S.label}>{isZh ? '有效期' : 'Duration'}</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
+                <input style={S.input} type="number" min="1" value={duration} onChange={e => setDuration(e.target.value)} />
+                <select style={S.input} value={durationUnit} onChange={e => setDurationUnit(Number(e.target.value))}>
+                  <option value={0}>{isZh ? '天' : 'Days'}</option>
+                  <option value={1}>{isZh ? '周' : 'Weeks'}</option>
+                  <option value={2}>{isZh ? '月' : 'Months'}</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                {presetDays.map(d => (
+                  <button key={d} onClick={() => { setDuration(String(d)); setDurationUnit(0); }}
+                    style={{ flex: 1, padding: '6px', borderRadius: '8px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
+                      border: duration === String(d) && durationUnit === 0 ? '1px solid #0A0A0A' : '0.5px solid #F0F0F0',
+                      background: duration === String(d) && durationUnit === 0 ? '#0A0A0A' : '#FFFFFF',
+                      color: duration === String(d) && durationUnit === 0 ? '#fff' : '#666666' }}>
+                    {d}{isZh ? '天' : 'd'}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* 时长 */}
-          <div>
-            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#374151',marginBottom:'6px'}}>{m.durationLabel}</div>
-            <div style={{display:'flex',gap:'8px',marginBottom:'8px'}}>
-              <input
-                type="number" min="1" step="1"
-                value={duration}
-                onChange={e => setDuration(e.target.value)}
-                style={{flex:1,background:'#F9F8FF',border:'1.5px solid #DDD6FE',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'#1A1A2E',outline:'none'}}
-              />
-              <select
-                value={durationUnit}
-                onChange={e => setDurationUnit(Number(e.target.value))}
-                style={{background:'#F9F8FF',border:'1.5px solid #DDD6FE',borderRadius:'12px',padding:'10px 12px',fontSize:'14px',color:'#1A1A2E',outline:'none'}}
-              >
-                {unitLabels.map((u, i) => <option key={i} value={i}>{u}</option>)}
-              </select>
-            </div>
-            <div style={{display:'flex',gap:'8px'}}>
-              {presetDays.map((d, i) => (
-                <button
-                  key={d}
-                  onClick={() => { setDuration(String(d)); setDurationUnit(0); }}
-                  style={{flex:1,padding:'7px',borderRadius:'10px',fontSize:'11px',fontWeight:500,border: duration === String(d) && durationUnit === 0 ? '1.5px solid #7C3AED' : '1px solid #DDD6FE',background: duration === String(d) && durationUnit === 0 ? '#F5F3FF' : '#F9F8FF',color: duration === String(d) && durationUnit === 0 ? '#7C3AED' : '#6B7280',cursor:'pointer'}}
-                >{presetLabels[i]}</button>
-              ))}
-            </div>
-          </div>
-
-          {/* 可见范围 */}
-          <div>
-            <div style={{fontSize:'9px',letterSpacing:'0.1em',textTransform:'uppercase',color:'#374151',marginBottom:'8px'}}>{m.visibilityLabel}</div>
-            <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
-              {[
-                { key: 'public' as const, label: m.visibilities[0], desc: m.visibilityDescPublic },
-                { key: 'private' as const, label: m.visibilities[1], desc: m.visibilityDescPrivate },
-                { key: 'ai' as const, label: m.visibilityAI, desc: m.visibilityDescAI },
-              ].map(opt => (
-                <div
-                  key={opt.key}
-                  onClick={() => setVisibility(opt.key)}
-                  style={{borderRadius:'12px',padding:'10px 12px',cursor:'pointer',display:'flex',alignItems:'flex-start',gap:'12px',border: visibility === opt.key ? (opt.key === 'ai' ? '1.5px solid #C4B5FD' : '1.5px solid #DBEAFE') : '1px solid #EEE9FC',background: visibility === opt.key ? (opt.key === 'ai' ? '#F5F3FF' : '#EFF6FF') : '#F9F8FF'}}
-                >
-                  <div style={{width:'14px',height:'14px',borderRadius:'50%',border: visibility === opt.key ? (opt.key === 'ai' ? '2px solid #7C3AED' : '2px solid #3B82F6') : '2px solid #C4B5FD',background: visibility === opt.key ? (opt.key === 'ai' ? '#7C3AED' : '#3B82F6') : 'transparent',flexShrink:0,marginTop:'2px',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                    {visibility === opt.key && <div style={{width:'6px',height:'6px',borderRadius:'50%',background:'white'}} />}
+          {/* §5 Audience pool */}
+          <div style={S.clause}>
+            <div style={S.clauseNum}>§ 5</div>
+            <div style={S.clauseContent}>
+              <div style={S.label}>
+                {isZh ? '观众池分配' : 'Audience pool allocation'}
+                <span style={{ fontSize: '9px', color: '#E0E0E0', fontStyle: 'italic', textTransform: 'none', letterSpacing: 0, marginLeft: '6px' }}>
+                  {isZh ? '开发中' : 'in development'}
+                </span>
+              </div>
+              <div style={{ background: '#FFFFFF', border: '0.5px solid #F0F0F0', borderRadius: '10px', padding: '12px', opacity: 0.6 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <div style={{ textAlign: 'center', padding: '8px', background: '#fff', border: '0.5px solid #F0F0F0', borderRadius: '8px' }}>
+                    <div style={{ fontSize: '9px', color: '#999999', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '3px' }}>{isZh ? '赢家获得' : 'Winner gets'}</div>
+                    <div style={{ fontSize: '16px', fontWeight: 600, color: '#444444' }}>100%</div>
                   </div>
-                  <div>
-                    <div style={{fontSize:'13px',fontWeight:600,color: visibility === opt.key ? (opt.key === 'ai' ? '#7C3AED' : '#1D4ED8') : '#374151',marginBottom:'3px'}}>{opt.label}</div>
-                    <div style={{fontSize:'11px',color:'#6B7280'}}>{opt.desc}</div>
+                  <div style={{ textAlign: 'center', padding: '8px', background: '#fff', border: '0.5px solid #F0F0F0', borderRadius: '8px' }}>
+                    <div style={{ fontSize: '9px', color: '#999999', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '3px' }}>{isZh ? '观众池' : 'Audience'}</div>
+                    <div style={{ fontSize: '16px', fontWeight: 600, color: '#444444' }}>0%</div>
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
 
-          {error && <div style={{fontSize:'11px',color:'#f87171',background:'rgba(248,113,113,0.1)',borderRadius:'8px',padding:'8px 12px'}}>Error: {(error as any)?.shortMessage || error?.message}</div>}
+          {/* §6 Visibility */}
+          <div style={S.clause}>
+            <div style={S.clauseNum}>§ 6</div>
+            <div style={S.clauseContent}>
+              <div style={S.label}>{isZh ? '可见性' : 'Visibility'}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
+                {[
+                  { key: 'public' as const, name: isZh ? '公开' : 'Public', desc: isZh ? '在广场展示，任何人可接受挑战' : 'Listed in Arena. Any wallet may accept.' },
+                  { key: 'private' as const, name: isZh ? '私密' : 'Private', desc: isZh ? '仅通过链接访问，分享给指定对手' : 'Accessible via link only. Share with your challenger.' },
+                ].map(opt => (
+                  <div key={opt.key} onClick={() => setVisibility(opt.key)}
+                    style={{ border: visibility === opt.key ? '1px solid #444444' : '0.5px solid #F0F0F0', borderRadius: '10px', padding: '10px 12px', cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: '10px', background: visibility === opt.key ? '#FFFFFF' : '#fff' }}>
+                    <div style={{ width: '14px', height: '14px', borderRadius: '50%', border: visibility === opt.key ? '2px solid #0A0A0A' : '1.5px solid #E0E0E0', background: visibility === opt.key ? '#0A0A0A' : 'transparent', flexShrink: 0, marginTop: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {visibility === opt.key && <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#fff' }} />}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 500, color: '#0A0A0A', marginBottom: '2px' }}>{opt.name}</div>
+                      <div style={{ fontSize: '11px', color: '#666666' }}>{opt.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* §7 TG */}
+          <div style={S.clause}>
+            <div style={S.clauseNum}>§ 7</div>
+            <div style={S.clauseContent}>
+              <div style={S.label}>{isZh ? 'Telegram 通知' : 'Telegram notification'}</div>
+              <input style={S.input} type="text" value={tgUsername} onChange={e => setTgUsername(e.target.value)} placeholder="@your_telegram_username" />
+              <div style={{ fontSize: '10px', color: '#999999', marginTop: '4px' }}>
+                {isZh ? '先给 @VerdictProtocol_Bot 发 /start 才能收到通知' : 'Send /start to @VerdictProtocol_Bot first to activate notifications.'}
+              </div>
+            </div>
+          </div>
+
+          {/* §8 Signatures */}
+          <div style={{ borderTop: '0.5px dashed #F0F0F0', paddingTop: '16px' }}>
+            <div style={S.clause}>
+              <div style={S.clauseNum}>§ 8</div>
+              <div style={S.clauseContent}>
+                <div style={S.label}>{isZh ? '签名' : 'Signatures'}</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div style={{ border: '0.5px solid #F0F0F0', borderRadius: '10px', padding: '10px 12px', minHeight: '52px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                    <div style={{ fontSize: '9px', color: '#999999', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '3px' }}>{isZh ? '发起方 (红方)' : 'Claimant (Red)'}</div>
+                    <div style={{ fontSize: '12px', color: '#666666', fontStyle: 'italic' }}>{isZh ? '已连接钱包' : 'Connected wallet'}</div>
+                  </div>
+                  <div style={{ border: '0.5px dashed #F0F0F0', borderRadius: '10px', padding: '10px 12px', minHeight: '52px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                    <div style={{ fontSize: '9px', color: '#999999', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '3px' }}>{isZh ? '挑战方 (蓝方)' : 'Challenger (Blue)'}</div>
+                    <div style={{ fontSize: '12px', color: '#E0E0E0', fontStyle: 'italic' }}>{isZh ? '等待接受' : 'Awaiting acceptance'}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* FOOTER */}
-        <div style={{padding:'0 20px 20px',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px'}}>
-          <button onClick={onClose} style={{padding:'10px',borderRadius:'12px',fontSize:'14px',fontWeight:500,color:'#9CA3AF',border:'1px solid #E5E7EB',background:'transparent',cursor:'pointer'}}>{m.cancel}</button>
-          <button
-            onClick={handleSubmit}
-            disabled={!canSubmit}
-            style={{padding:'10px',borderRadius:'12px',fontSize:'14px',fontWeight:600,border: isSuccess ? '1px solid #A7F3D0' : '1px solid #7C3AED',background: isSuccess ? '#ECFDF5' : '#7C3AED',color: isSuccess ? '#059669' : '#fff',cursor: canSubmit ? 'pointer' : 'not-allowed',opacity: canSubmit ? 1 : 0.5}}
-          >{btnLabel}</button>
+        {/* Footer */}
+        <div style={S.footer}>
+          <button style={S.btnCancel} onClick={onClose}>{isZh ? '取消' : 'Cancel'}</button>
+          <button style={{ ...S.btnPrimary, opacity: canReview ? 1 : 0.45, cursor: canReview ? 'pointer' : 'not-allowed' }}
+            onClick={handleReview} disabled={!canReview}>
+            <span>🛡</span>
+            {isZh ? 'ContractAI 审查' : 'Review with ContractAI'}
+            <span style={{ fontSize: '10px', padding: '1px 7px', borderRadius: '4px', background: 'rgba(255,255,255,0.2)', fontWeight: 500 }}>AI</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── STEP: SCANNING ──
+  if (step === 'scanning') return (
+    <div style={S.wrap}>
+      <div style={{ ...S.modal, maxWidth: '360px' }}>
+        <div style={{ padding: '40px 32px', textAlign: 'center' }}>
+          <div style={{ width: '56px', height: '68px', margin: '0 auto 20px', position: 'relative', border: '0.5px solid #F0F0F0', borderRadius: '5px', overflow: 'hidden', background: '#FAFAFA' }}>
+            <div style={{ position: 'absolute', left: 0, right: 0, height: '1.5px', background: 'linear-gradient(90deg, transparent, #0A0A0A, transparent)', animation: 'scanBeam 1.6s ease-in-out infinite' }} />
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '5px', padding: '10px 8px' }}>
+              {[1, 0.5, 0.3].map((op, i) => (
+                <div key={i} style={{ height: '2px', borderRadius: '1px', background: '#E0E0E0', opacity: op }} />
+              ))}
+            </div>
+          </div>
+          <div style={{ fontSize: '13px', fontWeight: 500, color: '#0A0A0A', marginBottom: '12px' }}>
+            {isZh ? 'ContractAI 审查中...' : 'ContractAI analyzing...'}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
+            {(isZh ? ['解析合同结构', '审查条款风险', '生成报告'] : ['Parsing contract', 'Reviewing clauses', 'Generating report']).map((s, i) => (
+              <div key={i} style={{ fontSize: '11px', display: 'flex', alignItems: 'center', gap: '7px', color: i === 1 ? '#0A0A0A' : '#999999' }}>
+                <div style={{ width: '5px', height: '5px', borderRadius: '50%', flexShrink: 0, background: i === 0 ? '#639922' : i === 1 ? '#0A0A0A' : '#F0F0F0' }} />
+                {s}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <style>{`@keyframes scanBeam { 0% { top: -2px; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }`}</style>
+    </div>
+  );
+
+  // ── STEP: REPORT ──
+  if (step === 'report') {
+    const risks = auditResult?.risks || [];
+    const score = auditResult?.overallScore ?? 0;
+    const summary = auditResult?.summary || '';
+    const highCount = risks.filter((r: any) => r.level === 'high').length;
+    const midCount = risks.filter((r: any) => r.level === 'mid').length;
+    const lowCount = risks.filter((r: any) => r.level === 'low').length;
+    const riskLevel = score <= 30 ? (isZh ? '⚖️ 低风险' : '⚖️ Low risk') :
+      score <= 60 ? (isZh ? '🔍 中等风险' : '🔍 Medium risk') :
+      score <= 80 ? (isZh ? '⚠️ 高风险' : '⚠️ High risk') :
+      (isZh ? '🔨 极高风险' : '🔨 Critical');
+
+    return (
+      <div style={S.wrap} onClick={onClose}>
+        <div style={S.modal} onClick={e => e.stopPropagation()}>
+          {/* Header */}
+          <div style={{ ...S.header, display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'left' as const, padding: '16px 24px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '50%', border: '0.5px solid #F0F0F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0 }}>⚖️</div>
+            <div>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: '#0A0A0A' }}>
+                {isZh ? 'ContractAI 风险报告' : 'ContractAI Risk Report'}
+              </div>
+              <div style={{ fontSize: '11px', color: '#999999' }}>CASE {caseNo} · {isZh ? '对赌协议' : 'Wager Agreement'} · Draft</div>
+            </div>
+          </div>
+
+          {/* Score bar */}
+          {auditResult && (
+            <div style={{ padding: '16px 24px', borderBottom: '0.5px solid #F0F0F0' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <div>
+                  <div style={{ fontSize: '11px', color: '#999999', marginBottom: '2px' }}>{isZh ? '风险评分' : 'Risk score'}</div>
+                  <div style={{ fontSize: '20px', fontWeight: 600, color: '#0A0A0A' }}>{score} <span style={{ fontSize: '13px', fontWeight: 400, color: '#999999' }}>/100</span></div>
+                </div>
+                <div style={{ fontSize: '11px', padding: '4px 10px', borderRadius: '6px', background: score > 60 ? '#FCEBEB' : score > 30 ? '#FAEEDA' : '#EAF3DE', color: score > 60 ? '#A32D2D' : score > 30 ? '#854F0B' : '#3B6D11' }}>
+                  {riskLevel}
+                </div>
+              </div>
+              <div style={{ height: '3px', background: '#F5F5F5', borderRadius: '2px', overflow: 'hidden', marginBottom: '10px' }}>
+                <div style={{ height: '100%', width: `${score}%`, borderRadius: '2px', background: score > 60 ? '#E24B4A' : score > 30 ? '#EF9F27' : '#639922' }} />
+              </div>
+              <div style={{ display: 'flex', gap: '14px' }}>
+                {[{ c: '#E24B4A', n: highCount, l: isZh ? '高' : 'High' }, { c: '#EF9F27', n: midCount, l: isZh ? '中' : 'Med' }, { c: '#639922', n: lowCount, l: isZh ? '低' : 'Low' }].map(s => (
+                  <div key={s.l} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', color: '#666666' }}>
+                    <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: s.c }} />
+                    {s.n} {s.l}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Summary */}
+          {summary && (
+            <div style={{ padding: '12px 24px', borderBottom: '0.5px solid #F0F0F0', fontSize: '12px', color: '#666666', lineHeight: '1.6', fontStyle: 'italic' }}>
+              "{summary}"
+            </div>
+          )}
+
+          {/* Risk list */}
+          <div style={{ padding: '14px 24px', display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '240px', overflowY: 'auto' }}>
+            {!auditResult ? (
+              <div style={{ fontSize: '13px', color: '#999999', textAlign: 'center', padding: '20px 0' }}>
+                {isZh ? 'AI 分析暂时不可用，你仍然可以继续发起。' : 'AI analysis temporarily unavailable. You may still proceed.'}
+              </div>
+            ) : risks.length === 0 ? (
+              <div style={{ fontSize: '13px', color: '#639922', textAlign: 'center', padding: '20px 0' }}>
+                {isZh ? '✓ 未发现明显风险' : '✓ No significant risks found'}
+              </div>
+            ) : risks.map((r: any, i: number) => (
+              <div key={i} style={{ border: '0.5px solid #F0F0F0', borderLeft: `2.5px solid ${RISK_COLOR[r.level] || '#F0F0F0'}`, borderRadius: '10px', padding: '12px 14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '10px', fontWeight: 500, padding: '2px 8px', borderRadius: '4px', background: RISK_BG[r.level], color: RISK_TEXT[r.level] }}>
+                    {isZh ? RISK_LABEL_ZH[r.level] : RISK_LABEL_EN[r.level]}
+                  </span>
+                  <span style={{ fontSize: '13px', fontWeight: 500, color: '#0A0A0A' }}>{r.title}</span>
+                </div>
+                <div style={{ fontSize: '12px', color: '#666666', lineHeight: '1.5', marginBottom: '8px' }}>{r.description}</div>
+                <div style={{ fontSize: '11px', color: '#999999', lineHeight: '1.5', padding: '7px 10px', background: '#FFFFFF', borderRadius: '7px', display: 'flex', gap: '6px' }}>
+                  <span>💡</span><span>{r.suggestion}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Footer */}
+          <div style={{ ...S.footer, flexDirection: 'column' as const, display: 'flex', gap: '8px' }}>
+            <div style={{ fontSize: '11px', color: '#999999', textAlign: 'center' }}>
+              {isZh ? '你可以返回修改，或确认风险继续签名。' : 'You may revise the contract, or acknowledge the risks and proceed.'}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <button style={S.btnCancel} onClick={() => setStep('form')}>
+                {isZh ? '← 返回修改' : '← Revise'}
+              </button>
+              <button style={{ ...S.btnPrimary, opacity: isPending || isConfirming ? 0.6 : 1 }}
+                onClick={handleProceed} disabled={isPending || isConfirming}>
+                {btnLabel}
+              </button>
+            </div>
+            {error && <div style={{ fontSize: '11px', color: '#E24B4A', background: '#FCEBEB', borderRadius: '8px', padding: '8px 12px' }}>
+              {(error as any)?.shortMessage || (error as any)?.message}
+            </div>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── STEP: SIGNING ──
+  return (
+    <div style={S.wrap}>
+      <div style={{ ...S.modal, maxWidth: '360px' }}>
+        <div style={{ padding: '40px 32px', textAlign: 'center' }}>
+          <div style={{ fontSize: '32px', marginBottom: '16px' }}>{isSuccess ? '✅' : '✍️'}</div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: '#0A0A0A', marginBottom: '6px' }}>
+            {isSuccess ? (isZh ? '对决已上链！' : 'Duel is live!') :
+             isConfirming ? (isZh ? '链上确认中...' : 'Confirming on-chain...') :
+             (isZh ? '等待钱包签名...' : 'Waiting for wallet signature...')}
+          </div>
+          <div style={{ fontSize: '12px', color: '#999999' }}>
+            {isSuccess ? (isZh ? '正在关闭...' : 'Closing...') : (isZh ? '请在钱包中确认交易' : 'Please confirm in your wallet')}
+          </div>
+          {error && (
+            <div style={{ marginTop: '16px', fontSize: '11px', color: '#E24B4A', background: '#FCEBEB', borderRadius: '8px', padding: '8px 12px' }}>
+              {(error as any)?.shortMessage || (error as any)?.message}
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
+
+
 
 const LIVE_DUEL = {
   id: '0042', challenger: { name: '@CryptoKing', addr: '0x3f...a21c', color: '#6a1a1a' },
@@ -951,18 +1179,18 @@ function LiveCard({ t, onEnter }: { t: typeof LANG['en']; onEnter: () => void })
   useEffect(() => { if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight; }, [chatMsgs]);
   const red = Math.round(supportRed); const isRedLeading = red > 50;
   return (
-    <div className="bg-white border border-[#EEE9FC] rounded-2xl overflow-hidden" style={{ display: 'grid', gridTemplateColumns: '70% 30%', height: '540px' }}>
+    <div className="bg-white border border-[#F0F0F0] rounded-lg overflow-hidden" style={{ display: 'grid', gridTemplateColumns: '70% 30%', height: '540px' }}>
       <div className="flex flex-col border-r border-white/10 bg-[#07070f] overflow-hidden">
         <div className="bg-[#09091e] border-b border-white/5 px-3 py-2 flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center gap-1.5 bg-red-500/10 border border-red-500/30 rounded-full px-2.5 py-1"><div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /><span className="text-[9px] font-bold text-red-400 tracking-widest">LIVE</span></div>
-          <div className="flex items-center gap-2"><div className="flex">{['#6a1a3a','#1a3a6a','#1a6a2a'].map((c,i) => (<div key={i} className="w-4 h-4 rounded-full overflow-hidden border border-[#09091e] -ml-1 first:ml-0 relative"><div className="absolute inset-0" style={{ background: c }} /><img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" /></div>))}</div><span className="text-[10px] text-[#9CA3AF]"><span className="text-green-400 font-semibold">{watchers}</span> {lt.watching}</span></div>
-          <div className="flex items-center gap-2"><span className="text-[8px] text-red-400 border border-red-400/30 bg-red-400/10 rounded px-1.5 py-0.5 tracking-wider">KOL BATTLE</span><span className="text-[8px] tracking-widest text-[#C4B5FD]">#{LIVE_DUEL.id}</span></div>
+          <div className="flex items-center gap-1.5 bg-red-500/10 border border-red-500/30 rounded px-2.5 py-1"><div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /><span className="text-[9px] font-bold text-red-400 tracking-widest">LIVE</span></div>
+          <div className="flex items-center gap-2"><div className="flex">{['#6a1a3a','#1a3a6a','#1a6a2a'].map((c,i) => (<div key={i} className="w-4 h-4 rounded-full overflow-hidden border border-[#09091e] -ml-1 first:ml-0 relative"><div className="absolute inset-0" style={{ background: c }} /><img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" /></div>))}</div><span className="text-[10px] text-[#999999]"><span className="text-green-400 font-semibold">{watchers}</span> {lt.watching}</span></div>
+          <div className="flex items-center gap-2"><span className="text-[8px] text-red-400 border border-red-400/30 bg-red-400/10 rounded px-1.5 py-0.5 tracking-wider">KOL BATTLE</span><span className="text-[8px] tracking-widest text-[#E0E0E0]">#{LIVE_DUEL.id}</span></div>
         </div>
         <div className="bg-[#0a0a1e] border-b border-white/5 px-3 py-2 flex-shrink-0 flex items-center gap-3">
           <div className="flex-1 min-w-0">
             <div className="text-[7px] tracking-widest uppercase text-white/20 mb-1">{t.events.duelIssued}</div>
             <div className="text-[11px] font-semibold text-white/80 leading-snug mb-1">{t.duels[0].claim}</div>
-            <div className="flex items-center gap-2"><span className="text-[7px] tracking-widest uppercase text-[#C4B5FD]">Ruling</span><span className="text-[9px] text-[#C4B5FD]">DeFiLlama TVL data at expiry · 00:00 UTC</span></div>
+            <div className="flex items-center gap-2"><span className="text-[7px] tracking-widest uppercase text-[#E0E0E0]">Ruling</span><span className="text-[9px] text-[#999999]">DeFiLlama TVL data at expiry · 00:00 UTC</span></div>
           </div>
           <button onClick={onEnter} className="px-3 py-1.5 rounded-lg text-[10px] font-semibold text-red-400 border border-red-400/40 bg-red-400/10 hover:bg-red-400/20 transition-colors whitespace-nowrap flex-shrink-0">{lt.enterDuel}</button>
         </div>
@@ -970,13 +1198,13 @@ function LiveCard({ t, onEnter }: { t: typeof LANG['en']; onEnter: () => void })
           {/* RED */}
           <div className="flex flex-col items-center gap-2 text-center" style={{ transform: isRedLeading ? 'scale(1.04)' : 'scale(0.96)', transition: 'transform 0.6s ease' }}>
             <div className="relative">
-              {isRedLeading && <div className="absolute inset-[-10px] rounded-2xl pointer-events-none" style={{ background: 'radial-gradient(circle,rgba(255,107,107,0.25),transparent 70%)' }} />}
-              <div className="w-12 h-12 rounded-xl overflow-hidden relative border-2 border-red-400" style={{ filter: isRedLeading ? 'brightness(1.1)' : 'brightness(0.75) saturate(0.6)', transition: 'filter 0.6s ease' }}><div className="absolute inset-0" style={{ background: LIVE_DUEL.challenger.color }} /><img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" /><div className="absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full bg-green-400 border border-[#07070f]" /></div>
+              {isRedLeading && <div className="absolute inset-[-10px] rounded-lg pointer-events-none" style={{ background: 'radial-gradient(circle,rgba(255,107,107,0.25),transparent 70%)' }} />}
+              <div className="w-12 h-12 rounded-lg overflow-hidden relative border-2 border-red-400" style={{ filter: isRedLeading ? 'brightness(1.1)' : 'brightness(0.75) saturate(0.6)', transition: 'filter 0.6s ease' }}><div className="absolute inset-0" style={{ background: LIVE_DUEL.challenger.color }} /><img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" /><div className="absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full bg-green-400 border border-[#07070f]" /></div>
             </div>
             <div className="text-[10px] font-semibold text-white/80">{LIVE_DUEL.challenger.name}</div>
             <div className="text-[8px] text-white/25 font-mono">{LIVE_DUEL.challenger.addr}</div>
-            <div className="text-[8px] text-[#9CA3AF]">Bullish — Mantle flips</div>
-            <div className="text-lg font-bold text-red-400">{LIVE_DUEL.amount} <span className="text-[8px] text-[#C4B5FD]">ETH</span></div>
+            <div className="text-[8px] text-[#999999]">Bullish — Mantle flips</div>
+            <div className="text-lg font-bold text-red-400">{LIVE_DUEL.amount} <span className="text-[8px] text-[#E0E0E0]">ETH</span></div>
             <div className="w-full flex flex-col gap-1.5">
               {[{label:'SUP',val:`${red}%`,pct:red},{label:'TVL',val:'$588M',pct:22},{label:'MOM',val:'+40%',pct:78}].map(s => (<div key={s.label} className="flex items-center gap-1.5"><span className="text-[7px] text-white/20 w-6 text-right uppercase">{s.label}</span><div className="flex-1 h-[3px] bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-red-400 rounded-full transition-all duration-700" style={{ width: `${s.pct}%` }} /></div><span className="text-[7px] text-red-400 w-8 font-semibold">{s.val}</span></div>))}
             </div>
@@ -995,13 +1223,13 @@ function LiveCard({ t, onEnter }: { t: typeof LANG['en']; onEnter: () => void })
           {/* BLUE */}
           <div className="flex flex-col items-center gap-2 text-center" style={{ transform: !isRedLeading ? 'scale(1.04)' : 'scale(0.96)', transition: 'transform 0.6s ease' }}>
             <div className="relative">
-              {!isRedLeading && <div className="absolute inset-[-10px] rounded-2xl pointer-events-none" style={{ background: 'radial-gradient(circle,rgba(107,159,255,0.25),transparent 70%)' }} />}
-              <div className="w-12 h-12 rounded-xl overflow-hidden relative border-2 border-blue-400" style={{ filter: !isRedLeading ? 'brightness(1.1)' : 'brightness(0.75) saturate(0.6)', transition: 'filter 0.6s ease' }}><div className="absolute inset-0" style={{ background: LIVE_DUEL.defender.color }} /><img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" /><div className="absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full bg-green-400 border border-[#07070f]" /></div>
+              {!isRedLeading && <div className="absolute inset-[-10px] rounded-lg pointer-events-none" style={{ background: 'radial-gradient(circle,rgba(107,159,255,0.25),transparent 70%)' }} />}
+              <div className="w-12 h-12 rounded-lg overflow-hidden relative border-2 border-blue-400" style={{ filter: !isRedLeading ? 'brightness(1.1)' : 'brightness(0.75) saturate(0.6)', transition: 'filter 0.6s ease' }}><div className="absolute inset-0" style={{ background: LIVE_DUEL.defender.color }} /><img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" /><div className="absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full bg-green-400 border border-[#07070f]" /></div>
             </div>
             <div className="text-[10px] font-semibold text-white/80">{LIVE_DUEL.defender.name}</div>
             <div className="text-[8px] text-white/25 font-mono">{LIVE_DUEL.defender.addr}</div>
-            <div className="text-[8px] text-[#9CA3AF]">Bearish — Arbitrum holds</div>
-            <div className="text-lg font-bold text-blue-400">{LIVE_DUEL.amount} <span className="text-[8px] text-[#C4B5FD]">ETH</span></div>
+            <div className="text-[8px] text-[#999999]">Bearish — Arbitrum holds</div>
+            <div className="text-lg font-bold text-blue-400">{LIVE_DUEL.amount} <span className="text-[8px] text-[#E0E0E0]">ETH</span></div>
             <div className="w-full flex flex-col gap-1.5">
               {[{label:'SUP',val:`${100-red}%`,pct:100-red},{label:'TVL',val:'$2.08B',pct:80},{label:'MOM',val:'-1.2%',pct:18}].map(s => (<div key={s.label} className="flex items-center gap-1.5"><span className="text-[7px] text-white/20 w-6 text-right uppercase">{s.label}</span><div className="flex-1 h-[3px] bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-blue-400 rounded-full transition-all duration-700" style={{ width: `${s.pct}%` }} /></div><span className="text-[7px] text-blue-400 w-8 font-semibold">{s.val}</span></div>))}
             </div>
@@ -1013,7 +1241,7 @@ function LiveCard({ t, onEnter }: { t: typeof LANG['en']; onEnter: () => void })
           <div className="flex justify-between mt-0.5"><span className="text-[7px] text-red-400/40">{LIVE_DUEL.challenger.name}</span><span className="text-[7px] text-blue-400/40">{LIVE_DUEL.defender.name}</span></div>
         </div>
         <div className="px-3 pb-2 flex-shrink-0">
-          <div className="flex items-center justify-between mb-1.5"><span className="text-[7px] tracking-widest uppercase text-[#C4B5FD]">support_rate · live</span><div className="flex items-center gap-2"><div className="flex items-center gap-1"><span className="text-[7px] text-[#C4B5FD]">less</span>{[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-1.5 rounded-sm" style={{ background: RED_STOPS[i] }} />)}<span className="text-[7px] text-red-400/40">red</span></div><div className="flex items-center gap-1">{[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-1.5 rounded-sm" style={{ background: BLU_STOPS[i] }} />)}<span className="text-[7px] text-blue-400/40">blue</span><span className="text-[7px] text-[#C4B5FD]">more</span></div></div></div>
+          <div className="flex items-center justify-between mb-1.5"><span className="text-[7px] tracking-widest uppercase text-[#E0E0E0]">support_rate · live</span><div className="flex items-center gap-2"><div className="flex items-center gap-1"><span className="text-[7px] text-[#E0E0E0]">less</span>{[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-1.5 rounded-sm" style={{ background: RED_STOPS[i] }} />)}<span className="text-[7px] text-red-400/40">red</span></div><div className="flex items-center gap-1">{[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-1.5 rounded-sm" style={{ background: BLU_STOPS[i] }} />)}<span className="text-[7px] text-blue-400/40">blue</span><span className="text-[7px] text-[#E0E0E0]">more</span></div></div></div>
           <div className="flex gap-3">
             <div className="flex gap-[3px] flex-shrink-0">{heatmap.map((col, ci) => (<div key={ci} className="flex flex-col gap-[3px]">{col.map((cell, ri) => (<div key={ri} className="w-[10px] h-[10px] rounded-sm" style={{ background: cell.side === 'r' ? RED_STOPS[cell.intensity] : BLU_STOPS[cell.intensity], transition: 'background 1s ease' }} />))}</div>))}</div>
             <div className="flex-1 border-l border-white/5 pl-3 flex flex-col justify-between gap-2">
@@ -1025,20 +1253,20 @@ function LiveCard({ t, onEnter }: { t: typeof LANG['en']; onEnter: () => void })
                 <div className="flex justify-between mt-0.5"><span className="text-[6px] text-red-400/50">{LIVE_DUEL.challenger.name}</span><span className="text-[6px] text-purple-400/50">⚖️ {red > 55 ? 'leans RED' : red < 45 ? 'leans BLUE' : 'neutral'}</span><span className="text-[6px] text-blue-400/50">{LIVE_DUEL.defender.name}</span></div>
                 <div className="text-[8px] text-purple-300/50 italic leading-snug mt-1">"{red > 55 ? 'Momentum favors challenger.' : red < 45 ? 'Defender holds ground.' : 'Outcome uncertain.'}"</div>
               </div>
-              <div><div className="text-[6px] tracking-widest uppercase text-white/15 mb-0.5">Time elapsed</div><div className="h-1.5 bg-[#F3F0FB] rounded-full overflow-hidden"><div className="h-full bg-orange-400/50 rounded-full" style={{ width: '41%' }} /></div><div className="flex justify-between mt-0.5"><span className="text-[6px] text-orange-400/40">41% elapsed</span><span className="text-[6px] text-[#C4B5FD]">44d left</span></div></div>
+              <div><div className="text-[6px] tracking-widest uppercase text-white/15 mb-0.5">Time elapsed</div><div className="h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden"><div className="h-full bg-orange-400/50 rounded-full" style={{ width: '41%' }} /></div><div className="flex justify-between mt-0.5"><span className="text-[6px] text-orange-400/40">41% elapsed</span><span className="text-[6px] text-[#E0E0E0]">44d left</span></div></div>
             </div>
           </div>
         </div>
-        <div className="bg-[#04040c] border-t border-white/5 px-3 py-1.5 flex justify-between items-center flex-shrink-0"><span className="text-[7px] tracking-widest uppercase text-[#C4B5FD]">{lt.expiresIn}</span><span className="text-[9px] font-mono text-red-400/50">{timer}</span></div>
+        <div className="bg-[#04040c] border-t border-white/5 px-3 py-1.5 flex justify-between items-center flex-shrink-0"><span className="text-[7px] tracking-widest uppercase text-[#E0E0E0]">{lt.expiresIn}</span><span className="text-[9px] font-mono text-red-400/50">{timer}</span></div>
       </div>
       {/* CHAT */}
       <div className="flex flex-col bg-[#07070f] overflow-hidden">
-        <div className="bg-[#08081a] border-b border-white/5 px-3 py-2 flex items-center justify-between flex-shrink-0"><span className="text-[9px] font-semibold tracking-widest uppercase text-[#9CA3AF]">{lt.liveChat}</span><span className="text-[8px] text-[#C4B5FD]">{Math.floor(watchers * 0.15)} {lt.online}</span></div>
+        <div className="bg-[#08081a] border-b border-white/5 px-3 py-2 flex items-center justify-between flex-shrink-0"><span className="text-[9px] font-semibold tracking-widest uppercase text-[#999999]">{lt.liveChat}</span><span className="text-[8px] text-[#E0E0E0]">{Math.floor(watchers * 0.15)} {lt.online}</span></div>
         <div ref={chatRef} className="flex-1 overflow-y-auto p-2 flex flex-col gap-2" style={{ scrollbarWidth: 'none' }}>
           {chatMsgs.map((m, i) => (<div key={i} className="flex items-start gap-1.5"><div className="w-4 h-4 rounded-full overflow-hidden relative flex-shrink-0 mt-0.5"><div className="absolute inset-0" style={{ background: m.color }} /><img src={WARRIOR_IMG} alt="" className="absolute inset-0 w-full h-full object-cover object-top" /></div><div className="flex-1 min-w-0"><div className="flex items-center gap-1.5 mb-0.5 flex-wrap"><span className={`text-[8px] font-bold ${m.cls}`}>{m.name}</span>{m.pill && <span className={`text-[7px] font-semibold rounded px-1 py-0.5 ${m.pill==='r'?'text-red-400 bg-red-400/15 border border-red-400/25':'text-blue-400 bg-blue-400/15 border border-blue-400/25'}`}>{m.pill==='r'?'RED':'BLUE'}</span>}</div><div className="text-[9px] text-white/35 leading-snug">{m.text}</div></div></div>))}
         </div>
         <div className="border-t border-white/5 px-2 py-1.5 grid grid-cols-2 gap-1.5 bg-[#08081a] flex-shrink-0"><button className="py-1 rounded-md text-[8px] font-semibold text-red-400 border border-red-400/25 bg-red-400/8 hover:bg-red-400/15 transition-colors truncate">👑 {LIVE_DUEL.challenger.name}</button><button className="py-1 rounded-md text-[8px] font-semibold text-blue-400 border border-blue-400/25 bg-blue-400/8 hover:bg-blue-400/15 transition-colors truncate">⚔️ {LIVE_DUEL.defender.name}</button></div>
-        <div className="border-t border-white/5 px-2 py-1.5 bg-[#08081a] flex gap-1.5 items-center flex-shrink-0"><input className="flex-1 bg-[#0c0c1e] border border-white/8 rounded-full px-2.5 py-1.5 text-[9px] text-white/50 placeholder-white/20 outline-none" placeholder={lt.saySomething} /><button className="bg-red-400/15 border border-red-400/25 rounded-full px-2.5 py-1.5 text-[9px] text-red-400">{lt.send}</button></div>
+        <div className="border-t border-white/5 px-2 py-1.5 bg-[#08081a] flex gap-1.5 items-center flex-shrink-0"><input className="flex-1 bg-[#0c0c1e] border border-white/8 rounded px-2.5 py-1.5 text-[9px] text-white/50 placeholder-white/20 outline-none" placeholder={lt.saySomething} /><button className="bg-red-400/15 border border-red-400/25 rounded px-2.5 py-1.5 text-[9px] text-red-400">{lt.send}</button></div>
       </div>
     </div>
   );
@@ -1054,128 +1282,128 @@ function DuelCard({ duel, t, onClick, onEnter }: { duel: Duel; t: typeof LANG['e
   const ruleText = (duel as any)._ruleText || d.rulingStd;
   const totalPot = (duel.challenger.amount + (duel.defender?.amount ?? duel.challenger.amount)).toFixed(3);
   const chain = CHAINS.find(c => duel.network.includes(c.name));
-  const borderColor = isAI ? '#DDD6FE' : isEnding ? '#FED7AA' : '#EEE9FC';
+  const borderColor = isAI ? '#F0F0F0' : isEnding ? '#FED7AA' : '#F0F0F0';
   const challengerAddr = (duel as any)._onChainId ? duel.challenger.addr : duel.challenger.addr;
 
   return (
-    <div onClick={onClick} className="bg-white rounded-3xl overflow-hidden cursor-pointer group flex flex-col" style={{border:`1.5px solid ${borderColor}`,transition:'box-shadow 0.2s,transform 0.2s'}} onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.transform='translateY(-3px)';(e.currentTarget as HTMLDivElement).style.boxShadow='0 12px 32px rgba(124,58,237,0.10)'}} onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.transform='';(e.currentTarget as HTMLDivElement).style.boxShadow=''}}>
+    <div onClick={onClick} className="bg-white rounded-lg overflow-hidden cursor-pointer group flex flex-col" style={{border:`1.5px solid ${borderColor}`,transition:'box-shadow 0.2s,transform 0.2s'}} onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.transform='translateY(-3px)';(e.currentTarget as HTMLDivElement).style.boxShadow='0 12px 32px rgba(0,0,0,0.06)'}} onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.transform='';(e.currentTarget as HTMLDivElement).style.boxShadow=''}}>
       
       {/* HEADER */}
       <div className="px-4 pt-3.5 pb-0 flex items-center justify-between">
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full ${duel.type==='kolBattle'?'text-[#F43F5E] bg-[#FFF1F2]':duel.type==='friendsBet'?'text-[#3B82F6] bg-[#EFF6FF]':duel.type==='communityWar'?'text-[#7C3AED] bg-[#F5F3FF]':'text-[#059669] bg-[#ECFDF5]'}`}>{t.tags[duel.type]}</span>
-          {isAI && <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full text-[#7C3AED] bg-[#F5F3FF]">vs AI</span>}
+          <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full ${duel.type==='kolBattle'?'text-[#F43F5E] bg-[#FFF5F5]':duel.type==='friendsBet'?'text-[#1D4ED8] bg-[#F5F9FF]':duel.type==='communityWar'?'text-[#444444] bg-[#F5F5F5]':'text-[#065F46] bg-[#ECFDF5]'}`}>{t.tags[duel.type]}</span>
+          {isAI && <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full text-[#444444] bg-[#F5F5F5]">vs AI</span>}
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-[#C4B5FD] font-medium">#{(duel as any)._onChainId || duel.id}</span>
-          <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full ${duel.status==='live'?'text-[#F43F5E] bg-[#FFF1F2]':isOpen?'text-[#3B82F6] bg-[#EFF6FF]':isEnding?'text-[#EA580C] bg-[#FFF7ED]':'text-[#059669] bg-[#ECFDF5]'}`}>{t.tags[duel.status]}</span>
+          <span className="text-[10px] text-[#999999] font-medium">#{(duel as any)._onChainId || duel.id}</span>
+          <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full ${duel.status==='live'?'text-[#F43F5E] bg-[#FFF5F5]':isOpen?'text-[#3B82F6] bg-[#F5F9FF]':isEnding?'text-[#EA580C] bg-[#FFF7ED]':'text-[#059669] bg-[#ECFDF5]'}`}>{t.tags[duel.status]}</span>
         </div>
       </div>
 
       {/* CLAIM — accent bar style */}
-      <div className="mx-4 mt-3 mb-3 rounded-2xl overflow-hidden flex" style={{background:'#F9F8FF',border:'1px solid #EEE9FC'}}>
-        <div className="w-1 flex-shrink-0 rounded-l-2xl" style={{background: isEnding?'#EA580C':isAI?'#7C3AED':'#7C3AED'}} />
+      <div className="mx-4 mt-3 mb-3 rounded-lg overflow-hidden flex" style={{background:'#FFFFFF',border:'1px solid #F0F0F0'}}>
+        <div className="w-1 flex-shrink-0 rounded-l-2xl" style={{background: isEnding?'#F97316':'#0A0A0A'}} />
         <div className="px-3 py-2.5 min-w-0">
-          <p className="text-[12px] font-semibold text-[#1A1A2E] leading-snug line-clamp-2">{claimText}</p>
-          {ruleText && <p className="text-[10px] text-[#9CA3AF] mt-1 truncate">⚖️ {ruleText.length>50?ruleText.slice(0,50)+'...':ruleText}</p>}
+          <p className="text-[13px] font-medium text-[#0A0A0A] leading-snug line-clamp-2">{claimText}</p>
+          {ruleText && <p className="text-[10px] text-[#999999] mt-1 truncate">⚖️ {ruleText.length>50?ruleText.slice(0,50)+'...':ruleText}</p>}
         </div>
       </div>
 
       {/* PLAYERS */}
       <div className="px-4 pb-3" style={{display:'grid',gridTemplateColumns:'1fr 44px 1fr',gap:'8px',alignItems:'center'}}>
         {/* RED */}
-        <div className="rounded-2xl p-3" style={{background:'#FFF1F2',border:'1px solid #FFE4E6'}}>
+        <div className="rounded-lg p-3" style={{background:'#FFF5F5',border:'1px solid #FFE0E0'}}>
           <div className="flex items-center gap-2 mb-2.5">
             <GradientAvatar addr={duel.challenger.addr || '0xabc'} size={36} />
             <div className="min-w-0">
-              <div className="text-[11px] font-semibold text-[#1A1A2E] truncate">{duel.challenger.name}</div>
-              <div className="text-[9px] text-[#9CA3AF] mt-0.5">{t.nav.arena === '广场' ? '发起方' : 'Challenger'}</div>
+              <div className="text-[11px] font-semibold text-[#0A0A0A] truncate">{duel.challenger.name}</div>
+              <div className="text-[9px] text-[#999999] mt-0.5">{t.nav.arena === '广场' ? '发起方' : 'Challenger'}</div>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-[22px] font-bold text-[#F43F5E] leading-none">{duel.challenger.amount}</span>
-            <span className="text-[10px] font-semibold text-[#F43F5E] bg-[#FFE4E6] px-2 py-0.5 rounded-lg">{duel.token}</span>
+            <span className="text-[10px] font-semibold text-[#F43F5E] bg-[#FFE0E0] px-2 py-0.5 rounded-lg">{duel.token}</span>
           </div>
         </div>
 
         {/* VS */}
         <div className="flex flex-col items-center gap-2">
-          <div className="text-[10px] font-bold text-[#7C3AED] bg-[#F5F3FF] px-2 py-1.5 rounded-xl w-full text-center">VS</div>
-          {chain && <img src={chain.logo} alt={chain.name} className="w-5 h-5 rounded-full border border-[#EEE9FC]" onError={e=>{(e.target as HTMLImageElement).style.display='none'}} />}
+          <div className="text-[10px] font-bold text-[#444444] bg-[#F5F5F5] px-2 py-1.5 rounded-lg w-full text-center">VS</div>
+          {chain && <img src={chain.logo} alt={chain.name} className="w-5 h-5 rounded-full border border-[#F0F0F0]" onError={e=>{(e.target as HTMLImageElement).style.display='none'}} />}
         </div>
 
         {/* BLUE / EMPTY */}
         {isAI ? (
-          <div className="rounded-2xl p-3 flex flex-col items-center justify-center gap-1.5" style={{background:'#F5F3FF',border:'1px solid #DDD6FE',minHeight:'84px'}}>
-            <div className="w-9 h-9 rounded-full bg-[#EDE9FD] flex items-center justify-center text-xl">⚖️</div>
-            <div className="text-[11px] font-semibold text-[#7C3AED]">AI Judge</div>
+          <div className="rounded-lg p-3 flex flex-col items-center justify-center gap-1.5" style={{background:'#F5F5F5',border:'1px solid #F0F0F0',minHeight:'84px'}}>
+            <div className="w-9 h-9 rounded-full bg-[#F5F5F5] flex items-center justify-center text-xl">⚖️</div>
+            <div className="text-[11px] font-semibold text-[#444444]">AI Judge</div>
           </div>
         ) : duel.defender ? (
-          <div className="rounded-2xl p-3" style={{background:'#EFF6FF',border:'1px solid #DBEAFE'}}>
+          <div className="rounded-lg p-3" style={{background:'#F5F9FF',border:'1px solid #E0EEFF'}}>
             <div className="flex items-center gap-2 mb-2.5">
               <GradientAvatar addr={duel.defender.addr || '0xdef'} size={36} />
               <div className="min-w-0">
-                <div className="text-[11px] font-semibold text-[#1A1A2E] truncate">{duel.defender.name}</div>
-                <div className="text-[9px] text-[#9CA3AF] mt-0.5">{t.nav.arena === '广场' ? '接受方' : 'Defender'}</div>
+                <div className="text-[11px] font-semibold text-[#0A0A0A] truncate">{duel.defender.name}</div>
+                <div className="text-[9px] text-[#999999] mt-0.5">{t.nav.arena === '广场' ? '接受方' : 'Defender'}</div>
               </div>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-[22px] font-bold text-[#3B82F6] leading-none">{duel.defender.amount}</span>
-              <span className="text-[10px] font-semibold text-[#3B82F6] bg-[#DBEAFE] px-2 py-0.5 rounded-lg">{duel.token}</span>
+              <span className="text-[20px] font-normal text-[#3B82F6] leading-none">{duel.defender.amount}</span>
+              <span className="text-[10px] font-semibold text-[#3B82F6] bg-[#E0EEFF] px-2 py-0.5 rounded-lg">{duel.token}</span>
             </div>
           </div>
         ) : (
-          <div className="rounded-2xl p-3 flex flex-col items-center justify-center gap-1.5" style={{background:'#F9F8FF',border:'1.5px dashed #C4B5FD',minHeight:'84px'}}>
-            <div className="text-3xl text-[#C4B5FD]">?</div>
-            <div className="text-[10px] font-medium text-[#C4B5FD]">{t.nav.arena === '广场' ? '等待应战' : 'Waiting'}</div>
+          <div className="rounded-lg p-3 flex flex-col items-center justify-center gap-1.5" style={{background:'#FFFFFF',border:'1.5px dashed #E0E0E0',minHeight:'84px'}}>
+            <div className="text-3xl text-[#E0E0E0]">?</div>
+            <div className="text-[10px] font-medium text-[#999999]">{t.nav.arena === '广场' ? '等待应战' : 'Waiting'}</div>
           </div>
         )}
       </div>
 
       {/* SUPPORT BAR */}
       <div className="px-4 pb-3">
-        <div className="h-2.5 bg-[#F3F0FB] rounded-full overflow-hidden flex mb-2" style={{position:'relative'}}>
+        <div className="h-2 bg-[#F5F5F5] rounded-full overflow-hidden flex mb-2" style={{position:'relative'}}>
           <div className="bg-[#F43F5E] rounded-l-full transition-all duration-700" style={{width:`${duel.supportRed}%`}} />
-          <div className={`rounded-r-full flex-1 ${isAI?'bg-[#7C3AED]':'bg-[#3B82F6]'}`} />
+          <div className={`rounded-r-full flex-1 ${isAI?'bg-[#444444]':'bg-[#3B82F6]'}`} />
         </div>
         <div className="flex justify-between items-center">
           <span className="text-[11px] font-bold text-[#F43F5E]">{duel.supportRed}%</span>
-          <span className="text-[9px] text-[#C4B5FD] tracking-wide">{t.nav.arena === '广场' ? '社区支持率' : 'Community Vote'}</span>
-          <span className={`text-[11px] font-bold ${isAI?'text-[#7C3AED]':'text-[#3B82F6]'}`}>{100-duel.supportRed}%</span>
+          <span className="text-[9px] text-[#999999] tracking-wide">{t.nav.arena === '广场' ? '社区支持率' : 'Community Vote'}</span>
+          <span className={`text-[11px] font-bold ${isAI?'text-[#444444]':'text-[#3B82F6]'}`}>{100-duel.supportRed}%</span>
         </div>
       </div>
 
       {/* CHIPS ROW */}
       <div className="px-4 pb-3 flex gap-2 flex-wrap">
-        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-semibold border ${isEnding?'bg-[#FFF7ED] border-[#FED7AA] text-[#EA580C]':'bg-[#F9F8FF] border-[#EEE9FC] text-[#374151]'}`}>
+        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-semibold border ${isEnding?'bg-[#FFF7ED] border-[#FED7AA] text-[#EA580C]':'bg-[#FFFFFF] border-[#F0F0F0] text-[#444444]'}`}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
           {duel.expires}
         </div>
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-semibold border bg-[#F9F8FF] border-[#EEE9FC] text-[#374151]">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-semibold border bg-[#FFFFFF] border-[#F0F0F0] text-[#444444]">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6"/><path d="M8 14h8"/></svg>
           {totalPot} {duel.token}
         </div>
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-semibold border bg-[#F9F8FF] border-[#EEE9FC] text-[#374151]">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-semibold border bg-[#FFFFFF] border-[#F0F0F0] text-[#444444]">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           {duel.watchers}
         </div>
       </div>
 
       {/* FOOTER BUTTONS */}
-      <div className="px-4 pb-4 mt-auto flex gap-2 border-t border-[#F3F0FB] pt-3">
-        <button onClick={e=>{e.stopPropagation();onEnter();}} className="flex-1 py-2.5 rounded-2xl text-[12px] font-bold text-white transition-all hover:opacity-90 active:scale-95" style={{background:isOpen?'#EA580C':'#7C3AED'}}>
+      <div className="px-4 pb-4 mt-auto flex gap-2 border-t border-[#F5F5F5] pt-3">
+        <button onClick={e=>{e.stopPropagation();onEnter();}} className="flex-1 py-2.5 rounded-lg text-[12px] font-bold text-white transition-all hover:opacity-90 active:scale-95" style={{background:isOpen?'#E24B4A':'#0A0A0A'}}>
           {isOpen ? (t.nav.arena === '广场' ? '⚔️ 接受挑战' : '⚔️ Accept Challenge') : t.card.enterDuel}
         </button>
-        <button onClick={e=>{e.stopPropagation();generateStampImage(duel);}} className="px-3 py-2.5 rounded-2xl text-[12px] font-semibold bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE] hover:bg-[#EDE9FD] transition-colors" title="Share as image">
+        <button onClick={e=>{e.stopPropagation();generateStampImage(duel);}} className="px-3 py-2.5 rounded-lg text-[12px] font-semibold bg-[#F5F5F5] text-[#444444] border border-[#F0F0F0] hover:bg-[#F5F5F5] transition-colors" title="Share as image">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
         </button>
       </div>
 
       {/* NETWORK BAR */}
-      <div className="px-4 py-2 flex justify-between items-center" style={{background:'#F7F5FF',borderTop:'1px solid #EEE9FC'}}>
+      <div className="px-4 py-2 flex justify-between items-center" style={{background:'#FFFFFF',borderTop:'1px solid #F0F0F0'}}>
         <div className="flex items-center gap-1.5">
           {chain && <img src={chain.logo} alt="" className="w-3.5 h-3.5 rounded-full" onError={e=>{(e.target as HTMLImageElement).style.display='none'}} />}
-          <span className="text-[9px] font-medium text-[#9CA3AF]">{duel.network}</span>
+          <span className="text-[9px] font-medium text-[#999999]">{duel.network}</span>
         </div>
         <span className={`text-[9px] font-mono font-semibold ${isEnding?'text-[#EA580C]':'text-[#F43F5E]'}`}>{timer}</span>
       </div>
@@ -1299,33 +1527,33 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
   const payout = betStakeNum > 0 ? ((totalPot+betStakeNum)/supportPool*betStakeNum).toFixed(3) : '—';
 
   const S = { // inline styles shortcuts
-    overlay: {position:'fixed' as const,inset:0,background:'rgba(100,80,160,0.25)',zIndex:50,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'},
-    modal: {background:'#fff',border:'1.5px solid #EEE9FC',borderRadius:'20px',width:'100%',maxWidth:'440px',overflow:'hidden',boxShadow:'0 8px 40px rgba(124,58,237,0.10)'},
-    head: {background:'#F7F5FF',borderBottom:'1px solid #EEE9FC',padding:'11px 14px',display:'flex',alignItems:'center',justifyContent:'space-between'},
+    overlay: {position:'fixed' as const,inset:0,background:'rgba(0,0,0,0.35)',zIndex:50,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'},
+    modal: {background:'#fff',border:'1.5px solid #F0F0F0',borderRadius:'10px',width:'100%',maxWidth:'440px',overflow:'hidden',boxShadow:'0 2px 16px rgba(0,0,0,0.06)'},
+    head: {background:'#FFFFFF',borderBottom:'1px solid #F0F0F0',padding:'11px 14px',display:'flex',alignItems:'center',justifyContent:'space-between'},
     body: {padding:'14px',display:'flex',flexDirection:'column' as const,gap:'10px',maxHeight:'76vh',overflowY:'auto' as const},
     foot: {padding:'0 14px 14px',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'},
-    label: {fontSize:'9px',letterSpacing:'0.08em',textTransform:'uppercase' as const,color:'#9CA3AF',marginBottom:'4px'},
-    claimBox: {background:'#F5F3FF',border:'1px solid #DDD6FE',borderRadius:'12px',padding:'11px 13px',fontSize:'13px',color:'#1A1A2E',lineHeight:1.6,fontWeight:500},
-    ruleBox: {background:'#EFF6FF',border:'1px solid #DBEAFE',borderRadius:'12px',padding:'9px 12px',fontSize:'12px',color:'#1D4ED8',lineHeight:1.5,fontWeight:500},
-    sideRed: {background:'#FFF1F2',border:'1px solid #FFE4E6',borderRadius:'12px',padding:'8px 10px'},
-    sideBlue: {background:'#EFF6FF',border:'1px solid #DBEAFE',borderRadius:'12px',padding:'8px 10px',textAlign:'right' as const},
-    sideDash: {background:'#F9F8FF',border:'1px dashed #C4B5FD',borderRadius:'12px',padding:'8px 10px',textAlign:'center' as const},
-    aiBox: {background:'#F0EDFB',border:'1.5px solid #C4B5FD',borderRadius:'12px',padding:'10px 13px',display:'flex',alignItems:'flex-start',gap:'8px'},
+    label: {fontSize:'9px',letterSpacing:'0.08em',textTransform:'uppercase' as const,color:'#999999',marginBottom:'4px'},
+    claimBox: {background:'#F5F5F5',border:'1px solid #F0F0F0',borderRadius:'6px',padding:'11px 13px',fontSize:'13px',color:'#0A0A0A',lineHeight:1.6,fontWeight:500},
+    ruleBox: {background:'#F5F9FF',border:'1px solid #E0EEFF',borderRadius:'6px',padding:'9px 12px',fontSize:'12px',color:'#1D4ED8',lineHeight:1.5,fontWeight:500},
+    sideRed: {background:'#FFF5F5',border:'1px solid #FFE0E0',borderRadius:'6px',padding:'8px 10px'},
+    sideBlue: {background:'#F5F9FF',border:'1px solid #E0EEFF',borderRadius:'6px',padding:'8px 10px',textAlign:'right' as const},
+    sideDash: {background:'#FFFFFF',border:'1px dashed #E0E0E0',borderRadius:'6px',padding:'8px 10px',textAlign:'center' as const},
+    aiBox: {background:'#F0EDFB',border:'1.5px solid #E0E0E0',borderRadius:'6px',padding:'10px 13px',display:'flex',alignItems:'flex-start',gap:'8px'},
     statRow: {display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'6px'},
-    statBox: {background:'#F9F8FF',borderRadius:'10px',padding:'6px 8px',textAlign:'center' as const,border:'1px solid #EEE9FC'},
-    divider: {height:'0.5px',background:'#EEE9FC'},
-    phaseBox: {background:'#F0EDFB',border:'1.5px solid #C4B5FD',borderRadius:'12px',padding:'10px 13px'},
-    resultWin: {background:'#ECFDF5',border:'1px solid #A7F3D0',borderRadius:'12px',padding:'10px 12px',display:'flex',alignItems:'center',gap:'10px'},
-    resultLose: {background:'#FFF1F2',border:'1px solid #FFE4E6',borderRadius:'12px',padding:'10px 12px',display:'flex',alignItems:'center',gap:'10px'},
-    disputeNote: {background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'12px',padding:'7px 10px',fontSize:'10px',color:'#D97706',lineHeight:1.5},
+    statBox: {background:'#FFFFFF',borderRadius:'10px',padding:'6px 8px',textAlign:'center' as const,border:'1px solid #F0F0F0'},
+    divider: {height:'0.5px',background:'#F0F0F0'},
+    phaseBox: {background:'#F0EDFB',border:'1.5px solid #E0E0E0',borderRadius:'6px',padding:'10px 13px'},
+    resultWin: {background:'#ECFDF5',border:'1px solid #A7F3D0',borderRadius:'6px',padding:'10px 12px',display:'flex',alignItems:'center',gap:'10px'},
+    resultLose: {background:'#FFF5F5',border:'1px solid #FFE0E0',borderRadius:'6px',padding:'10px 12px',display:'flex',alignItems:'center',gap:'10px'},
+    disputeNote: {background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'6px',padding:'7px 10px',fontSize:'10px',color:'#D97706',lineHeight:1.5},
   };
 
   const Pill = ({ label, color }: { label: string; color: string }) => (
-    <span style={{fontSize:'9px',padding:'2px 7px',borderRadius:'20px',fontWeight:500,border:`1px solid ${color}40`,color,background:`${color}15`}}>{label}</span>
+    <span style={{fontSize:'9px',padding:'2px 7px',borderRadius:'10px',fontWeight:500,border:`1px solid ${color}40`,color,background:`${color}15`}}>{label}</span>
   );
 
   const statusLabel = isOpen ? t.tags.open : isActive ? t.tags.live : isSettled ? (t.tags as any).settled ?? 'Settled' : t.tags.open;
-  const statusColor = isOpen ? '#3B82F6' : isActive ? '#7C3AED' : '#9CA3AF';
+  const statusColor = isOpen ? '#3B82F6' : isActive ? '#7C3AED' : '#999999';
 
   const SideCard = ({ side }: { side: 'red'|'blue' }) => {
     const isRed = side === 'red';
@@ -1337,23 +1565,23 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
       <div style={isRed ? S.sideRed : S.sideBlue}>
         <div style={{display:'flex',alignItems:'center',gap:'4px',justifyContent: isRed ? 'flex-start' : 'flex-end',marginBottom:'3px'}}>
           <span style={{fontSize:'11px',fontWeight:500,color:c}}>{isRed ? '👑' : '⚔️'} {name}</span>
-          {isMe && <span style={{fontSize:'9px',padding:'1px 5px',borderRadius:'20px',background:`${c}15`,color:c,border:`1px solid ${c}30`}}>나</span>}
+          {isMe && <span style={{fontSize:'9px',padding:'1px 5px',borderRadius:'10px',background:`${c}15`,color:c,border:`1px solid ${c}30`}}>나</span>}
         </div>
         <div style={{fontSize:'10px',color:`${c}`,marginBottom:'3px',fontWeight:500,opacity:0.75}}>{isRed ? (t.nav.arena === '广场' ? '发起方' : 'Challenger') : (t.nav.arena === '广场' ? '接受方' : 'Defender')}</div>
-        <div style={{fontSize:'15px',fontWeight:700,color:c}}>{amt} <span style={{fontSize:'9px',color:'#9CA3AF'}}>{token}</span></div>
+        <div style={{fontSize:'15px',fontWeight:700,color:c}}>{amt} <span style={{fontSize:'9px',color:'#999999'}}>{token}</span></div>
       </div>
     );
   };
 
   const StatBox = ({ label, val, color }: { label: string; val: string; color?: string }) => (
     <div style={S.statBox}>
-      <div style={{fontSize:'8px',letterSpacing:'0.06em',textTransform:'uppercase',color:'#9CA3AF',marginBottom:'3px'}}>{label}</div>
-      <div style={{fontSize:'13px',fontWeight:600,color:color||'#1A1A2E'}}>{val}</div>
+      <div style={{fontSize:'8px',letterSpacing:'0.06em',textTransform:'uppercase',color:'#999999',marginBottom:'3px'}}>{label}</div>
+      <div style={{fontSize:'13px',fontWeight:600,color:color||'#0A0A0A'}}>{val}</div>
     </div>
   );
 
   const Btn = ({ label, color, bg, border, onClick, disabled }: { label:string; color:string; bg:string; border:string; onClick?:()=>void; disabled?:boolean }) => (
-    <button onClick={onClick} disabled={disabled} style={{padding:'10px',borderRadius:'12px',fontSize:'12px',fontWeight:600,color,border:`1.5px solid ${border}`,background:bg,cursor:disabled?'not-allowed':'pointer',opacity:disabled?0.5:1}}>{label}</button>
+    <button onClick={onClick} disabled={disabled} style={{padding:'10px',borderRadius:'6px',fontSize:'12px',fontWeight:600,color,border:`1.5px solid ${border}`,background:bg,cursor:disabled?'not-allowed':'pointer',opacity:disabled?0.5:1}}>{label}</button>
   );
 
   const BaseInfo = () => (
@@ -1366,198 +1594,79 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
   const VsRow = () => (
     <div style={{display:'grid',gridTemplateColumns:'1fr auto 1fr',gap:'8px',alignItems:'center'}}>
       <SideCard side="red" />
-      <div style={{fontSize:'10px',color:'#9CA3AF',textAlign:'center',fontWeight:500}}>VS</div>
+      <div style={{fontSize:'10px',color:'#999999',textAlign:'center',fontWeight:500}}>VS</div>
       {duel.defender ? <SideCard side="blue" /> :
-        <div style={S.sideDash}><div style={{fontSize:'11px',color:'#9CA3AF'}}>{t.nav.arena === '广场' ? '等待应战' : 'Waiting'}</div><div style={{fontSize:'20px',color:'#C4B5FD',lineHeight:1.2}}>?</div></div>
+        <div style={S.sideDash}><div style={{fontSize:'11px',color:'#999999'}}>{t.nav.arena === '广场' ? '等待应战' : 'Waiting'}</div><div style={{fontSize:'20px',color:'#E0E0E0',lineHeight:1.2}}>?</div></div>
       }
     </div>
   );
 
   const SupportBar = () => (
     <div>
-      <div style={{height:'5px',background:'#F3F0FB',borderRadius:'3px',overflow:'hidden',display:'flex'}}>
+      <div style={{height:'5px',background:'#F5F5F5',borderRadius:'3px',overflow:'hidden',display:'flex'}}>
         <div style={{background:'#F43F5E',width:`${duel.supportRed}%`,transition:'width 0.5s'}} />
         <div style={{background:'#3B82F6',flex:1}} />
       </div>
       <div style={{display:'flex',justifyContent:'space-between',marginTop:'3px'}}>
         <span style={{fontSize:'10px',fontWeight:500,color:'#F43F5E'}}>{duel.supportRed}%</span>
-        <span style={{fontSize:'9px',color:'#9CA3AF'}}>{t.nav.arena === '广场' ? '社区支持率' : 'Community Vote'}</span>
+        <span style={{fontSize:'9px',color:'#999999'}}>{t.nav.arena === '广场' ? '社区支持率' : 'Community Vote'}</span>
         <span style={{fontSize:'10px',fontWeight:500,color:'#3B82F6'}}>{100-duel.supportRed}%</span>
       </div>
     </div>
   );
 
   // ── 视角1：招募中，旁观者/接受方 ──
-  const [acceptAuditResult, setAcceptAuditResult] = useState<any>(null);
-  const [acceptAuditStep, setAcceptAuditStep] = useState<'idle'|'loading'|'report'>('idle');
-  const isZhDuel = t.nav.arena === '广场';
-
-  const doAccept = async () => {
-    const chainDuelId = (onChainDuel as any)?.originalId ?? onChainDuel?.id ?? (duel as any)._onChainId;
-    const wagerBigInt = onChainDuel?.wager ?? (duel as any)._wager;
-    const contractAddr = targetChainId === 5003
-      ? '0xE731a80668Ad0439a6B55e57f65C1D7885827566'
-      : '0xa0A997cF05F7Baf21becEA4130209fD7C7D1A994';
-    if (!chainDuelId) return;
-    if ((window as any).ethereum) {
-      try {
-        const accounts = await (window as any).ethereum.request({ method: 'eth_accounts' });
-        if (!accounts || accounts.length === 0) { openConnectModal?.(); return; }
-        const chainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
-        if (parseInt(chainId, 16) !== targetChainId) {
-          await (window as any).ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x' + targetChainId.toString(16) }] });
-        }
-        const idHex = chainDuelId.toString(16).padStart(64, '0');
-        const data = '0x19b05f49' + idHex;
-        const wagerHex = '0x' + (wagerBigInt ?? BigInt(Math.round(parseFloat(wager) * 1e18))).toString(16);
-        await (window as any).ethereum.request({
-          method: 'eth_sendTransaction',
-          params: [{ from: accounts[0], to: contractAddr, value: wagerHex, data }]
-        });
-      } catch(e: any) { console.error('accept error:', e); }
-    } else if (onChainDuel) {
-      accept(oid, wager);
-    } else {
-      openConnectModal?.();
-    }
-  };
-
-  const handleAcceptClick = async () => {
-    if (!address) { openConnectModal?.(); return; }
-    if (isWrongNetwork) return;
-    // Load audit report first
-    setAcceptAuditStep('loading');
-    try {
-      const claimHash = (duel as any).claimHash || (onChainDuel as any)?.claimHash;
-      let result = null;
-      if (claimHash) {
-        const cached = await fetch(`/api/audit?claimHash=${claimHash}`);
-        if (cached.ok) { result = await cached.json(); }
-      }
-      if (!result && duel.claim) {
-        const res = await fetch('/api/audit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ claimText: duel.claim, ruleText: (duel as any).rule || '', lang: isZhDuel ? 'zh' : 'en' }),
-        });
-        if (res.ok) result = await res.json();
-      }
-      setAcceptAuditResult(result);
-    } catch { setAcceptAuditResult(null); }
-    setAcceptAuditStep('report');
-  };
-
-  const RISK_COLOR2: Record<string,string> = { high:'#E24B4A', mid:'#EF9F27', low:'#639922' };
-  const RISK_BG2: Record<string,string>    = { high:'#FCEBEB', mid:'#FAEEDA', low:'#EAF3DE' };
-  const RISK_TEXT2: Record<string,string>  = { high:'#A32D2D', mid:'#854F0B', low:'#3B6D11' };
-
-  const ViewOpenOutsider = () => {
-    if (acceptAuditStep === 'loading') return (
-      <div style={{padding:'40px 24px',textAlign:'center'}}>
-        <div style={{fontSize:'28px',marginBottom:'12px',display:'inline-block',animation:'spin 1.5s linear infinite'}}>⚖️</div>
-        <div style={{fontSize:'13px',fontWeight:600,color:'#111827',marginBottom:'4px'}}>{isZhDuel ? 'ContractAI 审查中...' : 'ContractAI analyzing...'}</div>
-        <div style={{fontSize:'11px',color:'#9CA3AF'}}>{isZhDuel ? '加载对赌协议风险报告' : 'Loading wager agreement risk report'}</div>
-        <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+  const ViewOpenOutsider = () => (
+    <>
+      <BaseInfo />
+      <VsRow />
+      <div style={S.aiBox}><span style={{fontSize:'16px',flexShrink:0}}>⚖️</span><p style={{fontSize:'10px',color:'#7C3AED',lineHeight:1.5,margin:0}}>{t.detail?.judgeNote ?? ""}</p></div>
+      <div style={S.statRow}>
+        <StatBox label="到期" val={duel.expires} color="#D97706" />
+        <StatBox label="需押注" val={`${wager} ${token}`} />
+        <StatBox label="网络" val={duel.network} />
       </div>
-    );
-
-    if (acceptAuditStep === 'report') {
-      const risks = acceptAuditResult?.risks || [];
-      const score = acceptAuditResult?.overallScore ?? 0;
-      const summary = acceptAuditResult?.summary || '';
-      const highCount = risks.filter((r:any)=>r.level==='high').length;
-      const midCount  = risks.filter((r:any)=>r.level==='mid').length;
-      const lowCount  = risks.filter((r:any)=>r.level==='low').length;
-      const riskLevel = score<=30?(isZhDuel?'⚖️ 低风险':'⚖️ Low risk'):score<=60?(isZhDuel?'🔍 中等风险':'🔍 Medium risk'):score<=80?(isZhDuel?'⚠️ 高风险':'⚠️ High risk'):(isZhDuel?'🔨 极高风险':'🔨 Critical');
-      return (
-        <>
-          {/* Report header */}
-          <div style={{padding:'14px 20px',borderBottom:'0.5px solid #E5E7EB',display:'flex',alignItems:'center',gap:'10px'}}>
-            <div style={{width:'32px',height:'32px',borderRadius:'50%',border:'0.5px solid #E5E7EB',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'15px',flexShrink:0}}>⚖️</div>
-            <div>
-              <div style={{fontSize:'13px',fontWeight:600,color:'#111827'}}>{isZhDuel?'ContractAI 风险报告':'ContractAI Risk Report'}</div>
-              <div style={{fontSize:'10px',color:'#9CA3AF'}}>{isZhDuel?'接受前请阅读以下风险提示':'Please review risks before accepting'}</div>
-            </div>
-          </div>
-          {/* Score */}
-          {acceptAuditResult && (
-            <div style={{padding:'14px 20px',borderBottom:'0.5px solid #E5E7EB'}}>
-              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'8px'}}>
-                <div style={{fontSize:'20px',fontWeight:600,color:'#111827'}}>{score}<span style={{fontSize:'12px',fontWeight:400,color:'#9CA3AF'}}>/100</span></div>
-                <div style={{fontSize:'11px',padding:'3px 9px',borderRadius:'5px',background:score>60?'#FCEBEB':score>30?'#FAEEDA':'#EAF3DE',color:score>60?'#A32D2D':score>30?'#854F0B':'#3B6D11'}}>{riskLevel}</div>
-              </div>
-              <div style={{height:'3px',background:'#F3F4F6',borderRadius:'2px',overflow:'hidden',marginBottom:'8px'}}>
-                <div style={{height:'100%',width:`${score}%`,borderRadius:'2px',background:score>60?'#E24B4A':score>30?'#EF9F27':'#639922'}} />
-              </div>
-              <div style={{display:'flex',gap:'12px'}}>
-                {[{c:'#E24B4A',n:highCount,l:isZhDuel?'高':'High'},{c:'#EF9F27',n:midCount,l:isZhDuel?'中':'Med'},{c:'#639922',n:lowCount,l:isZhDuel?'低':'Low'}].map(s=>(
-                  <div key={s.l} style={{display:'flex',alignItems:'center',gap:'4px',fontSize:'11px',color:'#6B7280'}}>
-                    <div style={{width:'6px',height:'6px',borderRadius:'50%',background:s.c}} />{s.n} {s.l}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          {/* Summary */}
-          {summary && <div style={{padding:'10px 20px',borderBottom:'0.5px solid #E5E7EB',fontSize:'11px',color:'#6B7280',lineHeight:'1.6',fontStyle:'italic'}}>"{summary}"</div>}
-          {/* Risk list */}
-          <div style={{padding:'12px 20px',display:'flex',flexDirection:'column',gap:'8px',maxHeight:'200px',overflowY:'auto'}}>
-            {!acceptAuditResult ? (
-              <div style={{fontSize:'12px',color:'#9CA3AF',textAlign:'center',padding:'16px 0'}}>{isZhDuel?'风险报告暂时不可用，你仍可以继续接受。':'Risk report unavailable. You may still proceed.'}</div>
-            ) : risks.length===0 ? (
-              <div style={{fontSize:'12px',color:'#639922',textAlign:'center',padding:'16px 0'}}>✓ {isZhDuel?'未发现明显风险':'No significant risks found'}</div>
-            ) : risks.map((r:any,i:number)=>(
-              <div key={i} style={{border:'0.5px solid #E5E7EB',borderLeft:`2.5px solid ${RISK_COLOR2[r.level]||'#E5E7EB'}`,borderRadius:'9px',padding:'10px 12px'}}>
-                <div style={{display:'flex',alignItems:'center',gap:'7px',marginBottom:'5px'}}>
-                  <span style={{fontSize:'10px',fontWeight:500,padding:'2px 7px',borderRadius:'4px',background:RISK_BG2[r.level],color:RISK_TEXT2[r.level]}}>{isZhDuel?{high:'高风险',mid:'中风险',low:'低风险'}[r.level]:{high:'High',mid:'Medium',low:'Low'}[r.level]}</span>
-                  <span style={{fontSize:'12px',fontWeight:500,color:'#111827'}}>{r.title}</span>
-                </div>
-                <div style={{fontSize:'11px',color:'#6B7280',lineHeight:'1.5',marginBottom:'6px'}}>{r.description}</div>
-                <div style={{fontSize:'10px',color:'#9CA3AF',padding:'6px 9px',background:'#F9FAFB',borderRadius:'6px',display:'flex',gap:'5px'}}><span>💡</span><span>{r.suggestion}</span></div>
-              </div>
-            ))}
-          </div>
-          {/* Footer */}
-          <div style={{padding:'12px 20px',borderTop:'0.5px solid #E5E7EB'}}>
-            <div style={{fontSize:'10px',color:'#9CA3AF',textAlign:'center',marginBottom:'10px'}}>{isZhDuel?'接受对决即表示你已了解以上风险。':'By accepting, you acknowledge the risks above.'}</div>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px'}}>
-              <Btn label={isZhDuel?'← 返回':'← Back'} color='#6B7280' bg='transparent' border='#E5E7EB' onClick={()=>setAcceptAuditStep('idle')} />
-              <Btn
-                label={acceptSuccess?(isZhDuel?'✓ 已接受!':'✓ Accepted!'):acceptConfirming?(isZhDuel?'确认中...':'Confirming...'):acceptPending?(isZhDuel?'等待签名...':'Signing...'):(isZhDuel?'⚔️ 接受对决':'⚔️ Accept')}
-                color='#fff' bg='#7C3AED' border='#7C3AED'
-                onClick={doAccept}
-                disabled={acceptPending||acceptConfirming}
-              />
-            </div>
-          </div>
-        </>
-      );
-    }
-
-    // Default: idle view
-    return (
-      <>
-        <BaseInfo />
-        <VsRow />
-        <div style={S.aiBox}><span style={{fontSize:'16px',flexShrink:0}}>⚖️</span><p style={{fontSize:'10px',color:'#7C3AED',lineHeight:1.5,margin:0}}>{t.detail?.judgeNote ?? ""}</p></div>
-        <div style={S.statRow}>
-          <StatBox label="到期" val={duel.expires} color="#D97706" />
-          <StatBox label="需押注" val={`${wager} ${token}`} />
-          <StatBox label="网络" val={duel.network} />
-        </div>
-        <div style={S.divider} />
-        <div style={S.foot}>
-          <Btn label={isZhDuel ? '取消' : 'Cancel'} color="#9CA3AF" bg="transparent" border="#E5E7EB" onClick={onClose} />
-          <Btn
-            label={!address ? (isZhDuel ? '🔗 连接钱包后参与' : '🔗 Connect Wallet') : isWrongNetwork ? (isZhDuel ? '⚠️ 切换网络' : '⚠️ Switch Network') : (isZhDuel ? '⚔️ 接受挑战' : '⚔️ Accept Challenge')}
-            color={isWrongNetwork ? '#D97706' : '#fff'} bg={isWrongNetwork ? '#FFF7ED' : '#7C3AED'} border={isWrongNetwork ? '#FDE68A' : '#7C3AED'}
-            onClick={handleAcceptClick}
-            disabled={acceptPending || acceptConfirming}
-          />
-        </div>
-      </>
-    );
-  };
+      <div style={S.divider} />
+      <div style={S.foot}>
+        <Btn label={t.nav.arena === '广场' ? '取消' : 'Cancel'} color="#999999" bg="transparent" border="#F0F0F0" onClick={onClose} />
+        <Btn
+          label={!address ? (t.nav.arena === '广场' ? '🔗 连接钱包后参与' : '🔗 Connect Wallet') : isWrongNetwork ? (t.nav.arena === '广场' ? '⚠️ 切换网络' : '⚠️ Switch Network') : acceptSuccess ? (t.nav.arena === '广场' ? '✓ 已接受!' : '✓ Accepted!') : acceptConfirming ? (t.nav.arena === '广场' ? '确认中...' : 'Confirming...') : acceptPending ? (t.nav.arena === '广场' ? '等待签名...' : 'Signing...') : (t.nav.arena === '广场' ? '⚔️ 接受挑战' : '⚔️ Accept Challenge')}
+          color={isWrongNetwork ? '#D97706' : '#fff'} bg={isWrongNetwork ? '#FFF7ED' : '#7C3AED'} border={isWrongNetwork ? '#FDE68A' : '#7C3AED'}
+          onClick={async () => {
+            const chainDuelId = (onChainDuel as any)?.originalId ?? onChainDuel?.id ?? (duel as any)._onChainId;
+            const wagerBigInt = onChainDuel?.wager ?? (duel as any)._wager;
+            const contractAddr = targetChainId === 5003
+              ? '0xE731a80668Ad0439a6B55e57f65C1D7885827566'
+              : '0xa0A997cF05F7Baf21becEA4130209fD7C7D1A994';
+            if (!chainDuelId) return;
+            // 优先用 window.ethereum 直接调用，绕过wagmi状态问题
+            if ((window as any).ethereum) {
+              try {
+                const accounts = await (window as any).ethereum.request({ method: 'eth_accounts' });
+                if (!accounts || accounts.length === 0) { openConnectModal?.(); return; }
+                const chainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
+                if (parseInt(chainId, 16) !== targetChainId) {
+                  await (window as any).ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x' + targetChainId.toString(16) }] });
+                }
+                const idHex = chainDuelId.toString(16).padStart(64, '0');
+                const data = '0x19b05f49' + idHex;
+                const wagerHex = '0x' + (wagerBigInt ?? BigInt(Math.round(parseFloat(wager) * 1e18))).toString(16);
+                await (window as any).ethereum.request({
+                  method: 'eth_sendTransaction',
+                  params: [{ from: accounts[0], to: contractAddr, value: wagerHex, data }]
+                });
+              } catch(e: any) { console.error('accept error:', e); }
+            } else if (onChainDuel) {
+              accept(oid, wager);
+            } else {
+              openConnectModal?.();
+            }
+          }}
+          disabled={acceptPending || acceptConfirming}
+        />
+      </div>
+    </>
+  );
 
   // ── 视角2：招募中，发起方 ──
   const ViewOpenIssuer = () => (
@@ -1576,7 +1685,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
         ) : (
           <Btn label={cancelPending ? (t.nav.arena === '广场' ? '等待签名...' : 'Signing...') : cancelSuccess ? (t.nav.arena === '广场' ? '✓ 已取消' : '✓ Cancelled') : (t.nav.arena === '广场' ? '取消对决' : 'Cancel Duel')} color="rgba(255,107,107,0.6)" bg="rgba(255,107,107,0.06)" border="rgba(255,107,107,0.2)" onClick={() => onChainDuel && cancel(oid, undefined)} disabled={cancelPending} />
         )}
-        <Btn label={t.nav.arena === '广场' ? '复制分享链接' : 'Copy Share Link'} color="#9CA3AF" bg="transparent" border="#E5E7EB"
+        <Btn label={t.nav.arena === '广场' ? '复制分享链接' : 'Copy Share Link'} color="#999999" bg="transparent" border="#F0F0F0"
           onClick={() => {
             const url = `${window.location.origin}${window.location.pathname}?duel=${onChainDuel?.id}`;
             navigator.clipboard?.writeText(url);
@@ -1598,8 +1707,8 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
         <StatBox label={t.nav.arena === '广场' ? '观战' : 'Watching'} val={String(duel.watchers)} />
       </div>
       <div style={S.phaseBox}>
-        <div style={{fontSize:'11px',fontWeight:600,color:'#1A1A2E',marginBottom:'3px'}}>{t.nav.arena === '广场' ? '⏳ 对决进行中 — 到期后可操作' : '⏳ Duel in progress — actions after expiry'}</div>
-        <div style={{fontSize:'10px',color:'#374151',lineHeight:1.5}}>{t.nav.arena === '广场' ? '到期后可提交证据申请裁定，或与对方达成共识直接结算。' : 'After expiry, submit evidence to request ruling, or reach consensus.'}</div>
+        <div style={{fontSize:'11px',fontWeight:600,color:'#0A0A0A',marginBottom:'3px'}}>{t.nav.arena === '广场' ? '⏳ 对决进行中 — 到期后可操作' : '⏳ Duel in progress — actions after expiry'}</div>
+        <div style={{fontSize:'10px',color:'#444444',lineHeight:1.5}}>{t.nav.arena === '广场' ? '到期后可提交证据申请裁定，或与对方达成共识直接结算。' : 'After expiry, submit evidence to request ruling, or reach consensus.'}</div>
       </div>
       {isJudge && <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px'}}>
         <Btn label={settlePending ? t.nav.arena === '广场' ? '裁定中...' : 'Ruling...' : t.nav.arena === '广场' ? '⚖️ 裁红方胜' : '⚖️ Rule Red Wins'} color="rgba(255,107,107,0.9)" bg="rgba(255,107,107,0.06)" border="rgba(255,107,107,0.3)" onClick={() => onChainDuel && settle(oid, 1)} disabled={settlePending} />
@@ -1610,8 +1719,8 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
         {verdictData && (() => {
           const isInsufficient = verdictData.winner === 'Insufficient' || verdictData.winnerSide === 0;
           const iWin = !isInsufficient && verdictData.winnerSide === (isMyRed ? 1 : 2);
-          const bgColor = isInsufficient ? '#FFFBEB' : iWin ? '#ECFDF5' : '#FFF1F2';
-          const borderColor = isInsufficient ? '#FDE68A' : iWin ? '#A7F3D0' : '#FFE4E6';
+          const bgColor = isInsufficient ? '#FFFBEB' : iWin ? '#ECFDF5' : '#FFF5F5';
+          const borderColor = isInsufficient ? '#FDE68A' : iWin ? '#A7F3D0' : '#FFE0E0';
           const textColor = isInsufficient ? '#D97706' : iWin ? '#059669' : '#F43F5E';
           const resultText = isInsufficient
             ? (t.nav.arena==='广场'?'⚠️ 证据不足，无法裁定':'⚠️ Insufficient Evidence')
@@ -1621,14 +1730,14 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
           const chainId = targetChainId;
           const originalId = (onChainDuel as any)?.originalId ?? onChainDuel?.id;
           return (
-            <div style={{background:bgColor,border:`1px solid ${borderColor}`,borderRadius:'12px',padding:'12px 14px',marginBottom:'8px'}}>
+            <div style={{background:bgColor,border:`1px solid ${borderColor}`,borderRadius:'6px',padding:'12px 14px',marginBottom:'8px'}}>
               <div style={{fontSize:'11px',fontWeight:700,color:'#7C3AED',marginBottom:'4px'}}>⚖️ AI {t.nav.arena==='广场'?'裁定结果':'Judge Ruling'}</div>
               <div style={{fontSize:'14px',fontWeight:700,color:textColor,marginBottom:'4px'}}>{resultText}</div>
-              <div style={{fontSize:'11px',color:'#374151',lineHeight:1.5,fontStyle:'italic',marginBottom:'6px'}}>"{t.nav.arena==='广场' ? (verdictData.reasoningZh || verdictData.reasoning) : (verdictData.reasoning || verdictData.reasoningZh)}"</div>
+              <div style={{fontSize:'11px',color:'#444444',lineHeight:1.5,fontStyle:'italic',marginBottom:'6px'}}>"{t.nav.arena==='广场' ? (verdictData.reasoningZh || verdictData.reasoning) : (verdictData.reasoning || verdictData.reasoningZh)}"</div>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                <div style={{fontSize:'10px',color:'#9CA3AF'}}>{t.nav.arena==='广场'?'置信度':'Confidence'}: {verdictData.confidence}%</div>
+                <div style={{fontSize:'10px',color:'#999999'}}>{t.nav.arena==='广场'?'置信度':'Confidence'}: {verdictData.confidence}%</div>
                 <button onClick={() => window.open(`/verdict/${chainId}/${originalId}`, '_blank')}
-                  style={{fontSize:'11px',fontWeight:600,color:'#7C3AED',background:'#F5F3FF',border:'1px solid #DDD6FE',borderRadius:'8px',padding:'4px 10px',cursor:'pointer'}}>
+                  style={{fontSize:'11px',fontWeight:600,color:'#7C3AED',background:'#F5F5F5',border:'1px solid #F0F0F0',borderRadius:'6px',padding:'4px 10px',cursor:'pointer'}}>
                   {t.nav.arena==='广场'?'🔍 查看裁定详情':'🔍 View Ruling'}
                 </button>
               </div>
@@ -1636,18 +1745,18 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
           );
         })()}
         {opponentClaim > 0 && !mutualSubmitted && (
-          <div style={{background:'#FFF7ED',border:'1px solid #FDE68A',borderRadius:'12px',padding:'10px 13px',marginBottom:'8px',fontSize:'12px',color:'#D97706'}}>
+          <div style={{background:'#FFF7ED',border:'1px solid #FDE68A',borderRadius:'6px',padding:'10px 13px',marginBottom:'8px',fontSize:'12px',color:'#D97706'}}>
             ⚠️ {t.nav.arena === '广场' ? `对方已声明 ${opponentClaim === 1 ? '红方' : '蓝方'} 胜出，请确认你的结果` : `Opponent claimed ${opponentClaim === 1 ? 'Red' : 'Blue'} wins. Please confirm your result`}
           </div>
         )}
         {mutualSubmitted && (
-          <div style={{background:'#F0FDF4',border:'1.5px solid #A7F3D0',borderRadius:'12px',padding:'10px 13px',fontSize:'12px',color:'#059669',lineHeight:1.5}}>
+          <div style={{background:'#F0FDF4',border:'1.5px solid #A7F3D0',borderRadius:'6px',padding:'10px 13px',fontSize:'12px',color:'#059669',lineHeight:1.5}}>
             {t.nav.arena === '广场' ? '你已声明 ' : 'You declared '}<strong>{mutualSubmitted === 'self' ? myLabel : oppLabel}</strong>{t.nav.arena === '广场' ? ' 胜出，等待对方在 48 小时内确认。' : ' as winner. Waiting for opponent to confirm within 48h.'}
           </div>
         )}
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'6px'}}>
-          <Btn label={mutualSubmitted ? t.nav.arena === '广场' ? '✅ 已提交' : '✅ Submitted' : t.nav.arena === '广场' ? '共识结算' : 'Mutual Settle'} color={mutualSubmitted ? '#059669' : '#7C3AED'} bg={mutualSubmitted ? '#ECFDF5' : '#F5F3FF'} border={mutualSubmitted ? '#A7F3D0' : '#DDD6FE'} onClick={mutualSubmitted ? undefined : () => setShowMutualModal(true)} disabled={!!mutualSubmitted} />
-          <Btn label={evidenceSubmitted ? (t.nav.arena==='广场'?'✅ 证据已提交':'✅ Evidence Submitted') : (t.nav.arena==='广场'?'提交证据':'Submit Evidence')} color={evidenceSubmitted?'#059669':'#3B82F6'} bg={evidenceSubmitted?'#ECFDF5':'#EFF6FF'} border={evidenceSubmitted?'#A7F3D0':'#DBEAFE'} onClick={evidenceSubmitted ? undefined : () => setShowEvidenceModal(true)} disabled={evidenceSubmitted} />
+          <Btn label={mutualSubmitted ? t.nav.arena === '广场' ? '✅ 已提交' : '✅ Submitted' : t.nav.arena === '广场' ? '共识结算' : 'Mutual Settle'} color={mutualSubmitted ? '#059669' : '#7C3AED'} bg={mutualSubmitted ? '#ECFDF5' : '#F5F5F5'} border={mutualSubmitted ? '#A7F3D0' : '#F0F0F0'} onClick={mutualSubmitted ? undefined : () => setShowMutualModal(true)} disabled={!!mutualSubmitted} />
+          <Btn label={evidenceSubmitted ? (t.nav.arena==='广场'?'✅ 证据已提交':'✅ Evidence Submitted') : (t.nav.arena==='广场'?'提交证据':'Submit Evidence')} color={evidenceSubmitted?'#059669':'#3B82F6'} bg={evidenceSubmitted?'#ECFDF5':'#F5F9FF'} border={evidenceSubmitted?'#A7F3D0':'#E0EEFF'} onClick={evidenceSubmitted ? undefined : () => setShowEvidenceModal(true)} disabled={evidenceSubmitted} />
           <Btn label={requestingRuling ? (t.nav.arena==='广场'?'裁定中...':'Judging...') : verdictData ? (t.nav.arena==='广场'?'✅ 已裁定':'✅ Judged') : (t.nav.arena==='广场'?'申请裁定':'Request Ruling')} color={verdictData?'#059669':'#D97706'} bg={verdictData?'#ECFDF5':'#FFFBEB'} border={verdictData?'#A7F3D0':'#FDE68A'} onClick={verdictData || requestingRuling ? undefined : async () => {
             if (!onChainDuel) return;
             setRequestingRuling(true);
@@ -1688,7 +1797,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
             setRequestingRuling(false);
           }} disabled={!!verdictData || requestingRuling} />
         </div>
-        <Btn label={t.nav.arena === '广场' ? '复制分享链接' : 'Copy Share Link'} color="#9CA3AF" bg="transparent" border="#E5E7EB"
+        <Btn label={t.nav.arena === '广场' ? '复制分享链接' : 'Copy Share Link'} color="#999999" bg="transparent" border="#F0F0F0"
           onClick={() => {
             const url = `${window.location.origin}${window.location.pathname}?duel=${onChainDuel?.id}`;
             navigator.clipboard?.writeText(url);
@@ -1710,7 +1819,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
         <StatBox label={t.nav.arena === '广场' ? '观战' : 'Watching'} val={String(duel.watchers)} />
       </div>
       <div style={S.divider} />
-      <div style={{fontSize:'9px',letterSpacing:'0.08em',textTransform:'uppercase' as const,color:'#374151',marginBottom:'6px'}}>选择支持方</div>
+      <div style={{fontSize:'9px',letterSpacing:'0.08em',textTransform:'uppercase' as const,color:'#444444',marginBottom:'6px'}}>选择支持方</div>
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'}}>
         {([1,2] as const).map(side => {
           const isRed = side === 1;
@@ -1727,14 +1836,14 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
       </div>
       <div style={{display:'flex',gap:'8px'}}>
         <input type="number" min="0" step="0.001" value={betStake} onChange={e=>setBetStake(e.target.value)} placeholder="0.00"
-          style={{flex:1,background:'#F9F8FF',border:'1px solid #EEE9FC',borderRadius:'10px',padding:'9px 12px',fontSize:'13px',color:'#1A1A2E',outline:'none'}} />
+          style={{flex:1,background:'#FFFFFF',border:'1px solid #F0F0F0',borderRadius:'10px',padding:'9px 12px',fontSize:'13px',color:'#0A0A0A',outline:'none'}} />
         <div style={{padding:'9px 12px',borderRadius:'10px',fontSize:'12px',fontWeight:600,color:'#F43F5E',border:'1px solid rgba(255,107,107,0.3)',background:'rgba(255,107,107,0.08)',display:'flex',alignItems:'center'}}>{token}</div>
       </div>
       {betStakeNum > 0 && (
         <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'9px 12px',display:'grid',gridTemplateColumns:'1fr 1px 1fr',gap:'10px',alignItems:'center'}}>
-          <div style={{textAlign:'center'}}><div style={{fontSize:'8px',color:'#9CA3AF',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'3px'}}>预计赔率</div><div style={{fontSize:'14px',fontWeight:500,color:'rgba(255,255,255,0.7)'}}>{odds}x</div></div>
+          <div style={{textAlign:'center'}}><div style={{fontSize:'8px',color:'#999999',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'3px'}}>预计赔率</div><div style={{fontSize:'14px',fontWeight:500,color:'rgba(255,255,255,0.7)'}}>{odds}x</div></div>
           <div style={{background:'rgba(255,255,255,0.08)',height:'24px'}} />
-          <div style={{textAlign:'center'}}><div style={{fontSize:'8px',color:'#9CA3AF',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'3px'}}>赢了可得</div><div style={{fontSize:'14px',fontWeight:500,color:'#F43F5E'}}>{payout} {token}</div></div>
+          <div style={{textAlign:'center'}}><div style={{fontSize:'8px',color:'#999999',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'3px'}}>赢了可得</div><div style={{fontSize:'14px',fontWeight:500,color:'#F43F5E'}}>{payout} {token}</div></div>
         </div>
       )}
       <div style={S.foot}>
@@ -1814,56 +1923,56 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
           <div style={{fontSize:'20px',fontWeight:700,color:'#059669',marginBottom:'8px'}}>
             {t.nav.arena === '广场' ? '结算成功！' : 'Settled!'}
           </div>
-          <div style={{fontSize:'14px',color:'#374151',marginBottom:'4px'}}>
+          <div style={{fontSize:'14px',color:'#444444',marginBottom:'4px'}}>
             {t.nav.arena === '广场' ? '胜方：' : 'Winner: '}<strong>{settleResult.winner}</strong>
           </div>
           <div style={{fontSize:'18px',fontWeight:700,color:'#7C3AED',marginTop:'12px'}}>
             +{settleResult.amount}
           </div>
-          <div style={{fontSize:'11px',color:'#9CA3AF',marginTop:'8px'}}>
+          <div style={{fontSize:'11px',color:'#999999',marginTop:'8px'}}>
             {t.nav.arena === '广场' ? '点击任意处关闭' : 'Tap anywhere to close'}
           </div>
         </div>
       </div>
     )}
     {showEvidenceModal && (
-      <div style={{position:'fixed',inset:0,background:'rgba(100,80,160,0.25)',zIndex:60,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'}}
+      <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.35)',zIndex:60,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'}}
         onClick={() => setShowEvidenceModal(false)}>
-        <div style={{background:'#fff',border:'1.5px solid #EEE9FC',borderRadius:'20px',width:'100%',maxWidth:'420px',overflow:'hidden',boxShadow:'0 8px 40px rgba(124,58,237,0.12)'}}
+        <div style={{background:'#fff',border:'1.5px solid #F0F0F0',borderRadius:'10px',width:'100%',maxWidth:'420px',overflow:'hidden',boxShadow:'0 8px 40px rgba(124,58,237,0.12)'}}
           onClick={e => e.stopPropagation()}>
-          <div style={{background:'#F7F5FF',borderBottom:'1px solid #EEE9FC',padding:'14px 18px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-            <div style={{fontSize:'14px',fontWeight:600,color:'#1A1A2E'}}>📋 {t.nav.arena === '广场' ? '提交证据' : 'Submit Evidence'}</div>
-            <button onClick={() => setShowEvidenceModal(false)} style={{color:'#9CA3AF',fontSize:'20px',background:'none',border:'none',cursor:'pointer',lineHeight:1}}>×</button>
+          <div style={{background:'#FFFFFF',borderBottom:'1px solid #F0F0F0',padding:'14px 18px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+            <div style={{fontSize:'14px',fontWeight:600,color:'#0A0A0A'}}>📋 {t.nav.arena === '广场' ? '提交证据' : 'Submit Evidence'}</div>
+            <button onClick={() => setShowEvidenceModal(false)} style={{color:'#999999',fontSize:'20px',background:'none',border:'none',cursor:'pointer',lineHeight:1}}>×</button>
           </div>
           <div style={{padding:'18px'}}>
-            <div style={{fontSize:'12px',color:'#374151',marginBottom:'12px',lineHeight:1.6,background:'#F9F8FF',borderRadius:'10px',padding:'10px 12px',border:'1px solid #EEE9FC'}}>
+            <div style={{fontSize:'12px',color:'#444444',marginBottom:'12px',lineHeight:1.6,background:'#FFFFFF',borderRadius:'10px',padding:'10px 12px',border:'1px solid #F0F0F0'}}>
               📋 {t.nav.arena === '广场' ? '声明：' : 'Claim: '}<strong>{typeof window !== 'undefined' ? localStorage.getItem('claim_' + onChainDuel?.claimHash) || '' : ''}</strong>
             </div>
             <div style={{marginBottom:'14px'}}>
-              <div style={{fontSize:'11px',fontWeight:600,color:'#374151',marginBottom:'6px'}}>
+              <div style={{fontSize:'11px',fontWeight:600,color:'#444444',marginBottom:'6px'}}>
                 {t.nav.arena === '广场' ? '证据描述 *' : 'Evidence Description *'}
-                <span style={{fontSize:'10px',fontWeight:400,color:'#9CA3AF',marginLeft:'6px'}}>{evidenceDesc.length}/500</span>
+                <span style={{fontSize:'10px',fontWeight:400,color:'#999999',marginLeft:'6px'}}>{evidenceDesc.length}/500</span>
               </div>
               <textarea
                 value={evidenceDesc}
                 onChange={e => setEvidenceDesc(e.target.value.slice(0,500))}
                 placeholder={t.nav.arena === '广场' ? '描述你的证据，说明为什么你应该赢得这场对决...' : 'Describe your evidence and why you should win this duel...'}
-                style={{width:'100%',minHeight:'100px',padding:'10px 12px',borderRadius:'12px',border:'1px solid #DDD6FE',fontSize:'12px',resize:'vertical',outline:'none',fontFamily:'inherit',boxSizing:'border-box',lineHeight:1.5}}
+                style={{width:'100%',minHeight:'100px',padding:'10px 12px',borderRadius:'6px',border:'1px solid #F0F0F0',fontSize:'12px',resize:'vertical',outline:'none',fontFamily:'inherit',boxSizing:'border-box',lineHeight:1.5}}
               />
             </div>
             <div style={{marginBottom:'16px'}}>
-              <div style={{fontSize:'11px',fontWeight:600,color:'#374151',marginBottom:'6px'}}>{t.nav.arena === '广场' ? '证据链接（可选，最多3条）' : 'Evidence Links (optional, max 3)'}</div>
+              <div style={{fontSize:'11px',fontWeight:600,color:'#444444',marginBottom:'6px'}}>{t.nav.arena === '广场' ? '证据链接（可选，最多3条）' : 'Evidence Links (optional, max 3)'}</div>
               {evidenceLinks.map((link, i) => (
                 <input key={i} type="url" value={link}
                   onChange={e => { const nl = [...evidenceLinks]; nl[i] = e.target.value; setEvidenceLinks(nl); }}
                   placeholder={`URL ${i+1} (https://...)`}
-                  style={{width:'100%',padding:'8px 12px',borderRadius:'10px',border:'1px solid #EEE9FC',fontSize:'12px',marginBottom:'6px',outline:'none',fontFamily:'inherit',boxSizing:'border-box'}}
+                  style={{width:'100%',padding:'8px 12px',borderRadius:'10px',border:'1px solid #F0F0F0',fontSize:'12px',marginBottom:'6px',outline:'none',fontFamily:'inherit',boxSizing:'border-box'}}
                 />
               ))}
             </div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'}}>
               <button onClick={() => setShowEvidenceModal(false)}
-                style={{padding:'11px',borderRadius:'12px',fontSize:'13px',fontWeight:500,color:'#9CA3AF',border:'1px solid #E5E7EB',background:'transparent',cursor:'pointer'}}>
+                style={{padding:'11px',borderRadius:'6px',fontSize:'13px',fontWeight:500,color:'#999999',border:'1px solid #F0F0F0',background:'transparent',cursor:'pointer'}}>
                 {t.nav.arena === '广场' ? '取消' : 'Cancel'}
               </button>
               <button
@@ -1891,7 +2000,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
                   } catch {}
                   setEvidencePending(false);
                 }}
-                style={{padding:'11px',borderRadius:'12px',fontSize:'13px',fontWeight:600,border:'none',cursor:evidenceDesc.trim()?'pointer':'not-allowed',background:evidenceDesc.trim()?'#7C3AED':'#E5E7EB',color:evidenceDesc.trim()?'#fff':'#9CA3AF'}}>
+                style={{padding:'11px',borderRadius:'6px',fontSize:'13px',fontWeight:600,border:'none',cursor:evidenceDesc.trim()?'pointer':'not-allowed',background:evidenceDesc.trim()?'#7C3AED':'#F0F0F0',color:evidenceDesc.trim()?'#fff':'#999999'}}>
                 {evidencePending ? (t.nav.arena === '广场' ? '提交中...' : 'Submitting...') : (t.nav.arena === '广场' ? '提交证据' : 'Submit Evidence')}
               </button>
             </div>
@@ -1901,7 +2010,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
     )}
     {showAgentModal && agentStep > 0 && (
       <div style={{position:'fixed',inset:0,background:'rgba(20,10,40,0.7)',zIndex:70,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px',backdropFilter:'blur(4px)'}}>
-        <div style={{background:'#1A0E2E',border:'1px solid rgba(124,58,237,0.4)',borderRadius:'24px',width:'100%',maxWidth:'360px',overflow:'hidden',boxShadow:'0 20px 60px rgba(124,58,237,0.3)'}}>
+        <div style={{background:'#1A0E2E',border:'1px solid rgba(124,58,237,0.4)',borderRadius:'24px',width:'100%',maxWidth:'360px',overflow:'hidden',boxShadow:'0 20px 60px rgba(0,0,0,0.12)'}}>
           {/* Header */}
           <div style={{padding:'20px 20px 0',textAlign:'center'}}>
             <div style={{fontSize:'32px',marginBottom:'8px',animation:'pulse 2s infinite'}}>⚖️</div>
@@ -1927,7 +2036,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
                 <div key={step.n} style={{display:'flex',gap:'12px',alignItems:'flex-start',marginBottom:'12px',opacity:isPending ? 0.35 : 1,transition:'opacity 0.5s'}}>
                   {/* Icon */}
                   <div style={{width:'28px',height:'28px',borderRadius:'50%',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'13px',
-                    background: isDone ? 'rgba(5,150,105,0.2)' : isActive ? 'rgba(124,58,237,0.3)' : 'rgba(255,255,255,0.05)',
+                    background: isDone ? 'rgba(5,150,105,0.2)' : isActive ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.05)',
                     border: isDone ? '1px solid rgba(5,150,105,0.5)' : isActive ? '1px solid rgba(124,58,237,0.6)' : '1px solid rgba(255,255,255,0.1)',
                     boxShadow: isActive ? '0 0 12px rgba(124,58,237,0.4)' : 'none',
                   }}>
@@ -1935,7 +2044,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
                   </div>
                   {/* Content */}
                   <div style={{flex:1}}>
-                    <div style={{fontSize:'12px',fontWeight:600,color: isDone ? '#6EE7B7' : isActive ? '#C4B5FD' : '#6B7280'}}>
+                    <div style={{fontSize:'12px',fontWeight:600,color: isDone ? '#6EE7B7' : isActive ? '#E0E0E0' : '#666666'}}>
                       {t.nav.arena==='广场' ? step.zh : step.en}
                     </div>
                     <div style={{fontSize:'10px',color:'rgba(156,163,175,0.7)',marginTop:'1px'}}>
@@ -1944,7 +2053,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
                     {/* Progress bar for active step */}
                     {isActive && agentStep < 5 && (
                       <div style={{marginTop:'6px',height:'3px',borderRadius:'2px',background:'rgba(255,255,255,0.1)',overflow:'hidden'}}>
-                        <div style={{height:'100%',background:'linear-gradient(90deg,#7C3AED,#C4B5FD)',borderRadius:'2px',
+                        <div style={{height:'100%',background:'linear-gradient(90deg,#7C3AED,#E0E0E0)',borderRadius:'2px',
                           animation:'progress-indeterminate 1.5s ease-in-out infinite',
                           backgroundSize:'200% 100%'}} />
                       </div>
@@ -1962,7 +2071,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
               </div>
             ) : (
               <button onClick={() => setShowAgentModal(false)}
-                style={{width:'100%',padding:'12px',borderRadius:'14px',fontSize:'13px',fontWeight:600,border:'none',cursor:'pointer',background:'linear-gradient(135deg,#7C3AED,#5B21B6)',color:'#fff',boxShadow:'0 4px 20px rgba(124,58,237,0.4)'}}>
+                style={{width:'100%',padding:'12px',borderRadius:'10px',fontSize:'13px',fontWeight:600,border:'none',cursor:'pointer',background:'#0A0A0A',color:'#fff',boxShadow:'none'}}>
                 {t.nav.arena==='广场'?'✓ 查看裁定结果':'✓ View Result'}
               </button>
             )}
@@ -1981,40 +2090,40 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
       </div>
     )}
     {showMutualModal && (
-      <div style={{position:'fixed',inset:0,background:'rgba(100,80,160,0.25)',zIndex:60,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'}}
+      <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.35)',zIndex:60,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px'}}
         onClick={() => setShowMutualModal(false)}>
-        <div style={{background:'#fff',border:'1.5px solid #EEE9FC',borderRadius:'20px',width:'100%',maxWidth:'380px',overflow:'hidden',boxShadow:'0 8px 40px rgba(124,58,237,0.12)'}}
+        <div style={{background:'#fff',border:'1.5px solid #F0F0F0',borderRadius:'10px',width:'100%',maxWidth:'380px',overflow:'hidden',boxShadow:'0 8px 40px rgba(124,58,237,0.12)'}}
           onClick={e => e.stopPropagation()}>
-          <div style={{background:'#F7F5FF',borderBottom:'1px solid #EEE9FC',padding:'14px 18px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-            <div style={{fontSize:'14px',fontWeight:600,color:'#1A1A2E'}}>{t.nav.arena === '广场' ? '⚖️ 共识结算' : '⚖️ Mutual Settlement'}</div>
-            <button onClick={() => setShowMutualModal(false)} style={{color:'#9CA3AF',fontSize:'20px',background:'none',border:'none',cursor:'pointer',lineHeight:1}}>×</button>
+          <div style={{background:'#FFFFFF',borderBottom:'1px solid #F0F0F0',padding:'14px 18px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+            <div style={{fontSize:'14px',fontWeight:600,color:'#0A0A0A'}}>{t.nav.arena === '广场' ? '⚖️ 共识结算' : '⚖️ Mutual Settlement'}</div>
+            <button onClick={() => setShowMutualModal(false)} style={{color:'#999999',fontSize:'20px',background:'none',border:'none',cursor:'pointer',lineHeight:1}}>×</button>
           </div>
           <div style={{padding:'18px'}}>
-            <div style={{fontSize:'13px',color:'#374151',marginBottom:'16px',lineHeight:1.6}}>
+            <div style={{fontSize:'13px',color:'#444444',marginBottom:'16px',lineHeight:1.6}}>
               {t.nav.arena === '广场' ? '你认为谁赢得了这场对决？对方需在 48小时 内确认，若双方结果一致则自动结算。' : 'Who do you think won this duel? Opponent has 48h to confirm. If both agree, settlement is automatic.'}
             </div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px',marginBottom:'16px'}}>
               <button onClick={() => setMutualChoice('self')}
-                style={{padding:'14px 10px',borderRadius:'14px',border:`2px solid ${mutualChoice==='self' ? myColor : '#EEE9FC'}`,background:mutualChoice==='self' ? `${myColor}18` : '#F9F8FF',cursor:'pointer',transition:'all 0.15s'}}>
+                style={{padding:'14px 10px',borderRadius:'10px',border:`2px solid ${mutualChoice==='self' ? myColor : '#F0F0F0'}`,background:mutualChoice==='self' ? `${myColor}18` : '#FFFFFF',cursor:'pointer',transition:'all 0.15s'}}>
                 <div style={{fontSize:'20px',marginBottom:'6px'}}>🏆</div>
-                <div style={{fontSize:'12px',fontWeight:600,color:mutualChoice==='self' ? myColor : '#374151'}}>{t.nav.arena === '广场' ? '我赢了' : 'I Won'}</div>
-                <div style={{fontSize:'10px',color:'#9CA3AF',marginTop:'2px'}}>{myLabel}</div>
+                <div style={{fontSize:'12px',fontWeight:600,color:mutualChoice==='self' ? myColor : '#444444'}}>{t.nav.arena === '广场' ? '我赢了' : 'I Won'}</div>
+                <div style={{fontSize:'10px',color:'#999999',marginTop:'2px'}}>{myLabel}</div>
               </button>
               <button onClick={() => setMutualChoice('opponent')}
-                style={{padding:'14px 10px',borderRadius:'14px',border:`2px solid ${mutualChoice==='opponent' ? oppColor : '#EEE9FC'}`,background:mutualChoice==='opponent' ? `${oppColor}18` : '#F9F8FF',cursor:'pointer',transition:'all 0.15s'}}>
+                style={{padding:'14px 10px',borderRadius:'10px',border:`2px solid ${mutualChoice==='opponent' ? oppColor : '#F0F0F0'}`,background:mutualChoice==='opponent' ? `${oppColor}18` : '#FFFFFF',cursor:'pointer',transition:'all 0.15s'}}>
                 <div style={{fontSize:'20px',marginBottom:'6px'}}>🤝</div>
-                <div style={{fontSize:'12px',fontWeight:600,color:mutualChoice==='opponent' ? oppColor : '#374151'}}>{t.nav.arena === '广场' ? '对方赢了' : 'They Won'}</div>
-                <div style={{fontSize:'10px',color:'#9CA3AF',marginTop:'2px'}}>{oppLabel}</div>
+                <div style={{fontSize:'12px',fontWeight:600,color:mutualChoice==='opponent' ? oppColor : '#444444'}}>{t.nav.arena === '广场' ? '对方赢了' : 'They Won'}</div>
+                <div style={{fontSize:'10px',color:'#999999',marginTop:'2px'}}>{oppLabel}</div>
               </button>
             </div>
             {mutualChoice && (
-              <div style={{background:'#F5F3FF',borderRadius:'12px',padding:'10px 13px',marginBottom:'14px',fontSize:'12px',color:'#5B21B6',lineHeight:1.5}}>
+              <div style={{background:'#F5F5F5',borderRadius:'6px',padding:'10px 13px',marginBottom:'14px',fontSize:'12px',color:'#5B21B6',lineHeight:1.5}}>
                 {t.nav.arena === '广场' ? '你声明 ' : 'You declared '}<strong>{mutualChoice === 'self' ? myLabel : oppLabel}</strong>{t.nav.arena === '广场' ? ' 赢得了此次对决。提交后等待对方在 48 小时内确认。' : ' won this duel. Submit to wait for opponent confirmation within 48h.'}
               </div>
             )}
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'}}>
               <button onClick={() => { setShowMutualModal(false); setMutualChoice(null); }}
-                style={{padding:'11px',borderRadius:'12px',fontSize:'13px',fontWeight:500,color:'#9CA3AF',border:'1px solid #E5E7EB',background:'transparent',cursor:'pointer'}}>
+                style={{padding:'11px',borderRadius:'6px',fontSize:'13px',fontWeight:500,color:'#999999',border:'1px solid #F0F0F0',background:'transparent',cursor:'pointer'}}>
                 {t.nav.arena === '广场' ? '取消' : 'Cancel'}
               </button>
               <button disabled={!mutualChoice || mutualPending}
@@ -2086,7 +2195,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
                     setMutualPending(false);
                   }
                 }}
-                style={{padding:'11px',borderRadius:'12px',fontSize:'13px',fontWeight:600,border:'none',cursor:mutualChoice?'pointer':'not-allowed',background:mutualChoice?'#7C3AED':'#E5E7EB',color:mutualChoice?'#fff':'#9CA3AF',transition:'all 0.15s'}}>
+                style={{padding:'11px',borderRadius:'6px',fontSize:'13px',fontWeight:600,border:'none',cursor:mutualChoice?'pointer':'not-allowed',background:mutualChoice?'#7C3AED':'#F0F0F0',color:mutualChoice?'#fff':'#999999',transition:'all 0.15s'}}>
                 {mutualPending ? t.nav.arena === '广场' ? '提交中...' : 'Submitting...' : t.nav.arena === '广场' ? '确认提交' : 'Confirm'}
               </button>
             </div>
@@ -2102,7 +2211,7 @@ function DuelDetailModal({ duel, t, onClose, onChainDuel, refetch }: { duel: Due
             <Pill label={statusLabel} color={statusColor} />
             {isParticipant && <Pill label={isMyRed ? '红方' : '蓝方'} color={isMyRed ? '#F43F5E' : '#3B82F6'} />}
           </div>
-          <button onClick={onClose} style={{color:'#9CA3AF',fontSize:'20px',lineHeight:1,background:'none',border:'none',cursor:'pointer'}}>×</button>
+          <button onClick={onClose} style={{color:'#999999',fontSize:'20px',lineHeight:1,background:'none',border:'none',cursor:'pointer'}}>×</button>
         </div>
         <div style={S.body}>{renderBody()}</div>
       </div>
@@ -2136,8 +2245,8 @@ function HistoryRow({ d, t, address, token, onViewDuel }: {
   const isLost = d.status === DuelStatus.Settled && d.winner !== (isRed ? 1 : 2) && d.winner !== 0;
   const isCancelled = d.status === DuelStatus.Cancelled;
 
-  const resultColor = isWon ? '#059669' : isLost ? '#F43F5E' : '#9CA3AF';
-  const resultBg = isWon ? '#ECFDF5' : isLost ? '#FFF1F2' : '#F9F8FF';
+  const resultColor = isWon ? '#059669' : isLost ? '#F43F5E' : '#999999';
+  const resultBg = isWon ? '#ECFDF5' : isLost ? '#FFF5F5' : '#FFFFFF';
   const resultText = isWon
     ? (isZh ? '🏆 胜出' : '🏆 Won')
     : isLost ? (isZh ? '💀 败北' : '💀 Lost')
@@ -2156,20 +2265,20 @@ function HistoryRow({ d, t, address, token, onViewDuel }: {
   return (
     <div
       onClick={onViewDuel}
-      style={{display:'flex',alignItems:'center',gap:'10px',padding:'10px 14px',borderBottom:'1px solid #F3F0FB',cursor:'pointer',transition:'background 0.1s'}}
-      onMouseEnter={e=>(e.currentTarget.style.background='#F9F8FF')}
+      style={{display:'flex',alignItems:'center',gap:'10px',padding:'10px 14px',borderBottom:'1px solid #F5F5F5',cursor:'pointer',transition:'background 0.1s'}}
+      onMouseEnter={e=>(e.currentTarget.style.background='#FFFFFF')}
       onMouseLeave={e=>(e.currentTarget.style.background='transparent')}
     >
       {/* Result badge */}
-      <div style={{flexShrink:0,minWidth:'68px',padding:'3px 8px',borderRadius:'8px',background:resultBg,textAlign:'center'}}>
+      <div style={{flexShrink:0,minWidth:'68px',padding:'3px 8px',borderRadius:'6px',background:resultBg,textAlign:'center'}}>
         <span style={{fontSize:'11px',fontWeight:600,color:resultColor}}>{resultText}</span>
       </div>
       {/* Claim text */}
       <div style={{flex:1,minWidth:0}}>
-        <div style={{fontSize:'12px',fontWeight:500,color:'#1A1A2E',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+        <div style={{fontSize:'12px',fontWeight:500,color:'#0A0A0A',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
           {claimText}
         </div>
-        <div style={{fontSize:'10px',color:'#9CA3AF',marginTop:'2px',display:'flex',gap:'6px',alignItems:'center'}}>
+        <div style={{fontSize:'10px',color:'#999999',marginTop:'2px',display:'flex',gap:'6px',alignItems:'center'}}>
           <span style={{fontFamily:'monospace'}}>#{String(originalId).padStart(4,'0')}</span>
           <span>·</span>
           <span>{chainName}</span>
@@ -2180,10 +2289,10 @@ function HistoryRow({ d, t, address, token, onViewDuel }: {
       {/* Amount */}
       <div style={{flexShrink:0,textAlign:'right'}}>
         <div style={{fontSize:'13px',fontWeight:700,color:amtColor}}>{amtText}</div>
-        <div style={{fontSize:'10px',color:'#C4B5FD'}}>{chainToken}</div>
+        <div style={{fontSize:'10px',color:'#E0E0E0'}}>{chainToken}</div>
       </div>
       {/* Arrow */}
-      <div style={{flexShrink:0,color:'#C4B5FD',fontSize:'12px'}}>›</div>
+      <div style={{flexShrink:0,color:'#E0E0E0',fontSize:'12px'}}>›</div>
     </div>
   );
 }
@@ -2203,10 +2312,10 @@ function MyDuelCard({ record, t, onClaim, claimingId, fullWidth = false, onViewD
   const chain = CHAINS.find(c => c.name === record.network);
   const sideIsRed = record.side === 'red';
   const initials = (name: string) => name.replace('0x','').slice(0,2).toUpperCase();
-  const borderColor = isClaimable ? '#FDE68A' : isWon ? '#A7F3D0' : '#EEE9FC';
+  const borderColor = isClaimable ? '#FDE68A' : isWon ? '#A7F3D0' : '#F0F0F0';
 
   return (
-    <div className="bg-white rounded-3xl overflow-hidden transition-all" style={{border:`1.5px solid ${borderColor}`}}>
+    <div className="bg-white rounded-lg overflow-hidden transition-all" style={{border:`1.5px solid ${borderColor}`}}>
       {/* CLAIMABLE STRIP */}
       {isClaimable && (
         <div className="bg-[#FFFBEB] border-b border-[#FDE68A] px-4 py-2 flex items-center gap-2">
@@ -2218,67 +2327,67 @@ function MyDuelCard({ record, t, onClaim, claimingId, fullWidth = false, onViewD
         {/* HEADER */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-[#C4B5FD] font-medium font-mono">#{record.id}</span>
+            <span className="text-[10px] text-[#E0E0E0] font-medium font-mono">#{record.id}</span>
             {chain && <img src={chain.logo} alt="" className="w-3.5 h-3.5 rounded-full" onError={e=>{(e.target as HTMLImageElement).style.display='none'}} />}
-            <span className="text-[10px] text-[#9CA3AF]">{record.network}</span>
+            <span className="text-[10px] text-[#999999]">{record.network}</span>
           </div>
           {record.result ? (
-            <span className={`text-[11px] font-semibold px-3 py-1 rounded-full ${isWon ? 'bg-[#ECFDF5] text-[#059669]' : isLost ? 'bg-[#FFF1F2] text-[#F43F5E]' : 'bg-[#F9F8FF] text-[#9CA3AF]'}`}>{m.results[record.result]}</span>
+            <span className={`text-[11px] font-semibold px-3 py-1 rounded-full ${isWon ? 'bg-[#ECFDF5] text-[#059669]' : isLost ? 'bg-[#FFF5F5] text-[#F43F5E]' : 'bg-[#FFFFFF] text-[#999999]'}`}>{m.results[record.result]}</span>
           ) : isActive ? (
-            <span className="text-[11px] font-semibold px-3 py-1 rounded-full bg-[#EFF6FF] text-[#3B82F6]">⏳ {record.expires}</span>
+            <span className="text-[11px] font-semibold px-3 py-1 rounded-full bg-[#F5F9FF] text-[#3B82F6]">⏳ {record.expires}</span>
           ) : null}
         </div>
         {/* CLAIM TEXT */}
-        <p className="text-[13px] font-semibold text-[#1A1A2E] leading-snug mb-3 line-clamp-2">{record.claim}</p>
+        <p className="text-[13px] font-semibold text-[#0A0A0A] leading-snug mb-3 line-clamp-2">{record.claim}</p>
         {/* PLAYERS ROW */}
         <div className="grid gap-2 mb-3" style={{gridTemplateColumns:'1fr auto 1fr'}}>
           {/* MY SIDE */}
-          <div className={`rounded-2xl p-3 ${sideIsRed ? 'bg-[#FFF1F2] border border-[#FFE4E6]' : 'bg-[#EFF6FF] border border-[#DBEAFE]'}`}>
-            <div className="text-[9px] text-[#9CA3AF] mb-2">{sideIsRed ? '👑 我的立场' : '⚔️ 我的立场'}</div>
+          <div className={`rounded-lg p-3 ${sideIsRed ? 'bg-[#FFF5F5] border border-[#FFE0E0]' : 'bg-[#F5F9FF] border border-[#E0EEFF]'}`}>
+            <div className="text-[9px] text-[#999999] mb-2">{sideIsRed ? '👑 我的立场' : '⚔️ 我的立场'}</div>
             <div className="flex items-center gap-2 mb-2">
               <BeamAvatar addr={record.challengerColor || '0xB008'} size={32} />
-              <div className="min-w-0"><div className="text-[10px] font-semibold text-[#1A1A2E] truncate">{record.challengerColor ? '나' : 'Me'}</div><div className="text-[9px] text-[#9CA3AF]">{sideIsRed ? 'Red' : 'Blue'} side</div></div>
+              <div className="min-w-0"><div className="text-[10px] font-semibold text-[#0A0A0A] truncate">{record.challengerColor ? '나' : 'Me'}</div><div className="text-[9px] text-[#999999]">{sideIsRed ? 'Red' : 'Blue'} side</div></div>
             </div>
             <div className={`text-[18px] font-semibold ${sideIsRed ? 'text-[#F43F5E]' : 'text-[#3B82F6]'}`}>{record.stake} <span className="text-[10px]">{record.token}</span></div>
           </div>
           {/* POT CENTER */}
           <div className="flex flex-col items-center justify-center gap-1">
-            <div className="text-[9px] text-[#9CA3AF]">总奖池</div>
-            <div className="text-[16px] font-semibold text-[#7C3AED]">{record.totalPot}</div>
-            <div className="text-[9px] text-[#C4B5FD]">{record.token}</div>
+            <div className="text-[9px] text-[#999999]">总奖池</div>
+            <div className="text-[16px] font-semibold text-[#0A0A0A]">{record.totalPot}</div>
+            <div className="text-[9px] text-[#999999]">{record.token}</div>
           </div>
           {/* OPPONENT */}
-          <div className={`rounded-2xl p-3 ${sideIsRed ? 'bg-[#EFF6FF] border border-[#DBEAFE]' : 'bg-[#FFF1F2] border border-[#FFE4E6]'}`}>
-            <div className="text-[9px] text-[#9CA3AF] mb-2">⚔️ 对手</div>
+          <div className={`rounded-lg p-3 ${sideIsRed ? 'bg-[#F5F9FF] border border-[#E0EEFF]' : 'bg-[#FFF5F5] border border-[#FFE0E0]'}`}>
+            <div className="text-[9px] text-[#999999] mb-2">⚔️ 对手</div>
             <div className="flex items-center gap-2 mb-2">
               <BeamAvatar addr={record.opponentColor || '0xabc123'} size={32} />
-              <div className="min-w-0"><div className="text-[10px] font-semibold text-[#1A1A2E] truncate">{record.opponentName}</div><div className="text-[9px] text-[#9CA3AF]">{sideIsRed ? 'Blue' : 'Red'} side</div></div>
+              <div className="min-w-0"><div className="text-[10px] font-semibold text-[#0A0A0A] truncate">{record.opponentName}</div><div className="text-[9px] text-[#999999]">{sideIsRed ? 'Blue' : 'Red'} side</div></div>
             </div>
             <div className={`text-[18px] font-semibold ${sideIsRed ? 'text-[#3B82F6]' : 'text-[#F43F5E]'}`}>{record.stake} <span className="text-[10px]">{record.token}</span></div>
           </div>
         </div>
         {/* STATS ROW */}
         <div className="grid grid-cols-3 gap-2 mb-3">
-          <div className="bg-[#F9F8FF] rounded-2xl p-2.5 text-center border border-[#EEE9FC]">
-            <div className="text-[9px] text-[#9CA3AF] mb-1">{m.labels.yourStake}</div>
-            <div className="text-[12px] font-semibold text-[#1A1A2E]">{record.stake} <span className="text-[9px] text-[#C4B5FD]">{record.token}</span></div>
+          <div className="bg-[#FFFFFF] rounded-lg p-2.5 text-center border border-[#F0F0F0]">
+            <div className="text-[9px] text-[#999999] mb-1">{m.labels.yourStake}</div>
+            <div className="text-[12px] font-semibold text-[#0A0A0A]">{record.stake} <span className="text-[9px] text-[#999999]">{record.token}</span></div>
           </div>
-          <div className="bg-[#F9F8FF] rounded-2xl p-2.5 text-center border border-[#EEE9FC]">
-            <div className="text-[9px] text-[#9CA3AF] mb-1">{m.labels.side}</div>
+          <div className="bg-[#FFFFFF] rounded-lg p-2.5 text-center border border-[#F0F0F0]">
+            <div className="text-[9px] text-[#999999] mb-1">{m.labels.side}</div>
             <div className={`text-[12px] font-semibold ${sideIsRed ? 'text-[#F43F5E]' : 'text-[#3B82F6]'}`}>{sideIsRed ? m.sides.red : m.sides.blue}</div>
           </div>
-          <div className="bg-[#F9F8FF] rounded-2xl p-2.5 text-center border border-[#EEE9FC]">
-            <div className="text-[9px] text-[#9CA3AF] mb-1">{m.labels.payout}</div>
-            <div className={`text-[12px] font-semibold ${isWon || isClaimable ? 'text-[#059669]' : isLost ? 'text-[#F43F5E]' : 'text-[#9CA3AF]'}`}>{isClaimable || isWon ? `${record.payout}` : '—'}{(isClaimable || isWon) && <span className="text-[9px] ml-0.5 text-[#C4B5FD]">{record.token}</span>}</div>
+          <div className="bg-[#FFFFFF] rounded-lg p-2.5 text-center border border-[#F0F0F0]">
+            <div className="text-[9px] text-[#999999] mb-1">{m.labels.payout}</div>
+            <div className={`text-[12px] font-semibold ${isWon || isClaimable ? 'text-[#059669]' : isLost ? 'text-[#F43F5E]' : 'text-[#999999]'}`}>{isClaimable || isWon ? `${record.payout}` : '—'}{(isClaimable || isWon) && <span className="text-[9px] ml-0.5 text-[#E0E0E0]">{record.token}</span>}</div>
           </div>
         </div>
         {/* AI ANALYSIS */}
         {(isClaimable || isWon || isLost) && record.aiAnalysis && (
-          <div className="bg-[#F5F3FF] rounded-2xl p-3 mb-3 flex gap-2.5 items-start border border-[#DDD6FE]">
+          <div className="bg-[#F5F5F5] rounded-lg p-3 mb-3 flex gap-2.5 items-start border border-[#F0F0F0]">
             <span className="text-lg flex-shrink-0 mt-0.5">⚖️</span>
             <div>
-              <div className="text-[9px] font-semibold text-[#7C3AED] uppercase tracking-wide mb-1">AI Judge 裁定</div>
-              <p className="text-[11px] text-[#6D28D9] leading-relaxed italic">"{record.aiAnalysis}"</p>
+              <div className="text-[9px] font-semibold text-[#444444] uppercase tracking-wide mb-1">AI Judge 裁定</div>
+              <p className="text-[11px] text-[#444444] leading-relaxed italic">"{record.aiAnalysis}"</p>
             </div>
           </div>
         )}
@@ -2286,32 +2395,32 @@ function MyDuelCard({ record, t, onClaim, claimingId, fullWidth = false, onViewD
         {isClaimable && record.disputeHoursLeft !== undefined && (
           <div className="mb-3">
             <div className="flex justify-between mb-1.5">
-              <span className="text-[10px] text-[#9CA3AF]">{m.labels.disputeWindow}</span>
+              <span className="text-[10px] text-[#999999]">{m.labels.disputeWindow}</span>
               <span className="text-[10px] font-medium text-[#D97706]">{record.disputeHoursLeft}h 剩余</span>
             </div>
-            <div className="h-1.5 bg-[#F3F0FB] rounded-full overflow-hidden">
+            <div className="h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">
               <div className="h-full bg-[#D97706] rounded-full" style={{width:`${(record.disputeHoursLeft/48)*100}%`}} />
             </div>
-            <div className="text-[9px] text-[#9CA3AF] mt-1">{m.labels.claimBy}: {record.claimBy}</div>
+            <div className="text-[9px] text-[#999999] mt-1">{m.labels.claimBy}: {record.claimBy}</div>
           </div>
         )}
         {/* ACTIONS */}
         {isClaimable ? (
           <div className="flex gap-2">
-            <button onClick={()=>onClaim(record.id)} className={`flex-1 py-2.5 rounded-2xl text-[11px] font-semibold transition-all ${isClaiming ? 'bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]' : 'text-white hover:opacity-90'}`} style={isClaiming ? {} : {background:'#D97706'}}>{isClaiming ? '✓ 已领取!' : m.actions.claim}</button>
-            <button className="px-3 py-2.5 rounded-2xl text-[11px] font-semibold text-[#F43F5E] border border-[#FFE4E6] bg-[#FFF1F2] hover:bg-[#FFE4E6] transition-colors flex-shrink-0">{m.actions.dispute}</button>
+            <button onClick={()=>onClaim(record.id)} className={`flex-1 py-2.5 rounded-lg text-[11px] font-semibold transition-all ${isClaiming ? 'bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]' : 'text-white hover:opacity-90'}`} style={isClaiming ? {} : {background:'#D97706'}}>{isClaiming ? '✓ 已领取!' : m.actions.claim}</button>
+            <button className="px-3 py-2.5 rounded-lg text-[11px] font-semibold text-[#F43F5E] border border-[#FFE0E0] bg-[#FFF5F5] hover:bg-[#FFE0E0] transition-colors flex-shrink-0">{m.actions.dispute}</button>
           </div>
         ) : (record as any).isExpired && record.side === 'red' && !record.result && !(record as any).hasDefender ? (
           <div className="flex gap-2">
-            <button onClick={onViewDuel} className="flex-1 py-2.5 rounded-2xl text-[11px] font-semibold text-[#D97706] border border-[#FDE68A] bg-[#FFFBEB] hover:bg-[#FEF3C7] transition-colors">
+            <button onClick={onViewDuel} className="flex-1 py-2.5 rounded-lg text-[11px] font-semibold text-[#D97706] border border-[#FDE68A] bg-[#FFFBEB] hover:bg-[#FEF3C7] transition-colors">
               {t.nav.arena === '广场' ? '↩️ 申请退款' : '↩️ Request Refund'}
             </button>
-            <button onClick={onViewDuel} className="px-3 py-2.5 rounded-2xl text-[11px] font-semibold text-[#7C3AED] border border-[#DDD6FE] bg-[#F5F3FF] hover:bg-[#EDE9FD] transition-colors flex-shrink-0">
+            <button onClick={onViewDuel} className="px-3 py-2.5 rounded-lg text-[11px] font-semibold text-[#444444] border border-[#F0F0F0] bg-[#F5F5F5] hover:bg-[#F5F5F5] transition-colors flex-shrink-0">
               {m.actions.viewDuel}
             </button>
           </div>
         ) : (
-          <button onClick={onViewDuel} className="w-full py-2.5 rounded-2xl text-[11px] font-semibold text-[#7C3AED] border border-[#DDD6FE] bg-[#F5F3FF] hover:bg-[#EDE9FD] transition-colors">{m.actions.viewDuel}</button>
+          <button onClick={onViewDuel} className="w-full py-2.5 rounded-lg text-[11px] font-semibold text-[#444444] border border-[#F0F0F0] bg-[#F5F5F5] hover:bg-[#F5F5F5] transition-colors">{m.actions.viewDuel}</button>
         )}
       </div>
     </div>
@@ -2359,102 +2468,75 @@ function MyDuelsPage({ t, onGoToArena, onChainDuels, chainId, onViewDuel }: { t:
   const handleClaim = (id: number) => { claim(id); };
 
   const TAB_CONFIG = [
-    { key: 'active' as MyDuelTab, icon: '⚔️', activeStyle: 'bg-[#F5F3FF] text-[#7C3AED] border-[#DDD6FE]', badgeStyle: 'bg-[#7C3AED] text-white' },
+    { key: 'active' as MyDuelTab, icon: '⚔️', activeStyle: 'bg-[#F5F5F5] text-[#444444] border-[#F0F0F0]', badgeStyle: 'bg-[#0A0A0A] text-white' },
     { key: 'claimable' as MyDuelTab, icon: '💰', activeStyle: 'bg-[#FFFBEB] text-[#D97706] border-[#FDE68A]', badgeStyle: 'bg-[#D97706] text-white' },
-    { key: 'history' as MyDuelTab, icon: '📜', activeStyle: 'bg-[#F9F8FF] text-[#374151] border-[#EEE9FC]', badgeStyle: 'bg-[#EEE9FC] text-[#374151]' },
+    { key: 'history' as MyDuelTab, icon: '📜', activeStyle: 'bg-[#FFFFFF] text-[#444444] border-[#F0F0F0]', badgeStyle: 'bg-[#F0F0F0] text-[#444444]' },
   ];
 
   return (
-    <div className="flex bg-[#F7F5FF]" style={{ minHeight: 'calc(100vh - 56px)' }}>
-      {/* ── SIDEBAR ── */}
-      <div className="w-56 flex-shrink-0 border-r border-[#EEE9FC] bg-white flex flex-col" style={{ minHeight: 'calc(100vh - 52px)' }}>
-        {/* WALLET */}
-        <div className="px-4 py-4 border-b border-[#EEE9FC]">
-          <div className="flex items-center gap-2.5 mb-3">
-            <BeamAvatar addr={address || '0xabc'} size={36} square />
-            <div className="min-w-0">
-              <div className="text-[11px] font-semibold text-[#374151]">My Account</div>
-              <div className="text-[9px] text-[#9CA3AF] font-mono">{address ? shortAddr(address) : "—"}</div>
+    <div style={{ minHeight: '100vh', background: '#FFFFFF', padding: '28px 32px' }}>
+
+      {/* ── TOP: TABS + STATS ── */}
+      <div style={{ marginBottom: '24px' }}>
+        {/* Tab switcher */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '20px' }}>
+          {TAB_CONFIG.map(({ key, icon }) => (
+            <button key={key} onClick={() => setActiveTab(key)} style={{
+              padding: '7px 16px', borderRadius: '6px', border: 'none', cursor: 'pointer',
+              background: activeTab === key ? '#0A0A0A' : 'transparent',
+              color: activeTab === key ? '#FFFFFF' : '#999999',
+              fontSize: '13px', fontWeight: activeTab === key ? 500 : 400,
+              transition: 'all .12s ease', display: 'flex', alignItems: 'center', gap: '6px',
+            }}>
+              {icon} {m.tabs[key]}
+              {tabCounts[key] > 0 && (
+                <span style={{
+                  fontSize: '9px', background: activeTab === key ? 'rgba(255,255,255,0.2)' : '#F0F0F0',
+                  color: activeTab === key ? '#fff' : '#999999',
+                  borderRadius: '10px', padding: '1px 6px', fontWeight: 600,
+                }}>
+                  {tabCounts[key]}
+                </span>
+              )}
+            </button>
+          ))}
+          <div style={{ flex: 1 }} />
+          <span style={{ fontSize: '11px', color: '#BBBBBB' }}>sorted by expiry</span>
+        </div>
+
+        {/* Stats row */}
+        <div style={{ display: 'flex', gap: '32px', paddingBottom: '20px', borderBottom: '0.5px solid #F0F0F0' }}>
+          {[
+            { label: 'Total Staked', value: totalStaked > 0 ? `${totalStaked.toFixed(3)} ${token}` : '—' },
+            { label: 'Total Won', value: wonDuels.length > 0 ? `${wonDuels.reduce((a,d)=>a+parseFloat(fmtEther(d.wager*2n)),0).toFixed(3)} ${token}` : '—' },
+            { label: 'Win Rate', value: myDuels.filter(d=>d.status===DuelStatus.Settled).length > 0 ? `${winRate}%` : '—' },
+            { label: 'Duels Played', value: String(myDuels.length) },
+          ].map(s => (
+            <div key={s.label}>
+              <div style={{ fontSize: '10px', color: '#BBBBBB', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '4px' }}>{s.label}</div>
+              <div style={{ fontSize: '20px', fontWeight: 300, color: '#0A0A0A', letterSpacing: '-0.5px', lineHeight: 1 }}>{s.value}</div>
             </div>
-          </div>
-        </div>
-
-        {/* OVERVIEW STATS */}
-        <div className="px-3 py-3 border-b border-[#EEE9FC]">
-          <div className="text-[8px] tracking-widest uppercase text-[#9CA3AF] mb-2 px-1">Overview</div>
-          <div className="flex flex-col gap-1.5">
-            {[
-              { label: 'Total Staked', value: totalStaked > 0 ? `${totalStaked.toFixed(3)} ${token}` : '—', color: 'text-[#374151]' },
-              { label: 'Total Won', value: wonDuels.length > 0 ? `${wonDuels.reduce((a,d)=>a+parseFloat(fmtEther(d.wager*2n)),0).toFixed(3)} ${token}` : '—', color: 'text-green-400' },
-              { label: 'Win Rate', value: myDuels.filter(d=>d.status===DuelStatus.Settled).length > 0 ? `${winRate}%` : '—', color: 'text-yellow-400' },
-              { label: 'Duels Played', value: String(myDuels.length), color: 'text-white/50' },
-            ].map(s => (
-              <div key={s.label} className="flex items-center justify-between px-2.5 py-1.5 bg-[#F9F8FF] rounded-lg border border-[#EEE9FC]">
-                <span className="text-[9px] text-[#9CA3AF]">{s.label}</span>
-                <span className={`text-[10px] font-semibold ${s.color}`}>{s.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* TAB NAV */}
-        <div className="px-3 py-3 flex-1">
-          <div className="text-[8px] tracking-widest uppercase text-[#9CA3AF] mb-2 px-1">Filter</div>
-          <div className="flex flex-col gap-1">
-            {TAB_CONFIG.map(({ key, icon, activeStyle }) => (
-              <button key={key} onClick={() => setActiveTab(key)}
-                className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-[11px] font-semibold border transition-all ${activeTab === key ? activeStyle + ' border' : 'text-[#9CA3AF] border-transparent hover:text-[#7C3AED] hover:bg-[#F5F3FF]'}`}>
-                <span>{icon} {m.tabs[key]}</span>
-                {tabCounts[key] > 0 && (
-                  <span className={`text-[8px] rounded-full w-4 h-4 flex items-center justify-center font-bold ${activeTab === key ? TAB_CONFIG.find(c => c.key === key)!.badgeStyle : 'bg-[#EEE9FC] text-[#9CA3AF]'}`}>
-                    {tabCounts[key]}
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* BOTTOM NOTICE */}
-        <div className="px-3 pb-4">
-          <div className="bg-[#F9F8FF] border border-[#EEE9FC] rounded-lg p-2.5">
-            <div className="text-[8px] text-[#9CA3AF] leading-relaxed">
-              🛡 Dispute window: 48h after settlement. Disputes cost 5% of stake.
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* ── MAIN CONTENT ── */}
-      <div className="flex-1 min-w-0 p-5 bg-[#F7F5FF]">
-        {/* CONTENT HEADER */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <div className="text-sm font-semibold text-[#1A1A2E]">{m.tabs[activeTab]}</div>
-            <div className="text-[10px] text-[#9CA3AF] mt-0.5">
-              {currentDuels.length > 0 ? `${currentDuels.length} duels` : m.emptyDesc[activeTab]}
-            </div>
-          </div>
-          <div className="text-[9px] text-[#C4B5FD]">sorted by expiry</div>
-        </div>
-
         {/* EMPTY STATE */}
         {currentDuels.length === 0 ? (
-          <div className="bg-white border border-[#EEE9FC] rounded-2xl p-16 text-center">
+          <div className="bg-white border border-[#F0F0F0] rounded-lg p-16 text-center">
             <div className="text-4xl mb-3">{activeTab === 'active' ? '⚔️' : activeTab === 'claimable' ? '💰' : '📜'}</div>
-            <div className="text-sm font-semibold text-[#374151] mb-2">{m.empty[activeTab]}</div>
-            <div className="text-[11px] text-[#9CA3AF] mb-5">{m.emptyDesc[activeTab]}</div>
+            <div className="text-sm font-semibold text-[#444444] mb-2">{m.empty[activeTab]}</div>
+            <div className="text-[11px] text-[#999999] mb-5">{m.emptyDesc[activeTab]}</div>
             {activeTab === 'active' && (
-              <button onClick={onGoToArena} className="text-xs font-semibold text-white rounded-xl px-4 py-2 hover:opacity-90 transition-colors" style={{background:'#7C3AED'}}>
+              <button onClick={onGoToArena} className="text-xs font-semibold text-white rounded-lg px-4 py-2 hover:opacity-90 transition-colors" style={{background:'#0A0A0A'}}>
                 {m.actions.goToArena}
               </button>
             )}
           </div>
         ) : activeTab === 'history' ? (
           /* HISTORY — 流水账单样式 */
-          <div style={{background:'#fff',borderRadius:'16px',border:'1px solid #EEE9FC',overflow:'hidden'}}>
+          <div style={{background:'#fff',borderRadius:'10px',border:'1px solid #F0F0F0',overflow:'hidden'}}>
             {currentDuels.length === 0 ? (
-              <div style={{padding:'32px',textAlign:'center',color:'#9CA3AF',fontSize:'13px'}}>
+              <div style={{padding:'32px',textAlign:'center',color:'#999999',fontSize:'13px'}}>
                 {t.myDuels.empty.history}
               </div>
             ) : (
@@ -2509,69 +2591,58 @@ function MyDuelsPage({ t, onGoToArena, onChainDuels, chainId, onViewDuel }: { t:
             })}
           </div>
         )}
-      </div>
     </div>
   );
 }
 
 // ─── NAVBAR ───────────────────────────────────────────────────────────────────
 function NavBar({ t, lang, activePage, onPageChange, onLangToggle, onIssueClick }: { t: typeof LANG['en']; lang: Lang; activePage: Page; onPageChange: (p: Page) => void; onLangToggle: () => void; onIssueClick: () => void }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const h = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false); };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
-  }, []);
-  const claimableCount = 0; // AppInner에서 props로 전달 예정
   return (
-    <div className="bg-white border-b border-[#EEE9FC] px-4 flex items-center" style={{ height: '64px' }}>
-      {/* LEFT */}
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <img src="/verdict_logo.png" alt="Verdict Protocol" className="w-12 h-12 object-contain" />
-        <span className="text-[17px] font-bold text-[#1A1A2E]" style={{letterSpacing:'-0.3px'}}>{t.appName}</span>
-      </div>
-      {/* CENTER NAV */}
-      <div className="flex-1 flex items-center justify-center">
-        <div className="flex items-center bg-[#F3F0FB] rounded-2xl p-1.5 gap-1">
-          <button onClick={() => onPageChange('arena')} className={`px-5 py-2 rounded-xl text-[13px] font-bold transition-all ${activePage === 'arena' ? 'bg-white text-[#7C3AED]' : 'text-[#9CA3AF] hover:text-[#7C3AED]'}`}>
-            {t.nav.arena}
-          </button>
-          <button onClick={() => onPageChange('myDuels')} className={`px-5 py-2 rounded-xl text-[13px] font-bold transition-all flex items-center gap-1.5 ${activePage === 'myDuels' ? 'bg-white text-[#7C3AED]' : 'text-[#9CA3AF] hover:text-[#7C3AED]'}`}>
-            {t.nav.myDuels}
-            {claimableCount > 0 && <span className="text-[8px] bg-[#7C3AED] text-white rounded-full w-4 h-4 flex items-center justify-center font-bold">{claimableCount}</span>}
-          </button>
+    <div style={{position:'fixed',left:0,top:0,bottom:0,width:'200px',background:'#FFFFFF',borderRight:'0.5px solid #EBEBEB',display:'flex',flexDirection:'column',zIndex:40}}>
+      <div style={{padding:'24px 20px 20px',borderBottom:'0.5px solid #F5F5F5'}}>
+        <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+          <img src="/verdict_logo.svg" alt="logo" style={{width:'36px',height:'36px',objectFit:'contain'}} />
+          <span style={{fontSize:'13px',fontWeight:600,color:'#0A0A0A',letterSpacing:'-0.2px'}}>Protocol Bet</span>
         </div>
       </div>
-      {/* RIGHT */}
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <button onClick={onLangToggle} className="text-[13px] font-medium text-[#6B7280] bg-[#F7F5FF] border border-[#EEE9FC] rounded-xl px-3 py-2 hover:border-[#C4B5FD] transition-colors">{lang === 'en' ? '中文' : 'EN'}</button>
+      <div style={{padding:'12px',display:'flex',flexDirection:'column',gap:'2px'}}>
+        {([['arena', t.nav.arena], ['myDuels', t.nav.myDuels]] as [Page, string][]).map(([key, label]) => (
+          <button key={key} onClick={() => onPageChange(key)} style={{display:'flex',alignItems:'center',gap:'8px',padding:'8px 10px',borderRadius:'6px',border:'none',cursor:'pointer',background:activePage===key?'#F5F5F5':'transparent',color:activePage===key?'#0A0A0A':'#999999',fontSize:'13px',fontWeight:activePage===key?500:400,textAlign:'left',width:'100%',transition:'all .12s'}}>
+            {key === 'arena'
+              ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+              : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            }
+            {label}
+          </button>
+        ))}
+      </div>
+      <div style={{flex:1}} />
+      <div style={{padding:'16px 12px',borderTop:'0.5px solid #F5F5F5',display:'flex',flexDirection:'column',gap:'8px'}}>
+        <button onClick={onIssueClick} style={{width:'100%',padding:'9px 12px',background:'#0A0A0A',color:'#fff',border:'none',borderRadius:'6px',fontSize:'12px',fontWeight:500,cursor:'pointer',transition:'opacity .12s'}} onMouseEnter={e=>(e.currentTarget.style.opacity='0.85')} onMouseLeave={e=>(e.currentTarget.style.opacity='1')} onMouseDown={e=>(e.currentTarget.style.transform='scale(0.98)')} onMouseUp={e=>(e.currentTarget.style.transform='scale(1)')}>
+          {t.issueBtn}
+        </button>
         <ConnectButton.Custom>
-          {({ account, chain, openAccountModal, openConnectModal, mounted }) => {
-            const connected = mounted && account && chain;
-            if (!connected) return (<button onClick={openConnectModal} className="text-[13px] font-bold text-white rounded-xl px-4 py-2 transition-colors whitespace-nowrap hover:opacity-90" style={{background:'#7C3AED'}}>{t.connectWallet}</button>);
+          {({ account, openAccountModal, openConnectModal, mounted }) => {
+            if (!mounted || !account) return (
+              <button onClick={openConnectModal} style={{width:'100%',padding:'8px 12px',background:'transparent',color:'#999999',border:'0.5px solid #EBEBEB',borderRadius:'6px',fontSize:'12px',cursor:'pointer'}}>
+                Connect wallet
+              </button>
+            );
             return (
-              <div className="relative" ref={menuRef}>
-                <button onClick={() => setMenuOpen(o => !o)} className="flex items-center gap-2 bg-[#F7F5FF] border border-[#EEE9FC] rounded-xl px-3 py-2 hover:border-[#C4B5FD] transition-colors">
-                  <BeamAvatar addr={account.address || '0xabc'} size={22} />
-                  <span className="text-[13px] font-semibold text-[#6D28D9]">{account.displayName}</span>
-                  <span className="text-[#C4B5FD] text-[10px]">▾</span>
-                </button>
-                {menuOpen && (
-                  <div className="absolute right-0 top-full mt-1 bg-white border border-[#EEE9FC] rounded-2xl overflow-hidden z-50 min-w-[160px]" style={{boxShadow:'0 4px 24px rgba(124,58,237,0.10)'}}>
-                    <button onClick={() => { onPageChange('myDuels'); setMenuOpen(false); }} className="w-full flex items-center gap-2 px-3 py-2.5 text-xs text-[#1A1A2E] hover:bg-[#F7F5FF] transition-colors border-b border-[#F3F0FB]">
-                      <span>📋</span> {t.nav.myDuels}
-                      {claimableCount > 0 && <span className="ml-auto text-[8px] bg-[#7C3AED] text-white rounded-full w-4 h-4 flex items-center justify-center font-bold">{claimableCount}</span>}
-                    </button>
-                    <button onClick={() => { onIssueClick(); setMenuOpen(false); }} className="w-full flex items-center gap-2 px-3 py-2.5 text-xs text-[#1A1A2E] hover:bg-[#F7F5FF] transition-colors border-b border-[#F3F0FB]"><span>⚔️</span> {t.issueBtn}</button>
-                    <button onClick={() => { navigator.clipboard?.writeText(account.address); setMenuOpen(false); }} className="w-full flex items-center gap-2 px-3 py-2.5 text-xs text-[#1A1A2E] hover:bg-[#F7F5FF] transition-colors border-b border-[#F3F0FB]"><span>📋</span> Copy address</button>
-                    <button onClick={() => { openAccountModal(); setMenuOpen(false); }} className="w-full flex items-center gap-2 px-3 py-2.5 text-xs text-[#F43F5E] hover:bg-[#FFF1F2] transition-colors"><span>⏏</span> Disconnect</button>
-                  </div>
-                )}
-              </div>
+              <button onClick={openAccountModal} style={{display:'flex',alignItems:'center',gap:'7px',padding:'7px 10px',background:'#F5F5F5',border:'none',borderRadius:'6px',cursor:'pointer',width:'100%'}}>
+                <BeamAvatar addr={account.address||'0xabc'} size={20} />
+                <span style={{fontSize:'11px',color:'#444444',flex:1,textAlign:'left',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{account.displayName}</span>
+              </button>
             );
           }}
         </ConnectButton.Custom>
+        <div style={{display:'flex',alignItems:'center',gap:'6px',padding:'2px 10px'}}>
+          <div style={{width:'6px',height:'6px',borderRadius:'50%',background:'#22c55e',flexShrink:0}} />
+          <span style={{fontSize:'11px',color:'#999999'}}>Mantle Sepolia</span>
+        </div>
+        <button onClick={onLangToggle} style={{padding:'5px 10px',background:'transparent',border:'none',cursor:'pointer',fontSize:'11px',color:'#999999',textAlign:'left',borderRadius:'6px'}} onMouseEnter={e=>(e.currentTarget.style.color='#444444')} onMouseLeave={e=>(e.currentTarget.style.color='#999999')}>
+          {lang === 'en' ? '中文' : 'EN'}
+        </button>
       </div>
     </div>
   );
@@ -2742,13 +2813,14 @@ function AppInner() {
     : totalCount > 0 ? '...' : '—';
 
   return (
-    <div className="min-h-screen bg-[#F7F5FF] text-[#1A1A2E]">
+    <div style={{minHeight:'100vh',background:'#FFFFFF',display:'flex'}}>
       <style>{`
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 * { font-family: 'DM Sans', sans-serif; }
 .font-mono, code { font-family: 'DM Mono', monospace !important; }
 @keyframes fadeInUp { from { opacity:0; transform:translateX(-50%) translateY(6px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
 @keyframes cardIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+@keyframes scanBeam { 0% { top:-2px; opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { top:100%; opacity:0; } }
 .duel-card-grid > * { animation: cardIn 0.35s ease both; }
 .duel-card-grid > *:nth-child(1) { animation-delay: 0.05s; }
 .duel-card-grid > *:nth-child(2) { animation-delay: 0.10s; }
@@ -2758,33 +2830,33 @@ function AppInner() {
 .duel-card-grid > *:nth-child(6) { animation-delay: 0.30s; }
 `}</style>
       <NavBar t={t} lang={lang} activePage={activePage} onPageChange={setActivePage} onLangToggle={() => setLang(l => l === 'en' ? 'zh' : 'en')} onIssueClick={() => setShowModal(true)} />
+      <div style={{marginLeft:'200px',flex:1,minWidth:0}}>
       {activePage === 'arena' ? (
         <>
           <Ticker t={t} lang={lang} />
-          <div className="border-b border-[#EEE9FC]" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr' }}>
+          <div className="border-b border-[#F0F0F0]" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr' }}>
             {[
               { label: t.stats.duels, value: totalCount > 0 ? String(totalCount) : '—' },
               { label: t.stats.pool, value: totalPotStr },
               { label: t.stats.settled, value: onChainDuels.filter(d => d.status === DuelStatus.Settled).length > 0 ? String(onChainDuels.filter(d => d.status === DuelStatus.Settled).length) : '—' },
             ].map((s, i) => (
-              <div key={i} className={`py-3 text-center bg-white ${i < 2 ? 'border-r border-[#EEE9FC]' : ''}`}>
-                <div className="text-[9px] tracking-widest uppercase text-[#9CA3AF] mb-1 font-medium">{s.label}</div>
-                <div className="text-lg font-bold text-[#1A1A2E]">{s.value}</div>
+              <div key={i} className={`py-3 text-center bg-white ${i < 2 ? 'border-r border-[#F0F0F0]' : ''}`}>
+                <div className="text-[9px] tracking-widest uppercase text-[#999999] mb-1 font-medium">{s.label}</div>
+                <div className="text-lg font-bold text-[#0A0A0A]">{s.value}</div>
               </div>
             ))}
           </div>
-          <div className="bg-white border-b border-[#EEE9FC] px-4 py-3 flex items-center justify-between">
+          <div className="bg-white border-b border-[#F0F0F0] px-4 py-3 flex items-center justify-between">
             <div className="flex gap-1.5">
-              {t.filters.map((f, i) => (<button key={f} onClick={() => setActiveFilter(i)} className={`text-[10px] px-3 py-1.5 rounded-full border transition-colors font-medium ${activeFilter === i ? 'bg-[#7C3AED] text-white border-[#7C3AED]' : 'bg-[#F7F5FF] text-[#9CA3AF] border-[#EEE9FC] hover:border-[#C4B5FD]'}`}>{f}</button>))}
+              {t.filters.map((f, i) => (<button key={f} onClick={() => setActiveFilter(i)} className={`text-[10px] px-3 py-1.5 rounded-full border transition-colors font-medium ${activeFilter === i ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]' : 'bg-white text-[#999999] border-[#F0F0F0] hover:text-[#444444]'}`}>{f}</button>))}
             </div>
-            <button onClick={() => setShowModal(true)} className="text-xs font-semibold text-white rounded-xl px-4 py-1.5 transition-colors" style={{background:'#7C3AED'}}>{t.issueBtn}</button>
           </div>
           <div className="p-4">
-            <div className="text-[11px] font-semibold text-[#9CA3AF] mb-4 flex items-center gap-2 uppercase tracking-widest">
+            <div className="text-[11px] font-semibold text-[#999999] mb-4 flex items-center gap-2 uppercase tracking-widest">
               All Duels
-              {isLoading && <span className="text-[#C4B5FD]">loading...</span>}
+              {isLoading && <span className="text-[#E0E0E0]">loading...</span>}
               {!isLoading && visibleDuels.length === 0 && totalCount === 0 && (
-                <span className="text-[#C4B5FD]">— no active duels</span>
+                <span className="text-[#E0E0E0]">— no active duels</span>
               )}
             </div>
             <div className="duel-card-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
@@ -2795,7 +2867,7 @@ function AppInner() {
             </div>
           </div>
           <div className="pb-8 pt-4 text-center">
-            <button onClick={() => refetch()} className="text-xs text-[#9CA3AF] bg-white border border-[#EEE9FC] rounded-xl px-6 py-2.5 hover:border-[#C4B5FD] transition-colors">↻ Refresh</button>
+            <button onClick={() => refetch()} className="text-xs text-[#999999] bg-white border border-[#F0F0F0] rounded-lg px-6 py-2.5 hover:border-[#E0E0E0] transition-colors">↻ Refresh</button>
           </div>
         </>
       ) : (
@@ -2805,6 +2877,7 @@ function AppInner() {
           setSelectedOnChainDuel(d);
         }} />
       )}
+      </div>
       {showModal && <IssueModal t={t} onClose={() => { setShowModal(false); refetch(); }} chainId={chainId} />}
       {selectedDuel && <DuelModal duel={selectedDuel} t={t} refetch={refetch} onClose={() => {
         setSelectedDuel(null);
