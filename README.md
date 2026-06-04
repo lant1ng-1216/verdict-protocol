@@ -11,7 +11,6 @@
 [![npm](https://img.shields.io/badge/npm-@lant1ng/verdict--protocol--sdk-CB3837?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@lant1ng/verdict-protocol-sdk)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
 [![Solidity](https://img.shields.io/badge/Solidity-0.8.23-363636?style=for-the-badge&logo=solidity)](https://soliditylang.org)
-[![DeepSeek](https://img.shields.io/badge/AI-DeepSeek-4A90E2?style=for-the-badge)](https://deepseek.com)
 [![Telegram](https://img.shields.io/badge/Bot-@VerdictProtocol__Bot-26A5E4?style=for-the-badge&logo=telegram)](https://t.me/VerdictProtocol_Bot)
 
 ---
